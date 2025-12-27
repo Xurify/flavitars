@@ -1,6 +1,9 @@
 import { PresetAvatarState } from "../../../types";
 
-export const MARIKA_PRESETS: Record<string, Partial<PresetAvatarState> & { name: string; description?: string }> = {
+export const MARIKA_PRESETS: Record<
+  "marika-gombitova" | "marika-military" | "marika-atelier",
+  Partial<PresetAvatarState> & { name: string; description?: string }
+> = {
   "marika-gombitova": {
     name: "Pani Gombitka",
     description: "Classic",

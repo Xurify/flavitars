@@ -54,11 +54,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
       >
         <AvatarFilters filterId={filterId} clippingY={clippingY} headId={state.head} hatId={state.hat} />
 
-        <g
-          filter={
-            state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined
-          }
-        >
+        <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
           {state.texture !== "none" && (
             <>
               <rect x="0" y="0" width="100" height="100" fill="currentColor" opacity="0.06" className="text-foreground" />

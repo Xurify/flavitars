@@ -7,7 +7,7 @@ const serialize = createSerializer(avatarSearchParams);
 /**
  * Generates a shareable URL with the current avatar state encoded as query parameters.
  */
-export function generateShareableURL(state: AvatarState): string {
+export function generateShareableURL(state: Partial<AvatarState>): string {
   const url = new URL(typeof window !== "undefined" ? window.location.origin : "");
 
   const params: Partial<AvatarStateParams> = {

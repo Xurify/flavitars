@@ -73,7 +73,7 @@ export function getAvatarStateFromId(id: number): AvatarState {
 /**
  * Generate a deterministic numeric ID from an avatar state
  */
-export function getAvatarIdFromState(state: AvatarState): number {
+export function getAvatarIdFromState(state: Partial<AvatarState>): number {
   const orderedState = {
     head: state.head,
     eyebrows: state.eyebrows,

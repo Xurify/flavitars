@@ -1,7 +1,7 @@
 import { AvatarState, PresetAvatarState } from "../../types";
 import { MARIKA_PRESETS } from "./marika";
 
-const BASE_PRESETS: Record<string, Partial<AvatarState> & { name: string; description?: string }> = {
+const BASE_PRESETS: Record<"prvy" | "drew", Partial<AvatarState> & { name: string; description?: string }> = {
   prvy: {
     name: "Prvy",
     description: "Born for something",
@@ -46,13 +46,15 @@ const BASE_PRESETS: Record<string, Partial<AvatarState> & { name: string; descri
   },
 };
 
-export const AVATAR_PRESETS: Record<string, Partial<PresetAvatarState> & { name: string; description?: string }> = {
+export type PRESET_KEY = keyof typeof BASE_PRESETS | keyof typeof MARIKA_PRESETS;
+
+export const AVATAR_PRESETS: Record<PRESET_KEY, Partial<PresetAvatarState> & { name: string; description?: string }> = {
   ...BASE_PRESETS,
   ...MARIKA_PRESETS,
 };
 
 export const SELECTABLE_PRESETS = BASE_PRESETS;
 
-export function getAvatarStateFromPreset(name: string): Partial<PresetAvatarState> | null {
+export function getAvatarStateFromPreset(name: PRESET_KEY): Partial<PresetAvatarState> | null {
   return AVATAR_PRESETS[name] || null;
 }

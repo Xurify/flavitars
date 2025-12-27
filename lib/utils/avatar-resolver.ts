@@ -31,7 +31,7 @@ export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>)
   let state: AvatarState = { ...DEFAULT_AVATAR_STATE };
 
   if (params.preset) {
-    const presetData = AVATAR_PRESETS[params.preset];
+    const presetData = AVATAR_PRESETS[params.preset as keyof typeof AVATAR_PRESETS];
     if (presetData) {
       state = { ...state, ...(presetData as Partial<AvatarState>) };
     }
