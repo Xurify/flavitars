@@ -16,7 +16,7 @@ const vt323 = VT323({
   variable: "--font-sans",
 });
 
-const description = "Extremely modular characters to use across my projects";
+const description = "Extremely modular avatars to use across my projects";
 
 export const metadata: Metadata = {
   title: "Flavitars",
