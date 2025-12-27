@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="h-full bg-background">
+    <main className="h-full">
       <AvatarEditor />
     </main>
   );

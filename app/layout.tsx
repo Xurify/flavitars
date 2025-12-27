@@ -68,7 +68,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${pressStart2P.variable} ${vt323.variable}`}>
-      <body className="antialiased selection:bg-orange-500 selection:text-white font-retro bg-[#F5F0E6] text-[#2C2420] h-[100dvh] flex flex-col overflow-hidden relative">
+      <body className="antialiased selection:bg-orange-500 selection:text-white font-retro bg-[#F5F0E6] text-foreground h-dvh flex flex-col overflow-hidden relative">
         <Header />
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
           <Suspense fallback={<div />}>
