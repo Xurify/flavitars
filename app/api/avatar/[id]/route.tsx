@@ -5,16 +5,20 @@ import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 
 export const runtime = "nodejs";
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  const params = loadAvatarState(searchParams);
-
-  if (params.id && params.id.length > 128) {
+  if (id.length > 128) {
     return new NextResponse("ID too long (max 128 characters)", { status: 400 });
   }
 
-  const state = resolveAvatarStateFromParams(params);
+  const searchParams = request.nextUrl.searchParams;
+
+  const combinedParams = new URLSearchParams(searchParams);
+  combinedParams.set("id", id);
+
+  const avatarParams = loadAvatarState(combinedParams);
+  const state = resolveAvatarStateFromParams(avatarParams);
   const svgAsString = await renderAvatarSvg(state);
 
   return new NextResponse(svgAsString, {

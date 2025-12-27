@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  rewrites: async () => [
+    {
+      source: "/:id([a-zA-Z0-9_-]{1,128}).svg",
+      destination: "/api/avatar/:id",
+    },
+    {
+      source: "/:id([a-zA-Z0-9_-]{1,128}).png",
+      destination: "/api/avatar/:id?format=png",
+    },
+  ],
 };
 
 export default nextConfig;

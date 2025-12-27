@@ -3,7 +3,7 @@ import type { inferParserType } from "nuqs";
 
 export const avatarSearchParams = {
   // Deterministic ID (seed)
-  id: parseAsInteger,
+  id: parseAsString,
 
   // Predefined Presets (e.g., ?preset=michael-jackson)
   preset: parseAsString.withDefault(""),

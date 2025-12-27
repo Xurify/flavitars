@@ -1,7 +1,7 @@
 import { PresetAvatarState } from "../../../types";
 
 export const MARIKA_PRESETS: Record<
-  "marika-gombitova" | "marika-military" | "marika-atelier",
+  "marika-gombitova" | "marika-official" | "marika-atelier",
   Partial<PresetAvatarState> & { name: string; description?: string }
 > = {
   "marika-gombitova": {
@@ -18,7 +18,7 @@ export const MARIKA_PRESETS: Record<
     body: "marikaSparkleTop",
     bodyColor: "black",
   },
-  "marika-military": {
+  "marika-official": {
     name: "Pani Gombitka",
     description: "Legendárna",
     head: "rounded",
@@ -26,10 +26,10 @@ export const MARIKA_PRESETS: Record<
     eyebrows: "marikaDefinedArch",
     nose: "smallButton",
     mouth: "smirk",
-    hair: "marikaUpdo",
+    hair: "marikaBangsUpdo",
     skinTone: "porcelain",
     hairColor: "#F7E7CE",
-    body: "marikaRedMilitaryJacket",
+    body: "marikaOfficialJacket",
     bodyColor: "red",
     texture: "halftone",
   },

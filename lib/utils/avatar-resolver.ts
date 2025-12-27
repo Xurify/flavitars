@@ -37,7 +37,7 @@ export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>)
     }
   }
 
-  if (params.id !== undefined && params.id !== null) {
+  if (params.id) {
     state = { ...state, ...getAvatarStateFromId(params.id) };
   }
 

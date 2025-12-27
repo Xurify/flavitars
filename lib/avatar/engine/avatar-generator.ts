@@ -67,7 +67,7 @@ export function generateAvatarFromSeed(seed: string | number): AvatarState {
 /**
  * Generate a deterministic avatar configuration from a numeric ID
  */
-export function getAvatarStateFromId(id: number): AvatarState {
+export function getAvatarStateFromId(id: string | number): AvatarState {
   return generateAvatarFromSeed(id);
 }
 /**
