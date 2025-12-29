@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -114,7 +114,7 @@ const AvatarEditor: React.FC = () => {
     };
 
     CATEGORIES.forEach((category) => {
-      const keys = Object.keys(category.items);
+      const keys = category.sortedKeys;
       const selection = pick(keys);
       (randomState as Record<string, string | boolean | null>)[category.id === "hats" ? "hat" : (category.stateKey as string)] =
         selection;
