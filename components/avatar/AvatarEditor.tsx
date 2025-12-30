@@ -21,7 +21,11 @@ import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 import { exportToImage, exportToSVG } from "@/lib/utils/export";
 import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
 
-const AvatarEditor: React.FC = () => {
+interface AvatarEditorProps {
+  initialState?: AvatarState;
+}
+
+const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
   const [params, setParams] = useQueryStates(avatarSearchParams, {
     shallow: true,
     history: "push",
@@ -29,8 +33,13 @@ const AvatarEditor: React.FC = () => {
   });
 
   const avatarState: AvatarState = useMemo(() => {
-    return resolveAvatarStateFromParams(params);
-  }, [params]);
+    const resolvedState = resolveAvatarStateFromParams(params);
+    const hasUrlParams = Object.values(params).some((value) => value !== null && value !== undefined && value !== "");
+    if (!hasUrlParams && initialState) {
+      return initialState;
+    }
+    return resolvedState;
+  }, [params, initialState]);
 
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
   const previewRef = useRef<HTMLDivElement>(null);
