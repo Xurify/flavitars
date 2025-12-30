@@ -43,17 +43,16 @@ export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>)
 
   const overrides: Partial<AvatarState> = {};
 
-  const stringKeys: (keyof AvatarState)[] = CATEGORIES.map((category) => category.stateKey);
+  const categoryKeys: (keyof AvatarState)[] = CATEGORIES.map((category) => category.stateKey);
 
-  stringKeys.forEach((key) => {
-    // @ts-expect-error - dynamic assignment
-    const paramValue = params[key === "hat" ? "hat" : key];
+  categoryKeys.forEach((key) => {
+    const paramValue = params[key as keyof AvatarStateParams];
     if (typeof paramValue === "string") {
-      // @ts-expect-error - dynamic assignment
-      overrides[key] = paramValue;
+      (overrides as Record<string, AvatarState[keyof AvatarState]>)[key] = paramValue;
     }
   });
 
+  if (params.texture) overrides.texture = params.texture as AvatarState["texture"];
   if (params.skin_tone) overrides.skinTone = params.skin_tone;
   if (params.hair_color) overrides.hairColor = params.hair_color;
   if (params.hat_color) overrides.hatColor = params.hat_color;

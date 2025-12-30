@@ -298,7 +298,7 @@ export const CATEGORIES: CategoryConfig[] = [
     items: Textures,
     sortedKeys: Object.keys(Textures).sort(),
   },
-];
+] as const;
 
 export const SKIN_TONES: SkinTone[] = [
   // Human Tones
