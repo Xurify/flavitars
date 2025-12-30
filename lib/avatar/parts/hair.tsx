@@ -123,7 +123,7 @@ export const HairBack: Record<string, PartComponent> = {
   ),
   messySideSwept: ({ fill }) => (
     <path
-      d="M 10 25 C -20 45, -25 90, 15 100 C 25 105, 35 100, 45 105 C 55 100, 65 105, 75 102 C 85 105, 125 90, 80 15, 90 25 L 65 5 Z"
+      d="M 10 25 C -20 45, -25 90, 15 100 C 25 105, 35 100, 45 105 C 55 100, 65 105, 75 102 C 85 105, 125 90, 80 15 L 90 25 L 65 5 Z"
       fill={fill || "var(--avatar-hair, #000)"}
       stroke="currentColor"
       strokeWidth="2"
