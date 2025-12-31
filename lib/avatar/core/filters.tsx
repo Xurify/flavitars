@@ -15,8 +15,32 @@ export const AVATAR_FILTER_PREFIX = "avatar-filter";
 export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId: _filterId, clippingY, headId, hatId }) => {
   return (
     <defs>
+      {/* STYLE 0: NONE (Pass-through for iOS compatibility) */}
+      <filter
+        id={`${AVATAR_FILTER_PREFIX}-none`}
+        filterUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+        colorInterpolationFilters="sRGB"
+      >
+        <feFlood floodOpacity="0" result="none" />
+        <feMerge>
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
       {/* STYLE 1: CRUNCHY NOISE */}
-      <filter id={`${AVATAR_FILTER_PREFIX}-noise`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter
+        id={`${AVATAR_FILTER_PREFIX}-noise`}
+        filterUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+        colorInterpolationFilters="sRGB"
+      >
         <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="4" stitchTiles="stitch" result="noise" />
         <feColorMatrix
           in="noise"
@@ -37,7 +61,15 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId: _filterI
       </filter>
 
       {/* STYLE 2: POP-ART HALFTONE (Structured Dots) */}
-      <filter id={`${AVATAR_FILTER_PREFIX}-halftone`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter
+        id={`${AVATAR_FILTER_PREFIX}-halftone`}
+        filterUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+        colorInterpolationFilters="sRGB"
+      >
         <feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="1" result="dots" />
         <feColorMatrix
           in="dots"
@@ -53,7 +85,15 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId: _filterI
       </filter>
 
       {/* STYLE 3: DIGITAL GLITCH (Prime / Lo-Fi) */}
-      <filter id={`${AVATAR_FILTER_PREFIX}-glitch`} filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%">
+      <filter
+        id={`${AVATAR_FILTER_PREFIX}-glitch`}
+        filterUnits="userSpaceOnUse"
+        x="-10%"
+        y="-10%"
+        width="120%"
+        height="120%"
+        colorInterpolationFilters="sRGB"
+      >
         <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" in="SourceGraphic" result="red" />
         <feOffset in="red" dx="1" dy="0" result="redShift" />
         <feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" in="SourceGraphic" result="cyan" />
@@ -65,7 +105,15 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId: _filterI
         <feComposite in="rgbSplit" in2="glitchMask" operator="arithmetic" k2="1" k3="0.2" />
       </filter>
 
-      <filter id={`${AVATAR_FILTER_PREFIX}-wobble`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter
+        id={`${AVATAR_FILTER_PREFIX}-wobble`}
+        filterUnits="userSpaceOnUse"
+        x="0"
+        y="0"
+        width="100"
+        height="100"
+        colorInterpolationFilters="sRGB"
+      >
         <feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="3" result="edgeTurbulence" />
         <feDisplacementMap in2="edgeTurbulence" in="SourceGraphic" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
       </filter>
