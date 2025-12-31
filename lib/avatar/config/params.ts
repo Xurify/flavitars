@@ -1,14 +1,9 @@
-import { parseAsString, parseAsBoolean, parseAsInteger, createLoader, createSerializer } from "nuqs/server";
+import { parseAsString, parseAsBoolean, createLoader, createSerializer } from "nuqs/server";
 import type { inferParserType } from "nuqs";
 
 export const avatarSearchParams = {
-  // Deterministic ID (seed)
   id: parseAsString,
-
-  // Predefined Presets (e.g., ?preset=michael-jackson)
   preset: parseAsString.withDefault(""),
-
-  // Individual parts
   head: parseAsString,
   eyebrows: parseAsString,
   eyes: parseAsString,

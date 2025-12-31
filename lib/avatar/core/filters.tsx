@@ -12,7 +12,7 @@ interface AvatarFiltersProps {
 
 export const AVATAR_FILTER_PREFIX = "avatar-filter";
 
-export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY, headId, hatId }) => {
+export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId: _filterId, clippingY, headId, hatId }) => {
   return (
     <defs>
       {/* STYLE 1: CRUNCHY NOISE */}

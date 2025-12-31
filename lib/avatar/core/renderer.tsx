@@ -4,7 +4,7 @@ import { AvatarFilters } from "./filters";
 import { AvatarLayers } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
 
-export const renderAvatarSvg = async (state: AvatarState, idSuffix: string = "main"): Promise<string> => {
+export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
   const { hairColor } = resolveAvatarColors(state);
   const { clippingY } = resolveAvatarLogic(state);
 

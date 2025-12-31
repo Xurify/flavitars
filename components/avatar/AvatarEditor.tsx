@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -92,8 +92,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     ) as keyof typeof avatarSearchParams;
 
     if (allowedColors && !allowedColors.includes(avatarState[colorKey] as string)) {
-      // @ts-expect-error - nuqs types can be tricky with dynamic keys
-      updates[paramColorKey] = allowedColors[0];
+      (updates as Record<keyof AvatarStateParams, AvatarStateParams[keyof AvatarStateParams]>)[paramColorKey] = allowedColors[0];
     }
 
     handleParamsChange(updates);

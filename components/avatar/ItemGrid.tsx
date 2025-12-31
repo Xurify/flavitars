@@ -3,17 +3,11 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeadId, HeadShapes } from "@/lib/avatar/parts/head";
 import { PartComponent } from "@/lib/avatar/parts";
-import {
-  AvatarCategory,
-  HAIR_COLORS,
-  ACCESSORY_ACCENT_COLORS,
-} from "@/lib/avatar/types";
+import { AvatarCategory, HAIR_COLORS, ACCESSORY_ACCENT_COLORS } from "@/lib/avatar/types";
 
 interface ItemGridProps {
   items: Record<string, PartComponent>;
   backItems?: Record<string, PartComponent>;
-  // items: Record<string, PartComponent<Partial<AvatarState>>>;
-  // backItems?: Record<string, PartComponent<Partial<AvatarState>>>;
   selectedIndex: string;
   onSelect: (id: string) => void;
   allowNone?: boolean;
@@ -54,38 +48,21 @@ const TextureFilters = () => (
   <defs>
     <filter id="grid-noise">
       <feTurbulence baseFrequency="0.6" numOctaves="3" />
-      <feColorMatrix
-        type="matrix"
-        values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 15 -7"
-      />
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 15 -7" />
       <feComponentTransfer>
         <feFuncA type="linear" slope="0.5" />
       </feComponentTransfer>
       <feBlend mode="overlay" in="SourceGraphic" />
     </filter>
     <filter id="grid-glitch">
-      <feColorMatrix
-        type="matrix"
-        values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"
-        in="SourceGraphic"
-        result="redChannel"
-      />
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" in="SourceGraphic" result="redChannel" />
       <feOffset dx="2" in="redChannel" result="redShift" />
-      <feColorMatrix
-        type="matrix"
-        values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"
-        in="SourceGraphic"
-        result="cyanChannel"
-      />
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" in="SourceGraphic" result="cyanChannel" />
       <feOffset dx="-2" in="cyanChannel" result="cyanShift" />
       <feBlend mode="screen" in="redShift" in2="cyanShift" />
     </filter>
     <filter id="grid-halftone">
-      <feTurbulence
-        baseFrequency="1.5"
-        numOctaves="1"
-        result="turbulenceResult"
-      />
+      <feTurbulence baseFrequency="1.5" numOctaves="1" result="turbulenceResult" />
       <feColorMatrix
         type="matrix"
         values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 20 -10"
@@ -180,19 +157,10 @@ const ItemPreview: React.FC<ItemPreviewProps> = ({
 
                 const allowedColors = ItemComponent.colors;
                 if (allowedColors) {
-                  const currentId = isHatCategory
-                    ? hatColorId
-                    : categoryId === "body"
-                    ? bodyColorId
-                    : accessoryColorId;
+                  const currentId = isHatCategory ? hatColorId : categoryId === "body" ? bodyColorId : accessoryColorId;
                   if (!allowedColors.includes(currentId)) {
-                    const palette =
-                      isHatCategory || categoryId === "body"
-                        ? HAIR_COLORS
-                        : ACCESSORY_ACCENT_COLORS;
-                    const fallbackColor = palette.find(
-                      (colorOption) => colorOption.id === allowedColors[0]
-                    )?.color;
+                    const palette = isHatCategory || categoryId === "body" ? HAIR_COLORS : ACCESSORY_ACCENT_COLORS;
+                    const fallbackColor = palette.find((colorOption) => colorOption.id === allowedColors[0])?.color;
                     if (fallbackColor) {
                       if (isHatCategory) resolvedFill = fallbackColor;
                       else resolvedSecondaryFill = fallbackColor;
@@ -242,23 +210,11 @@ export const ItemGrid: React.FC<ItemGridProps> = ({
   headId,
   sortedKeys,
 }) => {
-  const showMannequin = [
-    "hair",
-    "eyes",
-    "nose",
-    "mouth",
-    "brows",
-    "hat",
-    "extras",
-    "hats",
-  ].includes(categoryId);
+  const showMannequin = ["hair", "eyes", "nose", "mouth", "brows", "hat", "extras", "hats"].includes(categoryId);
   return (
     <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
       {categoryId === "texture" && (
-        <svg
-          className="absolute w-0 h-0 pointer-events-none overflow-hidden"
-          aria-hidden="true"
-        >
+        <svg className="absolute w-0 h-0 pointer-events-none overflow-hidden" aria-hidden="true">
           <TextureFilters />
         </svg>
       )}
