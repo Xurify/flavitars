@@ -17,16 +17,12 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="100%"
       height="100%"
+      style={{
+        // @ts-expect-error CSS custom properties
+        "--avatar-hair": hairColor,
+        "--avatar-skin": skinTone,
+      }}
     >
-      <defs>
-        <style>{`
-          :root {
-            --avatar-hair: ${hairColor};
-            --avatar-skin: ${skinTone};
-          }
-        `}</style>
-      </defs>
-
       <AvatarFilters filterId={filterId} clippingY={clippingY} headId={state.head} hatId={state.hat} />
 
       <g filter={`url(#${filterId})`}>
