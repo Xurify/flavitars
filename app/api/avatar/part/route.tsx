@@ -11,6 +11,7 @@ import {
   Noses,
   Hats,
   PartProps,
+  HairId,
 } from "@/lib/avatar/parts";
 
 export const runtime = "nodejs";
@@ -61,7 +62,7 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
     const props: PartProps = {
       headId: "square",
       hatId: "none",
-      hairId: style,
+      hairId: style as HairId,
       fill: "var(--avatar-hair, #1a1a1a)",
     };
 
@@ -110,7 +111,6 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
   }
 }
 
-// GET /api/avatar/part?category=hair&style=bobCutSharp
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const category = searchParams.get("category") as PartCategory | null;
@@ -126,7 +126,6 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "image/svg+xml",
       "Cache-Control": "public, max-age=604800, immutable",
-      "Access-Control-Allow-Origin": "*",
     },
   });
 }
