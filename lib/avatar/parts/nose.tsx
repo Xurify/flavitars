@@ -1,6 +1,6 @@
 import { PartComponent } from "./common";
 
-export const NoseId = ["hook", "lShape", "button", "triangle", "refinedButton", "smallButton"] as const;
+export const NoseId = ["smallButton", "button", "refinedButton", "triangle", "lShape", "hook"] as const;
 export type NoseId = (typeof NoseId)[number];
 
 export const Noses: Record<NoseId, PartComponent> = {

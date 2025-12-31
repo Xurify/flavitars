@@ -29,8 +29,10 @@ import {
   Accessories,
   Hats,
   HatId,
+  HatIds,
   HeadId,
   HairId,
+  HairIds,
   EyesId,
   EyebrowsId,
   NoseId,
@@ -213,7 +215,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "eyebrows",
     allowNone: true,
     items: AllEyebrows,
-    sortedKeys: Object.keys(Eyebrows).sort(),
+    sortedKeys: [...EyebrowsId, ...MarikaEyebrowsIds],
   },
   {
     id: "eyes",
@@ -222,7 +224,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "eyes",
     allowNone: false,
     items: AllEyes,
-    sortedKeys: Object.keys(Eyes).sort(),
+    sortedKeys: [...EyesId, ...MarikaEyesIds],
   },
   {
     id: "nose",
@@ -231,7 +233,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "nose",
     allowNone: true,
     items: Noses,
-    sortedKeys: Object.keys(Noses).sort(),
+    sortedKeys: [...NoseId],
   },
   {
     id: "mouth",
@@ -240,7 +242,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "mouth",
     allowNone: false,
     items: AllMouths,
-    sortedKeys: Object.keys(Mouths).sort(),
+    sortedKeys: [...MouthId, ...MarikaMouthIds],
   },
   {
     id: "hair",
@@ -250,7 +252,7 @@ export const CATEGORIES: CategoryConfig[] = [
     allowNone: true,
     items: AllHairFront,
     backItems: AllHairBack,
-    sortedKeys: Object.keys(HairFront).sort(),
+    sortedKeys: [...HairIds, ...MarikaHairIds],
     sortedBackKeys: Object.keys(HairBack).sort(),
   },
   {
@@ -260,7 +262,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "hat",
     allowNone: true,
     items: Hats,
-    sortedKeys: Object.keys(Hats).sort(),
+    sortedKeys: [...HatIds],
   },
   {
     id: "extras",
@@ -278,7 +280,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "accessories",
     allowNone: true,
     items: AllAccessories,
-    sortedKeys: Object.keys(Accessories).sort(),
+    sortedKeys: [...AccessoryId, ...MarikaAccessoryIds],
   },
   {
     id: "body",
@@ -287,7 +289,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "body",
     allowNone: false,
     items: AllBodies,
-    sortedKeys: Object.keys(Bodies).sort(),
+    sortedKeys: [...BodyId, ...MarikaBodyIds],
   },
   {
     id: "texture",

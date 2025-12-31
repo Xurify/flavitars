@@ -3,13 +3,13 @@ import { PartComponent } from "./common";
 export const EyebrowsId = [
   "none",
   "neutral",
-  "raised",
-  "angry",
-  "quirky",
+  "softArch",
   "definedBrows",
   "glam",
   "glamWide",
-  "softArch",
+  "raised",
+  "angry",
+  "quirky",
 ] as const;
 export type EyebrowsId = (typeof EyebrowsId)[number];
 

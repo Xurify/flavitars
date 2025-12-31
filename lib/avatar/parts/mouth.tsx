@@ -1,25 +1,25 @@
 import { PartComponent } from "./common";
 
 export const MouthId = [
-  "smile",
   "neutral",
-  "oMouth",
-  "smirk",
-  "smirkRed",
-  "pout",
+  "smile",
   "smileDimples",
+  "softTeethSmile",
+  "brightGrin",
+  "laughing",
+  "neutralFullLips",
+  "naturalNude",
+  "naturalPinkSmile",
   "lipstickMouth",
   "softMatte",
   "softMatteSmile",
-  "naturalNude",
-  "naturalPinkSmile",
   "glossyMauveLips",
-  "laughing",
-  "neutralFullLips",
   "vibrantRedFull",
-  "brightGrin",
-  "softTeethSmile",
   "vibrantRedSmall",
+  "smirk",
+  "smirkRed",
+  "pout",
+  "oMouth",
 ] as const;
 export type MouthId = (typeof MouthId)[number];
 
