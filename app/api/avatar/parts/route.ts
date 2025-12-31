@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: `Invalid category: ${category}` }, { status: 400 });
   }
 
-  const categoryMeta = CATEGORIES.find((cat) => cat.id === category);
+  const categoryMeta = CATEGORIES.find((CATEGORY) => CATEGORY.id === category);
   const styles = Object.keys(config.items);
 
   const noneValues = ["bald", "none", "standard"];
