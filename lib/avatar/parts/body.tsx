@@ -16,9 +16,7 @@ export const BodyId = [
   "blueShinyShirt",
   "blackElegantTop",
   "redBlazer",
-  "redTexturedBlouse",
   "whiteRibbedTank",
-  "whiteOffShoulderTop",
   "blackPufferJacket",
   "pinkLatexDress",
   "greyRibbedTank",
@@ -29,7 +27,6 @@ export const BodyId = [
   "darkGreenFuzzyCoat",
   "blackHoodie",
   "pinkHeartSweater",
-  "sephoraBlackTop",
   "stripedBlazer",
   "bareShoulders",
   "blueShirtBlackCardigan",
@@ -38,10 +35,10 @@ export type BodyId = (typeof BodyId)[number];
 
 export const Bodies: Record<BodyId, PartComponent> = {
   basicWhiteTee: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Plain White Tee */}
       <path
-        d="M-38 0 Q-42 15, -45 40 L 45 40 Q 42 15, 38 0 L 25 -6 Q 0 0, -25 -6 Z"
+        d="M-38 0 Q-42 15, -45 40 L 45 40 Q 42 15, 38 0 L 16 -8 Q 0 -3, -16 -8 Z"
         fill="white"
         stroke="#e2e8f0"
         strokeWidth="2"
@@ -54,11 +51,11 @@ export const Bodies: Record<BodyId, PartComponent> = {
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <path d="M-25 -6 Q 0 2, 25 -6" fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+      <path d="M-16 -8 Q 0 -4, 16 -8" fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
     </g>
   ),
   basicBlackTee: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Basic Black Crew Neck */}
       <path
         d="M-35 2 Q -38 15, -42 40 L 42 40 Q 38 15, 35 2 L 20 -4 Q 0 0, -20 -4 Z"
@@ -160,36 +157,88 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   sweatshirtOverShirt: () => (
-    <g transform="translate(50, 95)">
-      {/* Light Blue Shirt Collar */}
-      <path d="M-12 -6 L 0 2 L 12 -6" fill="#93C5FD" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M-12 -6 L-18 -2 L-4 2 Z" fill="#93C5FD" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M 12 -6 L 18 -2 L 4 2 Z" fill="#93C5FD" stroke="currentColor" strokeWidth="1.5" />
-
-      {/* Navy Sweatshirt */}
+    <g transform="translate(50, 92)">
+      {/* --- LAYER 1: The Undershirt & Tie --- */}
+      {/* White Oxford Collar - Crisp & Angular */}
+      <path d="M-12 -6 L -15 2 L -5 4 L 0 0 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="0.5" />
+      <path d="M 12 -6 L  15 2 L  5 4 L 0 0 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth="0.5" />
+      {/* Back of collar */}
+      <path d="M-12 -6 L 12 -6 L 0 -2 Z" fill="#E2E8F0" />
+      {/* The Tie - Repp Stripe (Burgundy/Gold) */}
+      <path d="M-3 0 L 3 0 L 4 8 L 0 10 L -4 8 Z" fill="#7F1D1D" /> {/* Knot */}
+      <path d="M-4 8 L 4 8 L 5 25 L -5 25 Z" fill="#991B1B" /> {/* Body */}
+      {/* Gold Stripes on Tie */}
+      <path d="M-4 12 L 4 10 M -4 18 L 4 16" stroke="#FBBF24" strokeWidth="0.5" opacity="0.8" />
+      {/* --- LAYER 2: The Sweatshirt (Deep Navy) --- */}
+      {/* Main Body - rounded, relaxed fit */}
       <path
-        d="M-35 2 Q -38 15, -40 40 L 40 40 Q 38 15, 35 2 L 20 -4 Q 0 0, -20 -4 Z"
-        fill="#1E3A8A"
-        stroke="currentColor"
-        strokeWidth="2"
+        d="M-42 10 Q -46 -2, -32 -6 Q -20 -9, -16 -2 Q 0 8, 16 -2 Q 20 -9, 32 -6 Q 46 -2, 42 10 L 40 40 H -40 Z"
+        fill="#172554"
+        stroke="#0F172A"
+        strokeWidth="1.5"
       />
-      {/* Crew neck rim */}
-      <path d="M-20 -4 Q 0 0, 20 -4" fill="none" stroke="#3B82F6" opacity="0.4" strokeWidth="2" strokeLinecap="round" />
+      {/* --- LAYER 3: Texture & Lighting --- */}
+      {/* Subtle Noise/Grain (Simulated with specks) */}
+      <g fill="#3B82F6" opacity="0.05">
+        <circle cx="-30" cy="10" r="0.5" /> <circle cx="-20" cy="20" r="0.5" />
+        <circle cx="30" cy="15" r="0.5" /> <circle cx="10" cy="30" r="0.5" />
+        <circle cx="0" cy="15" r="0.5" /> <circle cx="-10" cy="35" r="0.5" />
+      </g>
+      {/* Deep Shadows (Folds) */}
+      <path d="M-32 5 Q -25 15, -28 30" fill="none" stroke="#000" opacity="0.2" strokeWidth="2" strokeLinecap="round" />
+      <path d="M 32 5 Q  25 15,  28 30" fill="none" stroke="#000" opacity="0.2" strokeWidth="2" strokeLinecap="round" />
+      {/* Highlights (Top of shoulders) */}
+      <path d="M-35 -2 Q -25 -4, -18 -2" fill="none" stroke="white" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
+      <path d="M 35 -2 Q  25 -4,  18 -2" fill="none" stroke="white" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
+      {/* --- LAYER 4: Ribbing --- */}
+      {/* Thick Crew Neck Ribbing */}
+      <path d="M-16 -2 Q 0 9, 16 -2 L 16 3 Q 0 14, -16 3 Z" fill="#1E3A8A" stroke="#172554" strokeWidth="0.5" />
+      {/* Vertical Rib lines */}
+      <g stroke="#60A5FA" strokeWidth="0.5" opacity="0.2">
+        {[-12, -8, -4, 0, 4, 8, 12].map((x) => (
+          <path key={x} d={`M${x} 0 V 6`} />
+        ))}
+      </g>
+      {/* --- LAYER 5: The "Extraordinary" Detail --- */}
+      {/* Chenille "F" Patch with Fuzzy Edge */}
+      <g transform="translate(-20, 18) rotate(-5)">
+        {/* Felt Backing */}
+        <circle r="9" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.5" />
 
-      {/* Decal / Text hint */}
-      <g transform="translate(0, 15)" opacity="0.8">
-        <text x="0" y="0" fontSize="6" fontWeight="bold" fill="white" textAnchor="middle" style={{ userSelect: "none" }}>
-          ELEGAN
+        {/* The Letter "F" */}
+        <text x="0" y="3" fontSize="12" fontWeight="900" fill="#DC2626" textAnchor="middle" fontFamily="serif">
+          F
         </text>
-        <rect x="-10" y="4" width="20" height="1" fill="white" />
-        <text x="0" y="10" fontSize="4" fontWeight="bold" fill="white" textAnchor="middle" style={{ userSelect: "none" }}>
-          PERLES
+
+        {/* "Fuzzy" Chenille Stitch Effect */}
+        {/* We use a dashed stroke to simulate the tufts of yarn */}
+        <text
+          x="0"
+          y="3"
+          fontSize="12"
+          fontWeight="900"
+          fill="none"
+          stroke="#EF4444"
+          strokeWidth="1.5"
+          strokeDasharray="0.5 0.5"
+          textAnchor="middle"
+          fontFamily="serif"
+          opacity="0.8"
+        >
+          F
         </text>
+        {/* Gold Border Stitching around patch */}
+        <circle r="8.5" fill="none" stroke="#FBBF24" strokeWidth="0.8" strokeDasharray="1 1" />
+      </g>
+      {/* Gold Enamel Pin on Right Side */}
+      <g transform="translate(25, 12)">
+        <circle r="2.5" fill="#FBBF24" stroke="#B45309" strokeWidth="0.5" />
+        <path d="M-1 -1 L 1 1 M 1 -1 L -1 1" stroke="#F59E0B" strokeWidth="0.5" /> {/* Sparkle */}
       </g>
     </g>
   ),
   featherCuffBlouse: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* White Satin Blouse */}
       <path
         d="M-35 0 Q -38 15, -45 40 L 45 40 Q 38 15, 35 0 L 15 -6 Q 0 -2, -15 -6 Z"
@@ -217,7 +266,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   hoodieUnderJacket: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Dark Jacket */}
       <path
         d="M-38 2 Q-42 15, -45 40 L 45 40 Q 42 15, 38 2 L 25 -4 Q 0 0, -25 -4 Z"
@@ -240,7 +289,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   houndstoothPurpShirt: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       <defs>
         <pattern id="houndstooth" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
           <rect width="10" height="10" fill="white" />
@@ -262,7 +311,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   denimShirtButtoned: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Denim Shirt Mass */}
       <path
         d="M-38 0 Q-40 15, -45 40 L 45 40 Q 40 15, 38 0 L 15 -6 Q 0 -2, -15 -6 Z"
@@ -314,9 +363,9 @@ export const Bodies: Record<BodyId, PartComponent> = {
   ),
   redRibbedTop: () => (
     <g transform="translate(50, 94)">
-      {/* Red Ribbed Top - Tighter Crew/Mock Neck */}
+      {/* Red Ribbed Top - Tighter Crew/Mock Neck - Fixed Shoulders */}
       <path
-        d="M-36 5 Q -40 20, -42 40 L 42 40 Q 40 20, 36 5 L 15 -5 Q 0 0, -15 -5 Z"
+        d="M-36 8 Q -38 20, -40 40 L 40 40 Q 38 20, 36 8 L 15 -5 Q 0 0, -15 -5 Z"
         fill="#DC2626"
         stroke="#991B1B"
         strokeWidth="1.5"
@@ -338,7 +387,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blueShinyShirt: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Deep Blue Satin Shirt */}
       <path
         d="M-38 0 Q-40 15, -45 40 L 45 40 Q 40 15, 38 0 L 15 -6 Q 0 -2, -15 -6 Z"
@@ -362,20 +411,20 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blackElegantTop: () => (
-    <g transform="translate(50, 95)">
-      {/* Black Elegant Top - Wide Scoop Neck */}
+    <g transform="translate(50, 91)">
+      {/* Black Elegant Top - Adjusted for better fit */}
       <path
-        d="M-36 5 Q -40 20, -42 40 L 42 40 Q 40 20, 36 5 L 25 -2 Q 0 10, -25 -2 Z"
+        d="M-36 8 Q -40 20, -42 40 L 42 40 Q 40 20, 36 8 L 25 0 Q 0 12, -25 0 Z"
         fill="#171717"
         stroke="#000000"
         strokeWidth="1.5"
       />
       {/* Subtle shine/lighting */}
-      <path d="M-20 0 Q 0 12, 20 0" fill="none" stroke="#404040" opacity="0.3" strokeWidth="1" />
+      <path d="M-20 2 Q 0 14, 20 2" fill="none" stroke="#404040" opacity="0.3" strokeWidth="1" />
     </g>
   ),
   redBlazer: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Red Blazer Jacket */}
       <path
         d="M-38 0 L -45 15 L -45 40 L 45 40 L 45 15 L 38 0 L 15 -6 L -15 -6 Z"
@@ -393,24 +442,8 @@ export const Bodies: Record<BodyId, PartComponent> = {
       <path d="M-45 15 L -35 40 M 45 15 L 35 40" stroke="#991B1B" opacity="0.2" strokeWidth="1" />
     </g>
   ),
-  redTexturedBlouse: () => (
-    <g transform="translate(50, 95)">
-      {/* Red Textured Blouse - V-Neck/Scoop with lace detail */}
-      <path
-        d="M-36 5 Q -40 20, -42 40 L 42 40 Q 40 20, 36 5 L 20 -5 Q 0 5, -20 -5 Z"
-        fill="#EF4444"
-        stroke="#B91C1C"
-        strokeWidth="1.5"
-      />
-      {/* Lace/Embroidery Texture */}
-      <path d="M-20 -5 Q 0 5, 20 -5" fill="none" stroke="#B91C1C" strokeWidth="1" strokeDasharray="2 1" />
-      <path d="M0 5 V 25" stroke="#B91C1C" opacity="0.2" strokeWidth="0.5" />
-      <path d="M-10 0 L 0 10 L 10 0" fill="none" stroke="#B91C1C" opacity="0.1" strokeWidth="0.5" />
-      <path d="M-10 10 L 0 20 L 10 10" fill="none" stroke="#B91C1C" opacity="0.1" strokeWidth="0.5" />
-    </g>
-  ),
   whiteRibbedTank: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Bare Shoulders/Skin Base */}
       <path d="M-36 10 Q -36 0, -20 -5 L 20 -5 Q 36 0, 36 10 V 20 H -36 Z" fill={skinTone || "#F5D0C5"} stroke="none" />
 
@@ -437,33 +470,8 @@ export const Bodies: Record<BodyId, PartComponent> = {
       </g>
     </g>
   ),
-  whiteOffShoulderTop: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
-      {/* Bare Skin / Chest Area */}
-      <path d="M-36 10 Q -36 0, -20 -5 L 20 -5 Q 36 0, 36 10 V 25 H -36 Z" fill={skinTone || "#F5D0C5"} stroke="none" />
-
-      {/* White Off-Shoulder Top */}
-      <g transform="translate(0, 5)">
-        {/* Top/Bodice */}
-        <path
-          d="M-30 40 L -35 15 Q -20 20, 0 18 Q 20 20, 35 15 L 30 40 H -30 Z"
-          fill="#FDFDFD"
-          stroke="#E5E5E5"
-          strokeWidth="1.5"
-        />
-        {/* Ruched/Textured Sleeves/Top Band */}
-        <path d="M-42 18 Q -30 10, -18 18" fill="none" stroke="#FDFDFD" strokeWidth="8" />
-        <path d="M42 18 Q 30 10, 18 18" fill="none" stroke="#FDFDFD" strokeWidth="8" />
-        <path d="M-42 18 Q -30 10, -18 18" fill="none" stroke="#E5E5E5" strokeWidth="1.5" />
-        <path d="M42 18 Q 30 10, 18 18" fill="none" stroke="#E5E5E5" strokeWidth="1.5" />
-
-        {/* Texture lines */}
-        <path d="M-30 20 Q -15 25, 0 22 Q 15 25, 30 20" fill="none" stroke="#E5E5E5" strokeWidth="1" opacity="0.5" />
-      </g>
-    </g>
-  ),
   blackPufferJacket: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* 1. Underlying Skin/Chest */}
       <path d="M-20 -5 Q 0 0, 20 -5 L 20 25 H -20 Z" fill={skinTone || "#F5D0C5"} stroke="none" />
 
@@ -475,26 +483,19 @@ export const Bodies: Record<BodyId, PartComponent> = {
         <path d="M-15 10 L 15 30 M 15 10 L -15 30" stroke="#333" strokeWidth="0.5" opacity="0.5" />
       </g>
 
-      {/* 3. Black Puffer Jacket */}
-      {/* Left Side */}
-      <path d="M-48 10 Q -48 0, -35 -5 L -20 -2 L -22 40 H -42 L -48 10 Z" fill="#111" stroke="#000" strokeWidth="1.5" />
-      {/* Right Side */}
-      <path d="M48 10 Q 48 0, 35 -5 L 20 -2 L 22 40 H 42 L 48 10 Z" fill="#111" stroke="#000" strokeWidth="1.5" />
+      {/* 3. Black Puffer Jacket - Redesigned for volume */}
+      <g stroke="#000" strokeWidth="1.5" fill="#111">
+        {/* Left Collar/Shoulder */}
+        <path d="M-45 15 Q-48 5, -35 -5 Q -25 -8, -18 -2 L -20 40 L -45 15 Z" />
+        {/* Right Collar/Shoulder */}
+        <path d="M45 15 Q 48 5, 35 -5 Q 25 -8, 18 -2 L 20 40 L 45 15 Z" />
 
-      {/* Puffer Segments / Lines */}
-      <g stroke="#333" strokeWidth="1" opacity="0.3">
-        <path d="M-46 12 H -22" />
-        <path d="M-44 20 H -22" />
-        <path d="M-43 28 H -22" />
-
-        <path d="M46 12 H 22" />
-        <path d="M44 20 H 22" />
-        <path d="M43 28 H 22" />
+        {/* Puffer Segments (Horizontal contours) */}
+        <path d="M-46 15 Q -30 20, -20 18" stroke="#333" strokeWidth="1" opacity="0.3" fill="none" />
+        <path d="M-46 25 Q -30 30, -21 28" stroke="#333" strokeWidth="1" opacity="0.3" fill="none" />
+        <path d="M46 15 Q 30 20, 20 18" stroke="#333" strokeWidth="1" opacity="0.3" fill="none" />
+        <path d="M46 25 Q 30 30, 21 28" stroke="#333" strokeWidth="1" opacity="0.3" fill="none" />
       </g>
-
-      {/* Collar/Hood Fold */}
-      <path d="M-35 -5 Q -25 5, -20 -2" fill="none" stroke="#222" strokeWidth="2" />
-      <path d="M35 -5 Q 25 5, 20 -2" fill="none" stroke="#222" strokeWidth="2" />
     </g>
   ),
   pinkLatexDress: ({ skinTone }) => (
@@ -533,7 +534,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   greyRibbedTank: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Bare Shoulders/Skin Base */}
       <path d="M-36 10 Q -36 0, -20 -5 L 20 -5 Q 36 0, 36 10 V 20 H -36 Z" fill={skinTone || "#F5D0C5"} stroke="none" />
 
@@ -594,7 +595,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   whiteStrappyTank: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Bare Shoulders/Skin Base */}
       <path d="M-36 10 Q -36 0, -20 -5 L 20 -5 Q 36 0, 36 10 V 25 H -36 Z" fill={skinTone || "#D1A384"} stroke="none" />
 
@@ -626,7 +627,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blueLeopardTop: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       <defs>
         <pattern id="leopardPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
           <rect width="10" height="10" fill="#BFDBFE" />
@@ -637,7 +638,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
       </defs>
       <path d="M-20 -5 Q 0 5, 20 -5 L 15 25 H -15 Z" fill={skinTone || "#D1A384"} stroke="none" />
       <path
-        d="M-38 0 Q-42 15, -45 40 L 45 40 Q 42 15, 38 0 L 25 -6 Q 0 0, -25 -6 Z"
+        d="M-32 0 Q-36 15, -38 40 L 38 40 Q 36 15, 32 0 L 20 -6 Q 0 0, -20 -6 Z"
         fill="url(#leopardPattern)"
         stroke="#60A5FA"
         strokeWidth="2"
@@ -645,7 +646,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blueStrappyTank: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       <path d="M-36 10 Q -36 0, -20 -5 L 20 -5 Q 36 0, 36 10 V 25 H -36 Z" fill={skinTone || "#D1A384"} stroke="none" />
       <path
         d="M-26 40 L -22 5 Q -18 -2, -12 -2 L -6 -2 Q -8 12, -8 18 Q 0 28, 8 18 Q 8 12, 6 -2 L 12 -2 Q 18 -2, 22 5 L 26 40 H -26 Z"
@@ -706,7 +707,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blackHoodie: () => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 98)">
       {/* Black Hoodie Base */}
       <path
         d="M-40 5 Q -42-5, -25 -8 L -20 -8 Q 0-4, 20 -8 L 25 -8 Q 42-5, 40 5 V 40 H -40 Z"
@@ -789,43 +790,6 @@ export const Bodies: Record<BodyId, PartComponent> = {
       </g>
     </g>
   ),
-  sephoraBlackTop: () => (
-    <g transform="translate(50, 95)">
-      {/* Black crew neck top */}
-      <path
-        d="M-38 5 Q -42 15, -45 40 H 45 Q 42 15, 38 5 L 18 -6 Q 0 -2, -18 -6 Z"
-        fill="#0a0a0a"
-        stroke="black"
-        strokeWidth="2"
-      />
-      {/* Subtle fabric sheen */}
-      <path d="M-25 10 Q-20 25, -22 35" fill="none" stroke="white" opacity="0.05" strokeWidth="2" />
-      <path d="M25 10 Q20 25, 22 35" fill="none" stroke="white" opacity="0.05" strokeWidth="2" />
-      {/* SEPHORA text */}
-      <text
-        x="0"
-        y="12"
-        fontSize="4"
-        fill="white"
-        opacity="0.7"
-        textAnchor="middle"
-        fontFamily="Arial"
-        style={{ userSelect: "none" }}
-      >
-        SEPHORA
-      </text>
-      {/* Name badge */}
-      <g transform="translate(8, 22)">
-        <rect x="-10" y="-5" width="20" height="10" rx="1" fill="#1a1a1a" stroke="#333" strokeWidth="0.5" />
-        <rect x="-8" y="-3" width="16" height="6" fill="#222" />
-        {/* Colorful lipstick icon */}
-        <rect x="-6" y="-2" width="3" height="4" fill="#EC4899" rx="0.5" />
-        <rect x="-6" y="0" width="3" height="2" fill="#3B82F6" />
-      </g>
-      {/* Collar line */}
-      <path d="M-18 -6 Q 0 -2, 18 -6" fill="none" stroke="white" opacity="0.05" strokeWidth="1.5" />
-    </g>
-  ),
   stripedBlazer: ({ skinTone }) => (
     <g transform="translate(50, 92)">
       {/* Skin at neckline */}
@@ -857,7 +821,7 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   bareShoulders: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Bare shoulders/upper body - natural skin look */}
       <path
         d="M-38 15 Q -38 5, -25 0 L -15 -5 Q 0 0, 15 -5 L 25 0 Q 38 5, 38 15 V 40 H -38 Z"
@@ -872,21 +836,21 @@ export const Bodies: Record<BodyId, PartComponent> = {
     </g>
   ),
   blueShirtBlackCardigan: ({ skinTone }) => (
-    <g transform="translate(50, 95)">
+    <g transform="translate(50, 92)">
       {/* Base skin showing at neckline */}
       <path d="M-10 -4 Q 0 6, 10 -4" fill={skinTone || "#F5D0C5"} stroke="none" />
 
       {/* Light Blue Collared Shirt - Wider V visible at center */}
       <path d="M-8 4 L 0 -1 L 8 4 L 5 40 H -5 Z" fill="#A7C7E7" stroke="#8FAFC7" strokeWidth="0.8" />
 
-      {/* Pointed Collar - extends far left and right like in reference */}
+      {/* Pointed Collar - Renarrowed to be congruent */}
       {/* Left collar point */}
-      <path d="M -6 -4 L -32 12 L -12 8 L -4 0 Z" fill="#A7C7E7" stroke="#7BA3C7" strokeWidth="1.2" />
+      <path d="M -6 -4 L -22 12 L -12 8 L -4 0 Z" fill="#A7C7E7" stroke="#7BA3C7" strokeWidth="1.2" />
       {/* Right collar point */}
-      <path d="M  6 -4 L  32 12 L  12 8 L  4 0 Z" fill="#A7C7E7" stroke="#7BA3C7" strokeWidth="1.2" />
+      <path d="M  6 -4 L  22 12 L  12 8 L  4 0 Z" fill="#A7C7E7" stroke="#7BA3C7" strokeWidth="1.2" />
       {/* Collar inner shadow/fold */}
-      <path d="M-10 0 L -24 8" stroke="#5A88A7" strokeWidth="1" opacity="0.4" />
-      <path d="M 10 0 L  24 8" stroke="#5A88A7" strokeWidth="1" opacity="0.4" />
+      <path d="M-10 0 L -18 6" stroke="#5A88A7" strokeWidth="1" opacity="0.4" />
+      <path d="M 10 0 L  18 6" stroke="#5A88A7" strokeWidth="1" opacity="0.4" />
 
       {/* Black Cardigan - Left side - stops before center */}
       <path
