@@ -5,7 +5,7 @@ import { AvatarLayers } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
 
 export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
-  const { hairColor } = resolveAvatarColors(state);
+  const { hairColor, skinTone } = resolveAvatarColors(state);
   const { clippingY } = resolveAvatarLogic(state);
 
   const filterId = `${AVATAR_FILTER_PREFIX}-${state.texture}`;
@@ -14,17 +14,23 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
     <svg
       viewBox="5 5 90 90"
       xmlns="http://www.w3.org/2000/svg"
-      style={{
-        width: "100%",
-        height: "100%",
-        color: "#1a1a1a",
-        ...({ "--avatar-hair": hairColor } as React.CSSProperties),
-      }}
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      width="100%"
+      height="100%"
     >
+      <defs>
+        <style>{`
+          :root {
+            --avatar-hair: ${hairColor};
+            --avatar-skin: ${skinTone};
+          }
+        `}</style>
+      </defs>
+
       <AvatarFilters filterId={filterId} clippingY={clippingY} headId={state.head} hatId={state.hat} />
 
       <g filter={`url(#${filterId})`}>
-        <rect x="0" y="0" width="100" height="100" fill="currentColor" opacity="0.03" className="text-foreground" />
+        <rect x="0" y="0" width="100" height="100" fill="#1a1a1a" opacity="0.03" />
         <AvatarLayers state={state} filterId={filterId} />
       </g>
     </svg>
