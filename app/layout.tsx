@@ -56,7 +56,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://flavitars.com/",
   },
-  authors: [{ name: "Xurify" }],
 };
 
 export default function RootLayout({
