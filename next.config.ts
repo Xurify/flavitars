@@ -57,6 +57,7 @@ const securityHeadersConfig = () => {
 };
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   rewrites: async () => [
     {
       source: "/:id([a-zA-Z0-9_-]{1,128}).svg",
@@ -92,6 +93,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // This is required to support PostHog trailing slash API requests
+  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;
