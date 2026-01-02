@@ -4,8 +4,6 @@ const isDevelopment = process.env.NODE_ENV === "development";
 const allowedOrigin = isDevelopment ? "http://localhost:3000" : "https://flags.games";
 
 const securityHeadersConfig = () => {
-  const upgradeInsecure = !isDevelopment ? "upgrade-insecure-requests;" : "";
-
   const defaultCSPDirectives = `
     default-src 'none';
     script-src 'self' 'unsafe-inline';
@@ -14,7 +12,7 @@ const securityHeadersConfig = () => {
     font-src 'self' data:;
     style-src 'self' 'unsafe-inline';
     frame-ancestors 'self';
-    ${upgradeInsecure}
+    ${isDevelopment ? "" : "upgrade-insecure-requests;"}
   `
     .replace(/\s{2,}/g, " ")
     .trim();
