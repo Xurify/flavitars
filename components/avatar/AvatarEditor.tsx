@@ -61,7 +61,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     if (!categoryConfig) return;
     const stateKey = categoryConfig.stateKey;
     const selectedItem = categoryConfig.items[id];
-    const allowedColors = selectedItem?.colors;
+    const allowedColors = selectedItem?.component?.colors;
 
     const updates: Partial<AvatarStateParams> = {
       [categoryConfig.id === "hats" ? "hat" : (categoryConfig.stateKey as string)]: id,
@@ -307,7 +307,7 @@ const EditorColorPickers = ({
       colors={HAIR_COLORS}
       allowedColorIds={(() => {
         const hatItem = Hats[avatarState.hat];
-        return hatItem?.colors;
+        return hatItem?.component?.colors;
       })()}
       selectedIndex={avatarState.hatColor}
       onSelect={(id) => {
@@ -342,7 +342,7 @@ const EditorColorPickers = ({
       colors={ACCESSORY_ACCENT_COLORS}
       allowedColorIds={(() => {
         const item = Accessories[avatarState.accessories as AccessoryId];
-        return item?.colors;
+        return item?.component?.colors;
       })()}
       selectedIndex={avatarState.accessoryColor}
       onSelect={(id) => {

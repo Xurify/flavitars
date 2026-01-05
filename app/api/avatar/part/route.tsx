@@ -12,6 +12,7 @@ import {
   Hats,
   PartProps,
   HairId,
+  PartDefinition,
 } from "@/lib/avatar/parts";
 
 export const runtime = "nodejs";
@@ -23,8 +24,8 @@ const STANDARD_VIEWBOX = "-5 -5 110 110";
 export const CATEGORY_CONFIG: Record<
   PartCategory,
   {
-    items: Record<string, React.ComponentType<PartProps>>;
-    backItems?: Record<string, React.ComponentType<PartProps>>;
+    items: Record<string, PartDefinition>;
+    backItems?: Record<string, PartDefinition>;
     usesHairColor?: boolean;
     usesSkinTone?: boolean;
     showMannequin?: boolean;
@@ -49,7 +50,9 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
     </svg>`;
   }
 
-  const PartComponent = config.items[style];
+  const itemDef = config.items[style];
+  const PartComponent = itemDef?.component;
+
   if (!PartComponent) {
     return `<svg viewBox="${STANDARD_VIEWBOX}" xmlns="http://www.w3.org/2000/svg">
       <text x="50" y="55" text-anchor="middle" fill="#999" font-size="10">${style}</text>
@@ -75,13 +78,13 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
 
     let backMarkup = "";
     if (config.backItems && config.backItems[style]) {
-      const BackComponent = config.backItems[style];
+      const BackComponent = config.backItems[style].component;
       backMarkup = renderToStaticMarkup(<BackComponent {...props} />);
     }
 
     let mannequinMarkup = "";
     if (config.showMannequin) {
-      const HeadShape = HeadShapes["square"];
+      const HeadShape = HeadShapes["square"].component;
       mannequinMarkup = renderToStaticMarkup(
         <g opacity="0.15">
           <HeadShape fill="var(--avatar-skin, #fce0c0)" headId="square" />

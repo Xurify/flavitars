@@ -18,6 +18,7 @@ export type AvatarCategory =
 import {
   PartProps,
   PartComponent,
+  PartDefinition,
   HeadShapes,
   Eyebrows,
   Eyes,
@@ -141,8 +142,8 @@ export interface CategoryConfig {
   icon: string;
   stateKey: keyof AvatarState;
   allowNone: boolean;
-  items: Record<string, PartComponent>;
-  backItems?: Record<string, PartComponent>;
+  items: Record<string, PartDefinition>;
+  backItems?: Record<string, PartDefinition>;
   sortedKeys: string[];
   sortedBackKeys?: string[];
 }

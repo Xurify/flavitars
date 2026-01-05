@@ -17,6 +17,18 @@ export interface PartComponent<P = Partial<AvatarState>> extends React.FC<PartPr
   colors?: string[];
 }
 
+export interface PartDefinition<P = Partial<AvatarState>> {
+  component: PartComponent<P>;
+  label: string;
+  isExclusive?: boolean;
+  presetOnly?: boolean;
+  tags?: string[];
+  incompatibleWith?: string[];
+  requiresParts?: string[];
+}
+
+export type PartRegistry<Id extends string, P = Partial<AvatarState>> = Record<Id, PartDefinition<P>>;
+
 export const getHatClippingY = (hatId: HatId | undefined, faceId: string): number | null => {
   if (!hatId || NO_CLIPPING_HATS.includes(hatId)) return null;
   let clippingY = DEFAULT_HAT_CLIPPING_CONFIG[hatId]?.clippingY;

@@ -2,12 +2,12 @@ import React from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeadId, HeadShapes } from "@/lib/avatar/parts/head";
-import { PartComponent } from "@/lib/avatar/parts";
+import { PartComponent, PartDefinition } from "@/lib/avatar/parts";
 import { AvatarCategory, HAIR_COLORS, ACCESSORY_ACCENT_COLORS } from "@/lib/avatar/types";
 
 interface ItemGridProps {
-  items: Record<string, PartComponent>;
-  backItems?: Record<string, PartComponent>;
+  items: Record<string, PartDefinition>;
+  backItems?: Record<string, PartDefinition>;
   selectedIndex: string;
   onSelect: (id: string) => void;
   allowNone?: boolean;
@@ -92,7 +92,7 @@ const ItemPreview: React.FC<ItemPreviewProps> = ({
   hatColorId,
   bodyColorId,
 }) => {
-  const HeadShape = HeadShapes[headId || "square"];
+  const HeadShape = (HeadShapes[headId] || HeadShapes["square"]).component;
   const isHeadCategory = categoryId === "head";
   const isHatCategory = categoryId === "hats";
   return (
@@ -219,8 +219,13 @@ export const ItemGrid: React.FC<ItemGridProps> = ({
         </svg>
       )}
       {sortedKeys.map((id) => {
-        const ItemComponent = items[id];
-        if (!ItemComponent) return null;
+        const itemDef = items[id];
+        if (!itemDef) return null;
+        if (itemDef.presetOnly) return null;
+
+        const ItemComponent = itemDef.component;
+        const BackComponent = backItems?.[id]?.component;
+
         return (
           <ItemPreview
             key={`item-preview-${id}`}
@@ -228,7 +233,7 @@ export const ItemGrid: React.FC<ItemGridProps> = ({
             categoryId={categoryId}
             headId={headId}
             ItemComponent={ItemComponent}
-            BackComponent={backItems?.[id]}
+            BackComponent={BackComponent}
             isSelected={selectedIndex === id}
             showMannequin={showMannequin}
             onSelect={onSelect}

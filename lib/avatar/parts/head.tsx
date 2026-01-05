@@ -1,4 +1,4 @@
-import { PartComponent } from "./common";
+import { PartRegistry, PartComponent } from "./common";
 
 export const HeadIds = ["square", "rounded", "angular", "oval"] as const;
 export type HeadId = (typeof HeadIds)[number];
@@ -10,9 +10,20 @@ export const HEAD_PATHS: Record<string, string> = {
   oval: "M20 40 C 20 10, 80 10, 80 40 C 80 70, 75 90, 50 90 C 25 90, 20 70, 20 40 Z",
 };
 
-export const HeadShapes: Record<string, PartComponent> = {
-  square: ({ fill }) => <path d={HEAD_PATHS.square} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />,
-  rounded: ({ fill }) => <path d={HEAD_PATHS.rounded} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />,
-  angular: ({ fill }) => <path d={HEAD_PATHS.angular} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />,
-  oval: ({ fill }) => <path d={HEAD_PATHS.oval} fill={fill} stroke="currentColor" strokeWidth="2" />,
+const squareHead: PartComponent = ({ fill }) => (
+  <path d={HEAD_PATHS.square} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+);
+const roundedHead: PartComponent = ({ fill }) => (
+  <path d={HEAD_PATHS.rounded} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+);
+const angularHead: PartComponent = ({ fill }) => (
+  <path d={HEAD_PATHS.angular} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+);
+const ovalHead: PartComponent = ({ fill }) => <path d={HEAD_PATHS.oval} fill={fill} stroke="currentColor" strokeWidth="2" />;
+
+export const HeadShapes: PartRegistry<HeadId> = {
+  square: { component: squareHead, label: "Square" },
+  rounded: { component: roundedHead, label: "Rounded" },
+  angular: { component: angularHead, label: "Angular" },
+  oval: { component: ovalHead, label: "Oval" },
 };

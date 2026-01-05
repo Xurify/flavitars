@@ -101,17 +101,17 @@ export function resolveAvatarColors(state: AvatarState) {
 
 export function resolveAvatarParts(state: AvatarState) {
   return {
-    HeadShape: HeadShapes[state.head] || Object.values(HeadShapes)[0],
-    EyebrowSet: AllEyebrows[state.eyebrows as keyof typeof AllEyebrows] || (() => null),
-    EyeSet: AllEyes[state.eyes as keyof typeof AllEyes] || Object.values(AllEyes)[0],
-    NoseSet: Noses[state.nose] || (() => null),
-    MouthSet: AllMouths[state.mouth as keyof typeof AllMouths] || Object.values(AllMouths)[0],
-    ExtraSet: AllExtras[state.extras as keyof typeof AllExtras] || (() => null),
-    HairBackSet: AllHairBack[state.hair as keyof typeof AllHairBack] || (() => null),
-    HairFrontSet: AllHairFront[state.hair as keyof typeof AllHairFront] || (() => null),
-    AccessorySet: AllAccessories[state.accessories as keyof typeof AllAccessories] || (() => null),
-    HatSet: Hats[state.hat] || (() => null),
-    BodySet: AllBodies[state.body as keyof typeof AllBodies] || Object.values(AllBodies)[0],
+    HeadShape: HeadShapes[state.head]?.component || Object.values(HeadShapes)[0].component,
+    EyebrowSet: AllEyebrows[state.eyebrows as keyof typeof AllEyebrows]?.component || (() => null),
+    EyeSet: AllEyes[state.eyes as keyof typeof AllEyes]?.component || Object.values(AllEyes)[0].component,
+    NoseSet: Noses[state.nose]?.component || (() => null),
+    MouthSet: AllMouths[state.mouth as keyof typeof AllMouths]?.component || Object.values(AllMouths)[0].component,
+    ExtraSet: AllExtras[state.extras as keyof typeof AllExtras]?.component || (() => null),
+    HairBackSet: AllHairBack[state.hair as keyof typeof AllHairBack]?.component || (() => null),
+    HairFrontSet: AllHairFront[state.hair as keyof typeof AllHairFront]?.component || (() => null),
+    AccessorySet: AllAccessories[state.accessories as keyof typeof AllAccessories]?.component || (() => null),
+    HatSet: Hats[state.hat]?.component || (() => null),
+    BodySet: AllBodies[state.body as keyof typeof AllBodies]?.component || Object.values(AllBodies)[0].component,
   };
 }
 
