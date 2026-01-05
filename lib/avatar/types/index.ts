@@ -43,6 +43,7 @@ import {
   Bodies,
   TextureId,
   Textures,
+  HeadIds,
 } from "../parts";
 
 import {
@@ -206,7 +207,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "head",
     allowNone: false,
     items: HeadShapes,
-    sortedKeys: Object.keys(HeadShapes).sort(),
+    sortedKeys: [...HeadIds],
   },
   {
     id: "eyebrows",
@@ -215,7 +216,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "eyebrows",
     allowNone: true,
     items: AllEyebrows,
-    sortedKeys: [...EyebrowsId, ...MarikaEyebrowsIds],
+    sortedKeys: [...EyebrowsId],
   },
   {
     id: "eyes",
@@ -224,7 +225,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "eyes",
     allowNone: false,
     items: AllEyes,
-    sortedKeys: [...EyesId, ...MarikaEyesIds],
+    sortedKeys: [...EyesId],
   },
   {
     id: "nose",
@@ -242,7 +243,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "mouth",
     allowNone: false,
     items: AllMouths,
-    sortedKeys: [...MouthId, ...MarikaMouthIds],
+    sortedKeys: [...MouthId],
   },
   {
     id: "hair",
@@ -252,8 +253,8 @@ export const CATEGORIES: CategoryConfig[] = [
     allowNone: true,
     items: AllHairFront,
     backItems: AllHairBack,
-    sortedKeys: [...HairIds, ...MarikaHairIds],
-    sortedBackKeys: Object.keys(HairBack).sort(),
+    sortedKeys: [...HairIds],
+    sortedBackKeys: [...HairIds],
   },
   {
     id: "hats",
@@ -271,7 +272,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "extras",
     allowNone: true,
     items: AllExtras,
-    sortedKeys: Object.keys(Extras).sort(),
+    sortedKeys: [...ExtrasId],
   },
   {
     id: "accessories",
@@ -280,7 +281,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "accessories",
     allowNone: true,
     items: AllAccessories,
-    sortedKeys: [...AccessoryId, ...MarikaAccessoryIds],
+    sortedKeys: [...AccessoryId],
   },
   {
     id: "body",
@@ -289,7 +290,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "body",
     allowNone: false,
     items: AllBodies,
-    sortedKeys: [...BodyId, ...MarikaBodyIds],
+    sortedKeys: [...BodyId],
   },
   {
     id: "texture",
@@ -298,7 +299,7 @@ export const CATEGORIES: CategoryConfig[] = [
     stateKey: "texture",
     allowNone: false,
     items: Textures,
-    sortedKeys: Object.keys(Textures).sort(),
+    sortedKeys: [...TextureId],
   },
 ] as const;
 
