@@ -32,21 +32,21 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/opengraph-image.png",
-        width: 1920,
-        height: 913,
+        width: 400,
+        height: 400,
         alt: "Flavitars",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Flavitars",
     description,
     images: [
       {
         url: "/opengraph-image.png",
-        width: 1920,
-        height: 913,
+        width: 400,
+        height: 400,
         alt: "Flavitars",
       },
     ],
