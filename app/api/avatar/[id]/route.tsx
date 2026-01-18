@@ -6,7 +6,8 @@ import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = rawId.replace(/\.svg$/, "");
 
   if (id.length > 128) {
     return new NextResponse("ID too long (max 128 characters)", { status: 400 });

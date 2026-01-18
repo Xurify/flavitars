@@ -1,4 +1,5 @@
 import { AvatarState, DEFAULT_AVATAR_STATE, SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES } from "../types";
+import { packState, unpackState } from "./packer";
 
 /**
  * Deterministic hash function (FNV-1a variant)
@@ -64,34 +65,15 @@ export function generateAvatarFromSeed(seed: string | number): AvatarState {
   return state;
 }
 
-/**
- * Generate a deterministic avatar configuration from a numeric ID
- */
 export function getAvatarStateFromId(id: string | number): AvatarState {
+  if (typeof id === "string" && id.startsWith("p_")) {
+    const unpacked = unpackState(id);
+    if (unpacked) {
+      return { ...DEFAULT_AVATAR_STATE, ...unpacked };
+    }
+  }
   return generateAvatarFromSeed(id);
 }
-/**
- * Generate a deterministic numeric ID from an avatar state
- */
-export function getAvatarIdFromState(state: Partial<AvatarState>): number {
-  const orderedState = {
-    head: state.head,
-    eyebrows: state.eyebrows,
-    eyes: state.eyes,
-    nose: state.nose,
-    mouth: state.mouth,
-    hair: state.hair,
-    extras: state.extras,
-    accessories: state.accessories,
-    hat: state.hat,
-    body: state.body,
-    skinTone: state.skinTone,
-    hairColor: state.hairColor,
-    hatColor: state.hatColor,
-    accessoryColor: state.accessoryColor,
-    bodyColor: state.bodyColor,
-    texture: state.texture,
-    containHair: state.containHair,
-  };
-  return hashString(JSON.stringify(orderedState));
+export function getAvatarIdFromState(state: AvatarState): string {
+  return "p_" + packState(state);
 }
