@@ -367,5 +367,5 @@ export const ACCESSORY_ACCENT_COLORS: HairColor[] = [
   { id: "nebula", name: "Nebula Purple", color: "#8B5CF6" },
   { id: "solar", name: "Solar Orange", color: "#F59E0B" },
   { id: "chrome", name: "Chrome Silver", color: "#94A3B8" },
-  { id: "obsidian", name: "Obsidian Black", color: "#1A1A1A" },
+  { id: "black", name: "Obsidian Black", color: "#1A1A1A" },
 ];
