@@ -1,4 +1,4 @@
-import { PartRegistry, PartComponent, getHeadSideTransform, getHeadSideOffset } from "./common";
+import { PartRegistry, PartComponent, AvatarItem, createAvatarItem, getHeadSideTransform, getHeadSideOffset } from "./common";
 
 export const AccessoryId = [
   "none",
@@ -481,33 +481,42 @@ const goldHoopSingle: PartComponent = ({ headId }) => (
   </g>
 );
 
-export const Accessories: PartRegistry<AccessoryId> = {
-  none: { component: noneAccessory, label: "None" },
-  roundGlasses: { component: roundGlasses, label: "Round Glasses" },
-  squareGlasses: { component: squareGlasses, label: "Square Glasses" },
-  catEyeGlasses: { component: catEyeGlasses, label: "Cat Eye Glasses" },
-  retroGlasses: { component: retroGlasses, label: "Retro Glasses" },
-  browlineGlasses: { component: browlineGlasses, label: "Browline Glasses" },
-  sunglasses: { component: sunglasses, label: "Sunglasses" },
-  aviators: { component: aviators, label: "Aviators" },
-  smallSunglasses: { component: smallSunglasses, label: "Small Sunglasses" },
-  skiGoggles: { component: skiGoggles, label: "Ski Goggles" },
-  safetyGoggles: { component: safetyGoggles, label: "Safety Goggles" },
-  vrHeadset: { component: vrHeadset, label: "VR Headset" },
-  eyepatch: { component: eyepatch, label: "Eyepatch" },
-  goldHoopSingle: { component: goldHoopSingle, label: "Single Gold Hoop" },
-  hoops: { component: hoops, label: "Gold Hoops" },
-  chunkyHoops: { component: chunkyHoops, label: "Chunky Hoops" },
-  goldHexHoops: { component: goldHexHoops, label: "Gold Hex Hoops" },
-  diamondStuds: { component: diamondStuds, label: "Diamond Studs" },
-  pearlEarrings: { component: pearlEarrings, label: "Pearl Earrings" },
-  goldDropEarrings: { component: goldDropEarrings, label: "Gold Drop Earrings" },
-  pinkDropEarrings: { component: pinkDropEarrings, label: "Pink Drop Earrings" },
-  silverNecklace: { component: silverNecklace, label: "Silver Necklace" },
-  goldNecklace: { component: goldNecklace, label: "Gold Necklace" },
-  pearlNecklace: { component: pearlNecklace, label: "Pearl Necklace" },
-  goldChain: { component: goldChain, label: "Gold Chain" },
-  layeredSilverChains: { component: layeredSilverChains, label: "Layered Silver Chains" },
-  monocle: { component: monocle, label: "Monocle" },
-  headphones: { component: headphones, label: "Headphones" },
-};
+export const AccessoryItems: AvatarItem[] = [
+  createAvatarItem({ id: "none", name: "None", svg: noneAccessory }),
+  createAvatarItem({ id: "roundGlasses", name: "Round Glasses", svg: roundGlasses }),
+  createAvatarItem({ id: "squareGlasses", name: "Square Glasses", svg: squareGlasses }),
+  createAvatarItem({ id: "catEyeGlasses", name: "Cat Eye Glasses", svg: catEyeGlasses }),
+  createAvatarItem({ id: "retroGlasses", name: "Retro Glasses", svg: retroGlasses }),
+  createAvatarItem({ id: "browlineGlasses", name: "Browline Glasses", svg: browlineGlasses }),
+  createAvatarItem({ id: "sunglasses", name: "Sunglasses", svg: sunglasses }),
+  createAvatarItem({ id: "aviators", name: "Aviators", svg: aviators }),
+  createAvatarItem({ id: "smallSunglasses", name: "Small Sunglasses", svg: smallSunglasses }),
+  createAvatarItem({
+    id: "skiGoggles",
+    name: "Ski Goggles",
+    svg: skiGoggles,
+    tags: ["fire", "electric", "emerald", "nebula", "solar", "chrome", "obsidian"],
+  }),
+  createAvatarItem({ id: "safetyGoggles", name: "Safety Goggles", svg: safetyGoggles }),
+  createAvatarItem({ id: "vrHeadset", name: "VR Headset", svg: vrHeadset }),
+  createAvatarItem({ id: "eyepatch", name: "Eyepatch", svg: eyepatch }),
+  createAvatarItem({ id: "goldHoopSingle", name: "Single Gold Hoop", svg: goldHoopSingle }),
+  createAvatarItem({ id: "hoops", name: "Gold Hoops", svg: hoops }),
+  createAvatarItem({ id: "chunkyHoops", name: "Chunky Hoops", svg: chunkyHoops }),
+  createAvatarItem({ id: "goldHexHoops", name: "Gold Hex Hoops", svg: goldHexHoops }),
+  createAvatarItem({ id: "diamondStuds", name: "Diamond Studs", svg: diamondStuds }),
+  createAvatarItem({ id: "pearlEarrings", name: "Pearl Earrings", svg: pearlEarrings }),
+  createAvatarItem({ id: "goldDropEarrings", name: "Gold Drop Earrings", svg: goldDropEarrings }),
+  createAvatarItem({ id: "pinkDropEarrings", name: "Pink Drop Earrings", svg: pinkDropEarrings }),
+  createAvatarItem({ id: "silverNecklace", name: "Silver Necklace", svg: silverNecklace }),
+  createAvatarItem({ id: "goldNecklace", name: "Gold Necklace", svg: goldNecklace }),
+  createAvatarItem({ id: "pearlNecklace", name: "Pearl Necklace", svg: pearlNecklace }),
+  createAvatarItem({ id: "goldChain", name: "Gold Chain", svg: goldChain }),
+  createAvatarItem({ id: "layeredSilverChains", name: "Layered Silver Chains", svg: layeredSilverChains }),
+  createAvatarItem({ id: "monocle", name: "Monocle", svg: monocle }),
+  createAvatarItem({ id: "headphones", name: "Headphones", svg: headphones }),
+];
+
+export const Accessories: PartRegistry<AccessoryId> = Object.fromEntries(
+  AccessoryItems.map((item) => [item.id, { component: item.svg, label: item.name, tags: item.tags }])
+) as any as PartRegistry<AccessoryId>;

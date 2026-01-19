@@ -1,4 +1,4 @@
-import { PartRegistry, PartComponent } from "./common";
+import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
 
 export const ExtrasId = ["none", "freckles", "blush", "beautyMark"] as const;
 export type ExtrasId = (typeof ExtrasId)[number];
@@ -37,9 +37,13 @@ const beautyMarkExtra: PartComponent = () => (
   </g>
 );
 
-export const Extras: PartRegistry<ExtrasId> = {
-  none: { component: noneExtra, label: "None" },
-  freckles: { component: frecklesExtra, label: "Freckles" },
-  blush: { component: blushExtra, label: "Blush" },
-  beautyMark: { component: beautyMarkExtra, label: "Beauty Mark" },
-};
+export const ExtrasItems: AvatarItem[] = [
+  createAvatarItem({ id: "none", name: "None", svg: noneExtra }),
+  createAvatarItem({ id: "freckles", name: "Freckles", svg: frecklesExtra }),
+  createAvatarItem({ id: "blush", name: "Blush", svg: blushExtra }),
+  createAvatarItem({ id: "beautyMark", name: "Beauty Mark", svg: beautyMarkExtra }),
+];
+
+export const Extras: PartRegistry<ExtrasId> = Object.fromEntries(
+  ExtrasItems.map((item) => [item.id, { component: item.svg, label: item.name }])
+) as any as PartRegistry<ExtrasId>;

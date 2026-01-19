@@ -1,4 +1,4 @@
-import { PartRegistry, PartComponent } from "./common";
+import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
 import { getHeadHairTransform, NO_CLIPPING_HATS, SMALL_HATS } from "./hats";
 
 export const HairIds = [
@@ -332,6 +332,8 @@ const shortCurlyBobBack: PartComponent = ({ fill }) => {
     </g>
   );
 };
+
+const longStraightLayeredFront: PartComponent = () => null;
 
 // --- FRONT COMPONENTS ---
 
@@ -818,70 +820,58 @@ const shortCurlyBobFront: PartComponent = ({ fill, hatId }) => {
   );
 };
 
-export const HairBack: PartRegistry<HairId> = {
-  bald: { component: baldBack, label: "Bald" },
-  buzzCut: { component: buzzCutBack, label: "Buzz Cut" },
-  flatTopShort: { component: flatTopShortBack, label: "Flat Top" },
-  shortJaggedCrop: { component: shortJaggedCropBack, label: "Jagged Crop" },
-  sidePartShort: { component: sidePartShortBack, label: "Side Part" },
-  bobCutSharp: { component: bobCutSharpBack, label: "Sharp Bob" },
-  bobCutStraight: { component: bobCutStraightBack, label: "Straight Bob" },
-  jaggedFringeBob: { component: jaggedFringeBobBack, label: "Jagged Bob" },
-  bowlCutRound: { component: bowlCutRoundBack, label: "Bowl Cut" },
-  sharpBobYellowHighlight: { component: sharpBobYellowHighlightBack, label: "Highlight Bob" },
-  shortCurlyBob: { component: shortCurlyBobBack, label: "Curly Bob" },
-  longStraightLayered: { component: longStraightLayeredBack, label: "Long Layered" },
-  longLocs: { component: longLocsBack, label: "Long Locs" },
-  messySideSwept: { component: messySideSweptBack, label: "Messy Side Swept" },
-  roundedCurls: { component: roundedCurlsBack, label: "Rounded Curls" },
-  trapezoidCut: { component: trapezoidCutBack, label: "Trapezoid" },
-  roundedMiddlePart: { component: roundedMiddlePartBack, label: "Middle Part" },
-  puffyMiddlePart: { component: puffyMiddlePartBack, label: "Puffy Middle Part" },
-  heartMiddlePart: { component: heartMiddlePartBack, label: "Heart Middle Part" },
-  sweptFringe: { component: sweptFringeBack, label: "Swept Fringe" },
-  singleTopKnot: { component: singleTopKnotBack, label: "Top Knot" },
-  doubleSpaceBuns: { component: doubleSpaceBunsBack, label: "Space Buns" },
-  lowPonytail: { component: lowPonytailBack, label: "Low Ponytail" },
-  largeAfro: { component: largeAfroBack, label: "Afro" },
-  spikyMohawk: { component: spikyMohawkBack, label: "Mohawk" },
-  shavedSidesLongBack: { component: shavedSidesLongBackBack, label: "Shaved Sides" },
-  aviatorFlaps: { component: aviatorFlapsBack, label: "Aviator Flaps" },
-  texturedPompadour: { component: texturedPompadourBack, label: "Pompadour" },
-  largeHairBow: { component: largeHairBowBack, label: "Large Bow" },
-  detailedHairBow: { component: detailedHairBowBack, label: "Detailed Bow" },
-};
+export const HairItems: AvatarItem[] = [
+  createAvatarItem({ id: "bald", name: "Bald", svg: baldFront, backSvg: baldBack }),
+  createAvatarItem({ id: "buzzCut", name: "Buzz Cut", svg: buzzCutFront, backSvg: buzzCutBack }),
+  createAvatarItem({ id: "flatTopShort", name: "Flat Top", svg: flatTopShortFront, backSvg: flatTopShortBack }),
+  createAvatarItem({ id: "shortJaggedCrop", name: "Jagged Crop", svg: shortJaggedCropFront, backSvg: shortJaggedCropBack }),
+  createAvatarItem({ id: "sidePartShort", name: "Side Part", svg: sidePartShortFront, backSvg: sidePartShortBack }),
+  createAvatarItem({ id: "bobCutSharp", name: "Sharp Bob", svg: bobCutSharpFront, backSvg: bobCutSharpBack }),
+  createAvatarItem({ id: "bobCutStraight", name: "Straight Bob", svg: bobCutStraightFront, backSvg: bobCutStraightBack }),
+  createAvatarItem({ id: "jaggedFringeBob", name: "Jagged Bob", svg: jaggedFringeBobFront, backSvg: jaggedFringeBobBack }),
+  createAvatarItem({ id: "bowlCutRound", name: "Bowl Cut", svg: bowlCutRoundFront, backSvg: bowlCutRoundBack }),
+  createAvatarItem({
+    id: "sharpBobYellowHighlight",
+    name: "Highlight Bob",
+    svg: sharpBobYellowHighlightFront,
+    backSvg: sharpBobYellowHighlightBack,
+  }),
+  createAvatarItem({ id: "shortCurlyBob", name: "Curly Bob", svg: shortCurlyBobFront, backSvg: shortCurlyBobBack }),
+  createAvatarItem({
+    id: "longStraightLayered",
+    name: "Long Layered",
+    svg: longStraightLayeredFront,
+    backSvg: longStraightLayeredBack,
+  }),
+  createAvatarItem({ id: "longLocs", name: "Long Locs", svg: longLocsFront, backSvg: longLocsBack }),
+  createAvatarItem({ id: "messySideSwept", name: "Messy Side Swept", svg: messySideSweptFront, backSvg: messySideSweptBack }),
+  createAvatarItem({ id: "roundedCurls", name: "Rounded Curls", svg: roundedCurlsFront, backSvg: roundedCurlsBack }),
+  createAvatarItem({ id: "trapezoidCut", name: "Trapezoid", svg: trapezoidCutFront, backSvg: trapezoidCutBack }),
+  createAvatarItem({ id: "roundedMiddlePart", name: "Middle Part", svg: roundedMiddlePartFront, backSvg: roundedMiddlePartBack }),
+  createAvatarItem({ id: "puffyMiddlePart", name: "Puffy Middle Part", svg: puffyMiddlePartFront, backSvg: puffyMiddlePartBack }),
+  createAvatarItem({ id: "heartMiddlePart", name: "Heart Middle Part", svg: heartMiddlePartFront, backSvg: heartMiddlePartBack }),
+  createAvatarItem({ id: "sweptFringe", name: "Swept Fringe", svg: sweptFringeFront, backSvg: sweptFringeBack }),
+  createAvatarItem({ id: "singleTopKnot", name: "Top Knot", svg: singleTopKnotFront, backSvg: singleTopKnotBack }),
+  createAvatarItem({ id: "doubleSpaceBuns", name: "Space Buns", svg: doubleSpaceBunsFront, backSvg: doubleSpaceBunsBack }),
+  createAvatarItem({ id: "lowPonytail", name: "Low Ponytail", svg: lowPonytailFront, backSvg: lowPonytailBack }),
+  createAvatarItem({ id: "largeAfro", name: "Afro", svg: largeAfroFront, backSvg: largeAfroBack }),
+  createAvatarItem({ id: "spikyMohawk", name: "Mohawk", svg: spikyMohawkFront, backSvg: spikyMohawkBack }),
+  createAvatarItem({
+    id: "shavedSidesLongBack",
+    name: "Shaved Sides",
+    svg: shavedSidesLongBackFront,
+    backSvg: shavedSidesLongBackBack,
+  }),
+  createAvatarItem({ id: "aviatorFlaps", name: "Aviator Flaps", svg: aviatorFlapsFront, backSvg: aviatorFlapsBack }),
+  createAvatarItem({ id: "texturedPompadour", name: "Pompadour", svg: texturedPompadourFront, backSvg: texturedPompadourBack }),
+  createAvatarItem({ id: "largeHairBow", name: "Large Bow", svg: largeHairBowFront, backSvg: largeHairBowBack }),
+  createAvatarItem({ id: "detailedHairBow", name: "Detailed Bow", svg: detailedHairBowFront, backSvg: detailedHairBowBack }),
+];
 
-const longStraightLayeredFront: PartComponent = () => null;
+export const HairBack: PartRegistry<HairId> = Object.fromEntries(
+  HairItems.map((item) => [item.id, { component: item.backSvg || (() => null), label: item.name }])
+) as any as PartRegistry<HairId>;
 
-export const HairFront: PartRegistry<HairId> = {
-  bald: { component: baldFront, label: "Bald" },
-  buzzCut: { component: buzzCutFront, label: "Buzz Cut" },
-  flatTopShort: { component: flatTopShortFront, label: "Flat Top" },
-  shortJaggedCrop: { component: shortJaggedCropFront, label: "Jagged Crop" },
-  sidePartShort: { component: sidePartShortFront, label: "Side Part" },
-  bobCutSharp: { component: bobCutSharpFront, label: "Sharp Bob" },
-  bobCutStraight: { component: bobCutStraightFront, label: "Straight Bob" },
-  jaggedFringeBob: { component: jaggedFringeBobFront, label: "Jagged Bob" },
-  bowlCutRound: { component: bowlCutRoundFront, label: "Bowl Cut" },
-  sharpBobYellowHighlight: { component: sharpBobYellowHighlightFront, label: "Highlight Bob" },
-  shortCurlyBob: { component: shortCurlyBobFront, label: "Curly Bob" },
-  longStraightLayered: { component: longStraightLayeredFront, label: "Long Layered" },
-  longLocs: { component: longLocsFront, label: "Long Locs" },
-  messySideSwept: { component: messySideSweptFront, label: "Messy Side Swept" },
-  roundedCurls: { component: roundedCurlsFront, label: "Rounded Curls" },
-  trapezoidCut: { component: trapezoidCutFront, label: "Trapezoid" },
-  roundedMiddlePart: { component: roundedMiddlePartFront, label: "Middle Part" },
-  puffyMiddlePart: { component: puffyMiddlePartFront, label: "Puffy Middle Part" },
-  heartMiddlePart: { component: heartMiddlePartFront, label: "Heart Middle Part" },
-  sweptFringe: { component: sweptFringeFront, label: "Swept Fringe" },
-  singleTopKnot: { component: singleTopKnotFront, label: "Top Knot" },
-  doubleSpaceBuns: { component: doubleSpaceBunsFront, label: "Space Buns" },
-  lowPonytail: { component: lowPonytailFront, label: "Low Ponytail" },
-  largeAfro: { component: largeAfroFront, label: "Afro" },
-  spikyMohawk: { component: spikyMohawkFront, label: "Mohawk" },
-  shavedSidesLongBack: { component: shavedSidesLongBackFront, label: "Shaved Sides" },
-  aviatorFlaps: { component: aviatorFlapsFront, label: "Aviator Flaps" },
-  texturedPompadour: { component: texturedPompadourFront, label: "Pompadour" },
-  largeHairBow: { component: largeHairBowFront, label: "Large Bow" },
-  detailedHairBow: { component: detailedHairBowFront, label: "Detailed Bow" },
-};
+export const HairFront: PartRegistry<HairId> = Object.fromEntries(
+  HairItems.map((item) => [item.id, { component: item.svg, label: item.name }])
+) as any as PartRegistry<HairId>;

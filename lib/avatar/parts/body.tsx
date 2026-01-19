@@ -1,4 +1,4 @@
-import { PartRegistry, PartComponent } from "./common";
+import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
 
 export const BodyId = [
   "bareShoulders",
@@ -917,34 +917,38 @@ const blueShirtBlackCardigan: PartComponent = ({ skinTone }) => (
   </g>
 );
 
-export const Bodies: PartRegistry<BodyId> = {
-  bareShoulders: { component: bareShoulders, label: "Bare Shoulders" },
-  basicWhiteTee: { component: basicWhiteTee, label: "White Tee" },
-  basicBlackTee: { component: basicBlackTee, label: "Black Tee" },
-  whiteRibbedTank: { component: whiteRibbedTank, label: "White Tank" },
-  greyRibbedTank: { component: greyRibbedTank, label: "Grey Tank" },
-  whiteStrappyTank: { component: whiteStrappyTank, label: "Strappy Tank" },
-  blueStrappyTank: { component: blueStrappyTank, label: "Blue Tank" },
-  redRibbedTop: { component: redRibbedTop, label: "Red Ribbed Top" },
-  blackElegantTop: { component: blackElegantTop, label: "Elegant Top" },
-  floralBlouse: { component: floralBlouse, label: "Floral Blouse" },
-  heartSweater: { component: heartSweater, label: "Heart Sweater" },
-  pinkHeartSweater: { component: pinkHeartSweater, label: "Pink Sweater" },
-  houndstoothPurpShirt: { component: houndstoothPurpShirt, label: "Houndstooth Shirt" },
-  blueLeopardTop: { component: blueLeopardTop, label: "Leopard Top" },
-  featherCuffBlouse: { component: featherCuffBlouse, label: "Feather Blouse" },
-  blueShinyShirt: { component: blueShinyShirt, label: "Shiny Shirt" },
-  blackHoodie: { component: blackHoodie, label: "Black Hoodie" },
-  hoodieUnderJacket: { component: hoodieUnderJacket, label: "Hoodie Jacket" },
-  sweatshirtOverShirt: { component: sweatshirtOverShirt, label: "Sweatshirt Layer" },
-  denimShirtButtoned: { component: denimShirtButtoned, label: "Denim Shirt" },
-  knitSweater: { component: knitSweater, label: "Knit Sweater" },
-  redBlazer: { component: redBlazer, label: "Red Blazer" },
-  stripedBlazer: { component: stripedBlazer, label: "Striped Blazer" },
-  blackPufferJacket: { component: blackPufferJacket, label: "Puffer Jacket" },
-  darkGreenFuzzyCoat: { component: darkGreenFuzzyCoat, label: "Fuzzy Coat" },
-  yellowFuzzySet: { component: yellowFuzzySet, label: "Yellow Set" },
-  pinkLatexDress: { component: pinkLatexDress, label: "Latex Dress" },
-  pajamas: { component: pajamas, label: "Pajamas" },
-  blueShirtBlackCardigan: { component: blueShirtBlackCardigan, label: "Cardigan" },
-};
+export const BodyItems: AvatarItem[] = [
+  createAvatarItem({ id: "bareShoulders", name: "Bare Shoulders", svg: bareShoulders }),
+  createAvatarItem({ id: "basicWhiteTee", name: "White Tee", svg: basicWhiteTee }),
+  createAvatarItem({ id: "basicBlackTee", name: "Black Tee", svg: basicBlackTee }),
+  createAvatarItem({ id: "whiteRibbedTank", name: "White Tank", svg: whiteRibbedTank }),
+  createAvatarItem({ id: "greyRibbedTank", name: "Grey Tank", svg: greyRibbedTank }),
+  createAvatarItem({ id: "whiteStrappyTank", name: "Strappy Tank", svg: whiteStrappyTank }),
+  createAvatarItem({ id: "blueStrappyTank", name: "Blue Tank", svg: blueStrappyTank }),
+  createAvatarItem({ id: "redRibbedTop", name: "Red Ribbed Top", svg: redRibbedTop }),
+  createAvatarItem({ id: "blackElegantTop", name: "Elegant Top", svg: blackElegantTop }),
+  createAvatarItem({ id: "floralBlouse", name: "Floral Blouse", svg: floralBlouse }),
+  createAvatarItem({ id: "heartSweater", name: "Heart Sweater", svg: heartSweater }),
+  createAvatarItem({ id: "pinkHeartSweater", name: "Pink Sweater", svg: pinkHeartSweater }),
+  createAvatarItem({ id: "houndstoothPurpShirt", name: "Houndstooth Shirt", svg: houndstoothPurpShirt }),
+  createAvatarItem({ id: "blueLeopardTop", name: "Leopard Top", svg: blueLeopardTop }),
+  createAvatarItem({ id: "featherCuffBlouse", name: "Feather Blouse", svg: featherCuffBlouse }),
+  createAvatarItem({ id: "blueShinyShirt", name: "Shiny Shirt", svg: blueShinyShirt }),
+  createAvatarItem({ id: "blackHoodie", name: "Black Hoodie", svg: blackHoodie }),
+  createAvatarItem({ id: "hoodieUnderJacket", name: "Hoodie Jacket", svg: hoodieUnderJacket }),
+  createAvatarItem({ id: "sweatshirtOverShirt", name: "Sweatshirt Layer", svg: sweatshirtOverShirt }),
+  createAvatarItem({ id: "denimShirtButtoned", name: "Denim Shirt", svg: denimShirtButtoned }),
+  createAvatarItem({ id: "knitSweater", name: "Knit Sweater", svg: knitSweater }),
+  createAvatarItem({ id: "redBlazer", name: "Red Blazer", svg: redBlazer }),
+  createAvatarItem({ id: "stripedBlazer", name: "Striped Blazer", svg: stripedBlazer }),
+  createAvatarItem({ id: "blackPufferJacket", name: "Puffer Jacket", svg: blackPufferJacket }),
+  createAvatarItem({ id: "darkGreenFuzzyCoat", name: "Fuzzy Coat", svg: darkGreenFuzzyCoat }),
+  createAvatarItem({ id: "yellowFuzzySet", name: "Yellow Set", svg: yellowFuzzySet }),
+  createAvatarItem({ id: "pinkLatexDress", name: "Latex Dress", svg: pinkLatexDress }),
+  createAvatarItem({ id: "pajamas", name: "Pajamas", svg: pajamas }),
+  createAvatarItem({ id: "blueShirtBlackCardigan", name: "Cardigan", svg: blueShirtBlackCardigan }),
+];
+
+export const Bodies: PartRegistry<BodyId> = Object.fromEntries(
+  BodyItems.map((item) => [item.id, { component: item.svg, label: item.name }])
+) as any as PartRegistry<BodyId>;

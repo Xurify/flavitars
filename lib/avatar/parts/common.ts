@@ -1,42 +1,4 @@
-import { DEFAULT_HAT_CLIPPING_CONFIG, HatId, NO_CLIPPING_HATS } from "./hats";
-import { HairId } from "./hair";
-import { HeadId } from "./head";
-import { AvatarState } from "../types";
-
-export interface PartProps {
-  fill?: string;
-  secondaryFill?: string;
-  accessoryColorId?: string;
-  headId: HeadId;
-  hatId?: HatId;
-  hairId?: HairId;
-  skinTone?: string;
-}
-
-export interface PartComponent<P = Partial<AvatarState>> extends React.FC<PartProps & P> {
-  colors?: string[];
-}
-
-export interface PartDefinition<P = Partial<AvatarState>> {
-  component: PartComponent<P>;
-  label: string;
-  isExclusive?: boolean;
-  presetOnly?: boolean;
-  tags?: string[];
-  incompatibleWith?: string[];
-  requiresParts?: string[];
-}
-
-export type PartRegistry<Id extends string, P = Partial<AvatarState>> = Record<Id, PartDefinition<P>>;
-
-export const getHatClippingY = (hatId: HatId | undefined, faceId: string): number | null => {
-  if (!hatId || NO_CLIPPING_HATS.includes(hatId)) return null;
-  let clippingY = DEFAULT_HAT_CLIPPING_CONFIG[hatId]?.clippingY;
-  if (["rounded", "oval"].includes(faceId)) {
-    clippingY = 24;
-  }
-  return clippingY ?? null;
-};
+export * from "./base";
 
 export const getHeadFacialTransform = (headId: string) => {
   const offsets: Record<string, number> = {
