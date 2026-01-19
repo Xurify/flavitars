@@ -11,10 +11,10 @@ const BASE36_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
 function bigIntToBase36(value: bigint): string {
   if (value === BigInt(0)) return "0";
   let result = "";
-  let v = value;
-  while (v > BigInt(0)) {
-    result = BASE36_CHARS[Number(v % BigInt(36))] + result;
-    v /= BigInt(36);
+  let remainingValue = value;
+  while (remainingValue > BigInt(0)) {
+    result = BASE36_CHARS[Number(remainingValue % BigInt(36))] + result;
+    remainingValue /= BigInt(36);
   }
   return result;
 }
