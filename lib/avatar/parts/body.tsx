@@ -951,4 +951,4 @@ export const BodyItems: AvatarItem[] = [
 
 export const Bodies: PartRegistry<BodyId> = Object.fromEntries(
   BodyItems.map((item) => [item.id, { component: item.svg, label: item.name }])
-) as any as PartRegistry<BodyId>;
+) as PartRegistry<BodyId>;

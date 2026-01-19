@@ -17,4 +17,4 @@ export const TextureItems: AvatarItem[] = [
 
 export const Textures: PartRegistry<TextureId> = Object.fromEntries(
   TextureItems.map((item) => [item.id, { component: item.svg, label: item.name }])
-) as any as PartRegistry<TextureId>;
+) as PartRegistry<TextureId>;

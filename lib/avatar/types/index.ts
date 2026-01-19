@@ -17,7 +17,6 @@ export type AvatarCategory =
 
 import {
   PartProps,
-  PartComponent,
   PartDefinition,
   HeadShapes,
   Eyebrows,

@@ -1,6 +1,6 @@
 import React from "react";
 import { PartRegistry, PartComponent, createAvatarItem } from "./common";
-import { HEAD_PATHS, HeadId } from "./head";
+import { HEAD_PATHS } from "./head";
 
 export const HatIds = [
   "none",

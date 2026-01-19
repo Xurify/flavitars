@@ -870,8 +870,8 @@ export const HairItems: AvatarItem[] = [
 
 export const HairBack: PartRegistry<HairId> = Object.fromEntries(
   HairItems.map((item) => [item.id, { component: item.backSvg || (() => null), label: item.name }])
-) as any as PartRegistry<HairId>;
+) as PartRegistry<HairId>;
 
 export const HairFront: PartRegistry<HairId> = Object.fromEntries(
   HairItems.map((item) => [item.id, { component: item.svg, label: item.name }])
-) as any as PartRegistry<HairId>;
+) as PartRegistry<HairId>;

@@ -519,4 +519,4 @@ export const AccessoryItems: AvatarItem[] = [
 
 export const Accessories: PartRegistry<AccessoryId> = Object.fromEntries(
   AccessoryItems.map((item) => [item.id, { component: item.svg, label: item.name, tags: item.tags }])
-) as any as PartRegistry<AccessoryId>;
+) as PartRegistry<AccessoryId>;
