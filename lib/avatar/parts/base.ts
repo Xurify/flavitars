@@ -15,11 +15,11 @@ export interface PartProps {
   skinTone?: string;
 }
 
-export interface PartComponent<P> extends React.FC<PartProps & P> {
+export interface PartComponent<P = object> extends React.FC<PartProps & P> {
   colors?: string[];
 }
 
-export interface PartDefinition<P> {
+export interface PartDefinition<P = object> {
   component: PartComponent<P>;
   label: string;
   isExclusive?: boolean;
@@ -29,7 +29,7 @@ export interface PartDefinition<P> {
   requiresParts?: string[];
 }
 
-export type PartRegistry<Id extends string, P> = Record<Id, PartDefinition<P>>;
+export type PartRegistry<Id extends string, P = object> = Record<Id, PartDefinition<P>>;
 
 export interface AvatarItemConfig {
   clippingY?: number;
@@ -37,7 +37,7 @@ export interface AvatarItemConfig {
   zIndex?: number;
 }
 
-export interface AvatarItem<P> {
+export interface AvatarItem<P = object> {
   id: string;
   name: string;
   tags?: string[];
