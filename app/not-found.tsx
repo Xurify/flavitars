@@ -13,9 +13,6 @@ export default function NotFound() {
           <h1 className="text-[8rem] sm:text-[12rem] font-pixel leading-none select-none [text-shadow:4px_4px_0px_#d64a2f,8px_8px_0px_#2C2420]">
             404
           </h1>
-          <div className="absolute inset-0 text-[8rem] sm:text-[12rem] font-pixel leading-none opacity-20 animate-pulse translate-x-0.5 translate-y-0.5">
-            404
-          </div>
         </div>
 
         <div className="mx-auto w-40 h-40 bg-white border-4 border-foreground shadow-[6px_6px_0px_0px_#2C2420] overflow-hidden">
