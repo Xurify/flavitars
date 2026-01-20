@@ -14,9 +14,8 @@ import {
   AllAccessories,
   AllBodies,
 } from "../avatar/types";
-import { HeadShapes, Noses, Hats, getHatClippingY } from "../avatar/parts";
+import { HeadShapes, Noses, Hats } from "../avatar/parts";
 import {
-  FULL_COVERAGE_HAIR,
   DEFAULT_SKIN_TONE,
   DEFAULT_HAIR_COLOR,
   DEFAULT_HAT_COLOR,
@@ -116,13 +115,6 @@ export function resolveAvatarParts(state: AvatarState) {
 }
 
 export function resolveAvatarLogic(state: AvatarState) {
-  const hatClippingY = getHatClippingY(state.hat, state.head);
-  const isFullHair = FULL_COVERAGE_HAIR.includes(state.hair);
-
-  const shouldClipHead = hatClippingY !== null || isFullHair;
-  const clippingY = hatClippingY ?? (isFullHair ? 22 : 0);
-
   const isSkiMask = state.hat === "skiMask";
-
-  return { shouldClipHead, clippingY, isSkiMask };
+  return { isSkiMask };
 }

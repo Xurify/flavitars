@@ -5,7 +5,7 @@ import React, { useState, useMemo, useRef } from "react";
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { generateShareableURL } from "@/lib/avatar/engine/url";
-import { HatId, Hats, HATS_THAT_CAN_CONTAIN_HAIR } from "@/lib/avatar/parts/hats";
+import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
 import { cn } from "@/lib/utils/strings";
 
@@ -129,9 +129,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     });
 
     if (randomState.hat) {
-      const canContain = HATS_THAT_CAN_CONTAIN_HAIR.includes(randomState.hat as HatId);
-      const hasHairToContain = randomState.hair !== "bald" && randomState.hair !== "buzzCut";
-      randomState.contain_hair = canContain && hasHairToContain;
+      // Logic for containment removed
     }
 
     setParams(randomState);
@@ -316,26 +314,7 @@ const EditorColorPickers = ({
       disabled={avatarState.hat === "none" || avatarState.hat === "chefHat"}
     />
 
-    <div
-      className={cn(
-        "pt-2 flex items-center gap-3 transition-opacity duration-300",
-        avatarState.hat === "none" && "opacity-40 pointer-events-none"
-      )}
-    >
-      <Checkbox
-        id="contain-hair"
-        disabled={avatarState.hat === "none"}
-        checked={avatarState.containHair}
-        onCheckedChange={(checked) => {
-          handleParamsChange({ contain_hair: !!checked });
-        }}
-        className="border-2 border-border shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] rounded-none w-4 h-4"
-      />
-      <label htmlFor="contain-hair" className="flex flex-col cursor-pointer select-none">
-        <span className="text-[9px] font-black uppercase tracking-tight">Contain Hair</span>
-        <span className="text-[7px] font-mono text-muted-foreground leading-none">Clip hair inside the hat</span>
-      </label>
-    </div>
+    {/* Contain Hair checkbox removed */}
     <div className="border-t border-dashed border-border/20 pt-1" />
     <ColorPicker
       label="Accessories Accent"

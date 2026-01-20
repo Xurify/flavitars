@@ -8,7 +8,6 @@ export const HatIds = [
   "baseballCap",
   "bucketHat",
   "flagsCap",
-  "plainBlackHeadband",
   "patternedHeadband",
   "cowboyHat",
   "detectiveHat",
@@ -31,77 +30,302 @@ export const HatIds = [
 ] as const;
 export type HatId = (typeof HatIds)[number];
 
-export const getHatClippingY = (hatId: HatId | undefined, faceId: string): number | null => {
-  if (!hatId || NO_CLIPPING_HATS.includes(hatId)) return null;
-  let clippingY = DEFAULT_HAT_CLIPPING_CONFIG[hatId]?.clippingY;
-  if (["rounded", "oval"].includes(faceId)) {
-    clippingY = 24;
-  }
-  return clippingY ?? null;
+// === NEW PHYSICS-BASED CLIP ZONE SYSTEM ===
+// Hair can only exist OUTSIDE the clip zone (the hat's physical footprint)
+// Hair "escapes" below the escapeY line and within sideEscapeX boundaries
+
+export interface HatClipZone {
+  // SVG path defining the "forbidden zone" where hair cannot exist
+  // This is the 2D footprint of the hat material
+  clipPath: string;
+  
+  // Y coordinate where hair can start appearing below the hat
+  escapeY: number;
+  
+  // X boundaries where side hair can appear (left, right)
+  sideEscapeX: [number, number];
+  
+  // Whether this hat allows back hair (ponytails through back opening)
+  allowsBackHair: boolean;
+  
+  // Whether this hat hides hair at all (false for decorative items)
+  hidesHair: boolean;
+  
+  // Transform scale for the clip path
+  scale: number;
+}
+
+export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap"];
+export const FLOATING_HATS: HatId[] = ["halo"];
+
+// Hair-revealing hats (don't clip hair)
+export const HAIR_VISIBLE_HATS: HatId[] = ["none", "halo", "patternedHeadband", "crown", "nurseCap", "propellerHat"];
+
+export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
+  none: { 
+    clipPath: '', 
+    escapeY: 0, 
+    sideEscapeX: [0, 100], 
+    allowsBackHair: true, 
+    hidesHair: false,
+    scale: 1
+  },
+  
+  // BEANIE: Covers top of head, hair escapes at temples and below
+  beanie: { 
+    clipPath: 'M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z',
+    escapeY: 35,
+    sideEscapeX: [10, 90],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // BASEBALL CAP: Front bill extends right, back opening allows ponytail
+  baseballCap: { 
+    clipPath: 'M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z',
+    escapeY: 28,
+    sideEscapeX: [12, 88],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // BUCKET HAT: Wide brim, covers more of the sides
+  bucketHat: { 
+    clipPath: 'M10 38 Q 10 5, 50 5 Q 90 5, 90 38 L 90 42 H 10 Z',
+    escapeY: 42,
+    sideEscapeX: [5, 95],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // FLAGS CAP: Similar to baseball cap
+  flagsCap: { 
+    clipPath: 'M15 30 Q 15 0, 50 0 Q 85 0, 85 30 L 95 32 L 95 38 H 15 Z',
+    escapeY: 30,
+    sideEscapeX: [10, 90],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.12
+  },
+  
+  // HEADBAND: Does NOT hide hair, just a decorative strip
+  patternedHeadband: { 
+    clipPath: '',
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1
+  },
+  
+  // COWBOY HAT: Crown covers top, wide brim on sides
+  cowboyHat: { 
+    clipPath: 'M8 42 Q 8 20, 28 20 L 28 10 Q 50 -5, 72 10 L 72 20 Q 92 20, 92 42 Q 50 52, 8 42 Z',
+    escapeY: 42,
+    sideEscapeX: [5, 95],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // DETECTIVE HAT: Similar to fedora
+  detectiveHat: { 
+    clipPath: 'M15 42 Q 15 10, 50 10 Q 85 10, 85 42 Q 50 48, 15 42 Z',
+    escapeY: 42,
+    sideEscapeX: [12, 88],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // NURSE CAP: Small decorative, doesn't hide hair
+  nurseCap: { 
+    clipPath: '',
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1
+  },
+  
+  // CHEF HAT: Tall puffy top
+  chefHat: { 
+    clipPath: 'M25 35 Q 20 0, 35 -15 Q 50 -20, 65 -15 Q 80 0, 75 35 L 75 40 H 25 Z',
+    escapeY: 40,
+    sideEscapeX: [20, 80],
+    allowsBackHair: false,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // ASTRONAUT HELMET: Full sphere enclosure
+  astronautHelmet: { 
+    clipPath: 'M 8 50 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0',
+    escapeY: 100, // No escape - fully enclosed
+    sideEscapeX: [50, 50], // No side escape
+    allowsBackHair: false,
+    hidesHair: true,
+    scale: 1
+  },
+  
+  // MILITARY HELMET: Covers top and sides, hair only escapes below
+  militaryHelmet: { 
+    clipPath: 'M10 38 Q 10 0, 50 0 Q 90 0, 90 38 Q 50 42, 10 38 Z',
+    escapeY: 38,
+    sideEscapeX: [8, 92],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // TOP HAT: Tall cylinder - clip path covers full head width to hide all side hair
+  topHat: { 
+    clipPath: 'M10 38 Q 10 0, 50 -20 Q 90 0, 90 38 Q 50 42, 10 38 Z',
+    escapeY: 38,
+    sideEscapeX: [8, 92],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // PIRATE HAT: Wide triangular
+  pirateHat: { 
+    clipPath: 'M10 35 Q 50 40, 90 35 L 80 8 Q 50 -5, 20 8 Z',
+    escapeY: 40,
+    sideEscapeX: [8, 92],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.15
+  },
+  
+  // VIKING HELMET: Covers head with horns
+  vikingHelmet: { 
+    clipPath: 'M18 40 Q 18 0, 50 0 Q 82 0, 82 40 Q 50 45, 18 40 Z',
+    escapeY: 40,
+    sideEscapeX: [15, 85],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.25
+  },
+  
+  // SAMURAI HELMET: Full coverage with neck guard
+  samuraiHelmet: { 
+    clipPath: 'M15 50 Q 15 0, 50 0 Q 85 0, 85 50 L 90 60 H 10 L 15 50 Z',
+    escapeY: 60,
+    sideEscapeX: [10, 90],
+    allowsBackHair: false,
+    hidesHair: true,
+    scale: 1.25
+  },
+  
+  // WIZARD HAT: Tall cone
+  wizardHat: { 
+    clipPath: 'M12 38 L 50 -50 L 88 38 Q 50 42, 12 38 Z',
+    escapeY: 38,
+    sideEscapeX: [10, 90],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // PROPELLER HAT: Small beanie with propeller, doesn't hide hair
+  propellerHat: { 
+    clipPath: '',
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1.15
+  },
+  
+  // BERET: Soft cap tilted to one side
+  beret: { 
+    clipPath: 'M20 32 Q 10 5, 50 5 Q 90 0, 85 32 Q 50 30, 20 32 Z',
+    escapeY: 32,
+    sideEscapeX: [18, 88],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1
+  },
+  
+  // STRAW HAT: Wide brim
+  strawHat: { 
+    clipPath: 'M5 40 Q 5 15, 50 15 Q 95 15, 95 40 Q 50 50, 5 40 Z',
+    escapeY: 40,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.15
+  },
+  
+  // USHANKA: Covers top + ear flaps extending down
+  ushanka: { 
+    // Main body + Left flap + Right flap combined
+    clipPath: 'M20 35 Q 20 0, 50 0 Q 80 0, 80 35 L 80 38 H 20 Z M14 38 L 8 60 Q 15 65, 25 58 L 25 38 Z M86 38 L 92 60 Q 85 65, 75 58 L 75 38 Z',
+    escapeY: 38, // Main body escape (flaps go lower)
+    sideEscapeX: [8, 92], // Flaps at edges
+    allowsBackHair: true,
+    hidesHair: true,
+    scale: 1.1
+  },
+  
+  // SKI MASK: Full face coverage
+  skiMask: {
+    clipPath: 'M15 100 Q 15 10, 50 10 Q 85 10, 85 100 L 85 100 H 15 Z',
+    escapeY: 100, // No escape
+    sideEscapeX: [50, 50], // No side escape
+    allowsBackHair: false,
+    hidesHair: true,
+    scale: 1
+  },
+  
+  // CROWN: Decorative, doesn't hide hair
+  crown: { 
+    clipPath: '',
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1
+  },
+  
+  // HALO: Floating ring, doesn't hide hair
+  halo: { 
+    clipPath: '',
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1
+  },
 };
 
-export const NO_HAIR_HATS: HatId[] = ["none", "beret"];
-export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap"];
-export const NO_CLIPPING_HATS: HatId[] = ["none", "crown", "propellerHat", "nurseCap", "halo", "astronautHelmet", "chefHat"];
-export const FLOATING_HATS: HatId[] = ["halo"];
-export const HATS_THAT_CAN_CONTAIN_HAIR: HatId[] = [
-  "beanie",
-  "baseballCap",
-  "bucketHat",
-  "cowboyHat",
-  "wizardHat",
-  "vikingHelmet",
-  "samuraiHelmet",
-  "militaryHelmet",
-  "ushanka",
-  "detectiveHat",
-  "strawHat",
-  "topHat",
-  "chefHat",
-  "pirateHat",
-  "astronautHelmet",
-  "skiMask",
-  "patternedHeadband",
-  "flagsCap",
-  "plainBlackHeadband",
-];
+// Get clip zone for a hat
+export const getHatClipZone = (hatId: HatId | undefined): HatClipZone => {
+  if (!hatId) return HAT_CLIP_ZONES.none;
+  return HAT_CLIP_ZONES[hatId] || HAT_CLIP_ZONES.none;
+};
 
-export const DEFAULT_HAT_CLIPPING_CONFIG: Record<HatId, { clippingY: number }> = {
-  none: { clippingY: 0 },
-  beanie: { clippingY: 24 },
-  baseballCap: { clippingY: 28 },
-  bucketHat: { clippingY: 22 },
-  cowboyHat: { clippingY: 34 },
-  beret: { clippingY: 25 },
-  wizardHat: { clippingY: 30 },
-  vikingHelmet: { clippingY: 35 },
-  pirateHat: { clippingY: 0 },
-  samuraiHelmet: { clippingY: 35 },
-  topHat: { clippingY: 0 },
-  detectiveHat: { clippingY: 35 },
-  strawHat: { clippingY: 20 },
-  militaryHelmet: { clippingY: 0 },
-  ushanka: { clippingY: 0 },
-  nurseCap: { clippingY: 0 },
-  skiMask: { clippingY: 90 },
-  astronautHelmet: { clippingY: 0 },
-  halo: { clippingY: 2 },
-  propellerHat: { clippingY: 0 },
-  chefHat: { clippingY: 0 },
-  crown: { clippingY: 0 },
-  patternedHeadband: { clippingY: 18 },
-  flagsCap: { clippingY: 30 },
-  plainBlackHeadband: { clippingY: 18 },
+// Legacy compatibility - maps to new system
+export const getHatPhysics = (hatId: HatId | undefined) => {
+  const zone = getHatClipZone(hatId);
+  return {
+    interiorMaskPath: zone.clipPath,
+    yOffset: 0,
+    hairBehavior: zone.hidesHair ? 'hide' : 'none',
+    squareStretch: zone.scale,
+  };
 };
 
 /**
  * Calculates dynamic hat positioning based on the head shape.
- * Angular is baseline (y=15 top).
- * Rounded/Oval have y=10 top (needs -5 shift to sink deeper).
- * Square has y=12 center top (needs -3 shift).
+ * Uses HAT_PHYSICS for precise Y-axis positioning if available.
  * @param headId - The current head shape ID
  * @param hatId - The current hat shape ID
- * @param baseTranslateY - The base vertical offset to align the hat's rim with y=15
+ * @param baseTranslateY - Fallback vertical offset if physics config is missing
  * @param squareStretch - How much to stretch the hat for square heads
  * @param uniformScale - Whether to apply uniform scaling to the hat
  */
@@ -126,12 +350,16 @@ export const getHeadHatTransform = (
   const isFloating = hatId && (FLOATING_HATS as readonly string[]).includes(hatId);
   const headOffset = isFloating ? 0 : yOffsets[headId] || 0;
 
+  // Use physics-based offset if available, otherwise fallback to provided baseTranslateY
+  // New system uses HAT_CLIP_ZONES which doesn't have yOffset, so we use baseTranslateY
+  const definedOffset = baseTranslateY;
+
   const isSquare = ["square", "angular"].includes(headId);
   const scale = isSquare ? squareStretch : 1;
   const translateX = isSquare ? 50 * (1 - scale) : 0;
 
   const scaleY = uniformScale ? scale : 1;
-  const translateY = baseTranslateY + headOffset;
+  const translateY = definedOffset + headOffset;
 
   return `translate(${translateX}, ${translateY}) scale(${scale}, ${scaleY})`;
 };
@@ -404,11 +632,18 @@ export const CowboyHat = createAvatarItem({
   tags: ["brown", "black", "orange", "khaki"],
   config: { clippingY: 34 },
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, -2, 1.1)}>
-      <path d="M35 15 Q 50 -10, 65 15 L 70 25 Q 50 20, 30 25 Z" fill={fill || "#78350F"} stroke="currentColor" strokeWidth="2" />
+    <g transform={getHeadHatTransform(headId, hatId, -8, 1.1)}>
+      {/* Increased overlap: the crown (top part) now extends further down (L 70 30) */}
+      <path 
+        d="M35 15 Q 50 -10, 65 15 L 72 30 Q 50 25, 28 30 Z" 
+        fill={fill || "#78350F"} 
+        stroke="currentColor" 
+        strokeWidth="2" 
+      />
+      {/* Brim: Adjusted to meet the crown better */}
       <path
-        d="M18 35 Q 18 25, 30 25 H 70 Q 82 25, 82 35 Q 50 45, 18 35 Z"
-        fill={fill || "#78350F"}
+        d="M15 35 Q 15 22, 30 22 H 70 Q 85 22, 85 35 Q 50 48, 15 35 Z"
+        fill={fill || "#78350F"} 
         stroke="currentColor"
         strokeWidth="2"
       />
@@ -577,17 +812,6 @@ export const FlagsCap = createAvatarItem({
   )
 });
 
-export const PlainBlackHeadband = createAvatarItem({
-  id: "plainBlackHeadband",
-  name: "Plain Black Headband",
-  config: { clippingY: 18 },
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
-      <path d="M 15 25 C 15 12, 85 12, 85 25 L 85 35 C 85 22, 15 22, 15 35 Z" fill="#1a1a1a" stroke="#0a0a0a" strokeWidth="1.5" />
-      <path d="M 25 18 Q 50 15, 75 18" fill="none" stroke="white" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  )
-});
 
 export const Crown = createAvatarItem({
   id: "crown",
@@ -616,7 +840,7 @@ export const Hats: PartRegistry<HatId> = {
   baseballCap: { component: BaseballCap.svg, label: BaseballCap.name },
   bucketHat: { component: BucketHat.svg, label: BucketHat.name },
   flagsCap: { component: FlagsCap.svg, label: FlagsCap.name },
-  plainBlackHeadband: { component: PlainBlackHeadband.svg, label: PlainBlackHeadband.name },
+
   patternedHeadband: { component: PatternedHeadband.svg, label: PatternedHeadband.name },
   cowboyHat: { component: CowboyHat.svg, label: CowboyHat.name },
   detectiveHat: { component: DetectiveHat.svg, label: DetectiveHat.name },

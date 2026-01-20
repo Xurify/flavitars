@@ -1,12 +1,12 @@
 import { AvatarState } from "../types";
-import { resolveAvatarColors, resolveAvatarLogic } from "../../utils/avatar-resolver";
+import { resolveAvatarColors } from "../../utils/avatar-resolver";
 import { AvatarFilters } from "./filters";
 import { AvatarLayers } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
 
 export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
   const { hairColor, skinTone } = resolveAvatarColors(state);
-  const { clippingY } = resolveAvatarLogic(state);
+  // clippingY removed
 
   const filterId = `${AVATAR_FILTER_PREFIX}-${state.texture}`;
 
@@ -23,7 +23,7 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
         "--avatar-skin": skinTone,
       }}
     >
-      <AvatarFilters filterId={filterId} clippingY={clippingY} headId={state.head} hatId={state.hat} />
+      <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 
       <g filter={`url(#${filterId})`}>
         <rect x="0" y="0" width="100" height="100" fill="#1a1a1a" opacity="0.03" />

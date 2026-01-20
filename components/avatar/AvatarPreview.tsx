@@ -1,6 +1,6 @@
 import React, { useId } from "react";
 import { AvatarState } from "@/lib/avatar/types";
-import { resolveAvatarColors, resolveAvatarLogic } from "@/lib/utils/avatar-resolver";
+import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
 import { AvatarLayers } from "@/lib/avatar/core/layers";
 import { cn } from "@/lib/utils/strings";
@@ -29,7 +29,6 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   centered = false,
 }) => {
   const { hairColor } = resolveAvatarColors(state);
-  const { clippingY } = resolveAvatarLogic(state);
 
   const baseId = useId();
   const filterId = `filter-${baseId.replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -52,7 +51,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
         )}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <AvatarFilters filterId={filterId} clippingY={clippingY} headId={state.head} hatId={state.hat} />
+        <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 
         <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
           {state.texture !== "none" && (

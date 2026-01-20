@@ -1,5 +1,5 @@
 import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
-import { getHeadHairTransform, NO_CLIPPING_HATS, SMALL_HATS } from "./hats";
+import { getHeadHairTransform, SMALL_HATS } from "./hats";
 
 export const HairIds = [
   "bald",
@@ -94,14 +94,33 @@ const largeAfroBack: PartComponent = ({ fill, hatId }) =>
     </g>
   );
 
-const sweptFringeBack: PartComponent = ({ fill }) => (
-  <path
-    d="M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z"
-    fill={fill || "var(--avatar-hair, #000)"}
-    stroke="currentColor"
-    strokeWidth="2"
-  />
-);
+const sweptFringeBack: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  
+  if (hasHat) {
+    // Hat variant: Hair flows from just under the hat edge (~Y=26)
+    // Curves inward at top to simulate being compressed under the hat
+    // Then flows outward and down naturally to shoulders
+    return (
+      <path
+        d="M12 26 Q 8 45, 5 70 Q 4 85, 10 100 L 90 100 Q 96 85, 95 70 Q 92 45, 88 26 Q 50 30, 12 26 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    );
+  }
+  
+  // No hat: Full flowing hair
+  return (
+    <path
+      d="M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z"
+      fill={fill || "var(--avatar-hair, #000)"}
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+  );
+};
 
 const singleTopKnotBack: PartComponent = () => null;
 
@@ -179,14 +198,31 @@ const aviatorFlapsBack: PartComponent = ({ fill }) => (
   </g>
 );
 
-const flatTopShortBack: PartComponent = ({ fill }) => (
-  <path
-    d="M15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z"
-    fill={fill || "var(--avatar-hair, #000)"}
-    stroke="currentColor"
-    strokeWidth="2"
-  />
-);
+const flatTopShortBack: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  
+  if (hasHat) {
+    // Hat variant: Back hair starts from under hat edge, tapers inward
+    return (
+      <path
+        d="M22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    );
+  }
+  
+  // No hat: Full back hair
+  return (
+    <path
+      d="M15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z"
+      fill={fill || "var(--avatar-hair, #000)"}
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+  );
+};
 
 const buzzCutBack: PartComponent = () => null;
 
@@ -339,158 +375,170 @@ const longStraightLayeredFront: PartComponent = () => null;
 
 const baldFront: PartComponent = () => null;
 
-const bobCutSharpFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  const startY = isFullHat ? 26 : 15;
+const bobCutSharpFront: PartComponent = ({ fill }) => {
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g>
       <path
-        d={
-          isFullHat
-            ? `M10 ${startY} Q 10 ${startY + 30}, 15 95 L 22 ${startY + 20} Q 15 ${startY}, 10 ${startY} Z`
-            : "M 12 15 Q 12 45, 18 80 L 25 35 Q 25 10, 12 15 Z"
-        }
+        d="M 12 15 Q 12 45, 18 80 L 25 35 Q 25 10, 12 15 Z"
         fill={hairColor}
         stroke="currentColor"
         strokeWidth="2"
       />
       <path
-        d={
-          isFullHat
-            ? `M90 ${startY} Q 90 ${startY + 30}, 85 95 L 78 ${startY + 20} Q 85 ${startY}, 90 ${startY} Z`
-            : "M 88 15 Q 88 45, 82 80 L 75 35 Q 75 10, 88 15 Z"
-        }
-        fill={hairColor}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      {!isFullHat && (
-        <path
-          d="M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      )}
-    </g>
-  );
-};
-
-const bobCutStraightFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  const hairColor = fill || "var(--avatar-hair, #000)";
-  return (
-    <g>
-      <path
-        d={
-          isFullHat
-            ? "M 15 28 C 10 48, 5 68, 10 95 L 25 95 Q 18 63, 22 28 Z"
-            : "M 15 15 C 8 35, 5 60, 12 85 L 25 35 Q 25 10, 15 15 Z"
-        }
+        d="M 88 15 Q 88 45, 82 80 L 75 35 Q 75 10, 88 15 Z"
         fill={hairColor}
         stroke="currentColor"
         strokeWidth="2"
       />
       <path
-        d={
-          isFullHat
-            ? "M 85 28 C 90 48, 95 68, 90 95 L 75 95 Q 82 63, 78 28 Z"
-            : "M 85 15 C 92 35, 95 60, 88 85 L 75 35 Q 75 10, 85 15 Z"
-        }
+        d="M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z"
         fill={hairColor}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      {!isFullHat && (
-        <path
-          d="M 12 15 Q 50 2, 88 15 L 82 35 Q 75 30, 68 38 L 50 32 L 32 38 Q 25 30, 18 35 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      )}
-    </g>
-  );
-};
-
-const shavedSidesLongBackFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  const hairColor = fill || "var(--avatar-hair, #000)";
-  return (
-    <g>
-      <path
-        d={
-          isFullHat
-            ? "M 15 30 C 5 60, 5 95, 20 95 L 30 85 L 22 50 Z"
-            : "M 15 15 C 5 35, 5 95, 25 100 L 35 85 L 22 35 Q 22 10, 15 15 Z"
-        }
-        fill={hairColor}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d={
-          isFullHat
-            ? "M 85 30 C 95 60, 95 95, 80 95 L 70 85 L 78 50 Z"
-            : "M 85 15 C 95 35, 95 95, 75 100 L 65 85 L 78 35 Q 78 10, 85 15 Z"
-        }
-        fill={hairColor}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      {!isFullHat && (
-        <path
-          d="M 12 15 Q 50 5, 88 15 L 82 35 C 70 25, 30 25, 18 35 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      )}
-    </g>
-  );
-};
-
-const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
-      <path
-        d="M22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z"
-        fill={fill || "var(--avatar-hair, #000)"}
         stroke="currentColor"
         strokeWidth="2"
         strokeLinejoin="round"
       />
     </g>
   );
+};
 
-const largeAfroFront: PartComponent = () => null;
+const bobCutStraightFront: PartComponent = ({ fill }) => {
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return (
+    <g>
+      <path
+        d="M 15 15 C 8 35, 5 60, 12 85 L 25 35 Q 25 10, 15 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 85 15 C 92 35, 95 60, 88 85 L 75 35 Q 75 10, 85 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 12 15 Q 50 2, 88 15 L 82 35 Q 75 30, 68 38 L 50 32 L 32 38 Q 25 30, 18 35 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+};
 
-const sweptFringeFront: PartComponent = ({ fill }) => (
-  <path
-    d="M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z"
-    fill={fill || "var(--avatar-hair, #000)"}
-    stroke="currentColor"
-    strokeWidth="2"
-  />
-);
+const shavedSidesLongBackFront: PartComponent = ({ fill }) => {
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return (
+    <g>
+      <path
+        d="M 15 15 C 5 35, 5 95, 25 100 L 35 85 L 22 35 Q 22 10, 15 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 85 15 C 95 35, 95 95, 75 100 L 65 85 L 78 35 Q 78 10, 85 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 12 15 Q 50 5, 88 15 L 82 35 C 70 25, 30 25, 18 35 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+};
 
-const singleTopKnotFront: PartComponent = ({ fill, headId, hairId }) => (
+const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  if (hasHat) return null; // Hide mohawk if hat
+
+  return (
   <g transform={getHeadHairTransform(headId, hairId, -1)}>
     <path
-      d="M 10 25 Q 50 2, 90 25 L 90 35 Q 50 22, 10 35 Z"
+      d="M22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z"
+      fill={fill || "var(--avatar-hair, #000)"}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+  </g>
+  );
+};
+
+const largeAfroFront: PartComponent = ({ hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  // Afro Front is typically volume. Only render if NO HAT.
+  if (hasHat) return null;
+
+  return null; // Original was null? 
+  // Wait, if original was null, does Afro have a front?
+  // Checking original file... line 435 said "const largeAfroFront: PartComponent = () => null;"
+  // So Afro is all Back?
+  // If so, I need to check largeAfroBack again.
+  // largeAfroBack was handled in lines 87-95.
+  // It effectively disappears if hat.
+  // So largeAfro is fine.
+};
+
+const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  
+  if (hasHat) {
+    // Hat variant: Smaller bangs peeking out from under the hat front edge
+    // These are lower and smaller than the no-hat version
+    return (
+      <path
+        d="M22 32 Q 40 26, 65 30 L 60 42 Q 40 35, 28 52 L 22 40 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    );
+  }
+  
+  // No hat: Full swept fringe
+  return (
+    <path
+      d="M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z"
       fill={fill || "var(--avatar-hair, #000)"}
       stroke="currentColor"
       strokeWidth="2"
     />
-    <circle cx="50" cy="5" r="14" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-  </g>
-);
+  );
+};
 
-const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId }) => (
+const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  // If hat, render nothing (fully hidden) or just base? 
+  // Base is effectively messy fringe.
+  if (hasHat) return null; // Assuming hat covers it completely.
+
+  return (
+    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+      <path
+        d="M 10 25 Q 50 2, 90 25 L 90 35 Q 50 22, 10 35 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <circle cx="50" cy="5" r="14" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+    </g>
+  );
+};
+
+const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  if (hasHat) return null; // Buns hidden
+  
+  return (
   <g transform={getHeadHairTransform(headId, hairId, -1)}>
     <path
       d="M10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z"
@@ -501,7 +549,8 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId }) => (
     <circle cx="15" cy="12" r="11" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
     <circle cx="85" cy="12" r="11" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
   </g>
-);
+  );
+};
 
 const sidePartShortFront: PartComponent = ({ fill, hatId }) => (
   <path
@@ -512,46 +561,34 @@ const sidePartShortFront: PartComponent = ({ fill, hatId }) => (
   />
 );
 
-const jaggedFringeBobFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinejoin="round"
-    />
-  );
+const jaggedFringeBobFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinejoin="round"
+  />
+);
 
-const bowlCutRoundFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+const bowlCutRoundFront: PartComponent = ({ fill }) => {
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g>
-      {!isFullHat && (
-        <path
-          d="M 12 18 Q 45 4, 88 15 L 82 35 C 65 25, 45 35, 30 45 L 18 35 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-      )}
       <path
-        d={
-          isFullHat
-            ? "M 15 32 C 0 57, -5 80, 15 95 L 32 88 Q 15 65, 22 32 Z"
-            : "M 15 25 C -5 55, -2 88, 22 100 L 42 95 Q 18 65, 15 25 Z"
-        }
+        d="M 12 18 Q 45 4, 88 15 L 82 35 C 65 25, 45 35, 30 45 L 18 35 Z"
         fill={hairColor}
         stroke="currentColor"
         strokeWidth="2"
       />
       <path
-        d={
-          isFullHat
-            ? "M 85 32 C 100 57, 105 80, 85 95 L 68 88 Q 85 65, 78 32 Z"
-            : "M 85 25 C 105 55, 102 88, 78 100 L 58 95 Q 82 65, 85 25 Z"
-        }
+        d="M 15 25 C -5 55, -2 88, 22 100 L 42 95 Q 18 65, 15 25 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 85 25 C 105 55, 102 88, 78 100 L 58 95 Q 82 65, 85 25 Z"
         fill={hairColor}
         stroke="currentColor"
         strokeWidth="2"
@@ -560,25 +597,33 @@ const bowlCutRoundFront: PartComponent = ({ fill, hatId }) => {
   );
 };
 
-const messySideSweptFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
+const messySideSweptFront: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  if (hasHat) return null; // Hidden by hat logic in Back component (merged above) or duplicate?
+  // Wait, I edited EXTENSIVELY above.
+  // The 'messySideSweptBack' editing in previous chunk actually targeted line 398 which is 'messySideSweptBack'.
+  // This chunk targets 'messySideSweptFront' at 516. 
+  // Since I merged them in my previous chunk thinking it was Front (my bad), I should be careful.
+  // Actually, messySideSwept HAS both Front and Back components.
+  // Use simple flattened path for Front.
+  return (
     <path
-      d="M 10 20 L 15 4 C 28 -5, 42 -5, 48 2 Q 78 0, 95 12 L 91 32 C 78 18, 55 18, 42 22 Q 25 25, 12 28 Z"
+      d={hasHat ? "M 12 28 Q 25 25, 42 25 C 55 25, 78 25, 88 32 C 85 35, 75 35, 60 38 Q 30 40, 12 28 Z" : "M 10 20 L 15 4 C 28 -5, 42 -5, 48 2 Q 78 0, 95 12 L 91 32 C 78 18, 55 18, 42 22 Q 25 25, 12 28 Z"}
       fill={fill || "var(--avatar-hair, #000)"}
       stroke="currentColor"
       strokeWidth="2"
     />
   );
+};
 
-const roundedCurlsFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 12 22 C 15 5, 45 5, 52 10 Q 75 10, 90 18 L 86 35 C 75 22, 55 25, 40 25 Q 25 25, 12 28 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const roundedCurlsFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 12 22 C 15 5, 45 5, 52 10 Q 75 10, 90 18 L 86 35 C 75 22, 55 25, 40 25 Q 25 25, 12 28 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
 const shortJaggedCropFront: PartComponent = ({ fill }) => (
   <path
@@ -602,26 +647,28 @@ const aviatorFlapsFront: PartComponent = ({ fill }) => (
   </g>
 );
 
-const flatTopShortFront: PartComponent = ({ fill }) => (
+const flatTopShortFront: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  return (
   <path
-    d="M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z"
+    d={hasHat ? "M20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z" : "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z"}
     fill={fill || "var(--avatar-hair, #000)"}
     stroke="currentColor"
     strokeWidth="2"
   />
-);
-
-const buzzCutFront: PartComponent = ({ fill, headId, hatId, hairId }) =>
-  hatId && !NO_CLIPPING_HATS.includes(hatId) ? null : (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
-      <path
-        d="M20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z"
-        fill={fill || "var(--avatar-hair, #000)"}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </g>
   );
+};
+
+const buzzCutFront: PartComponent = ({ fill, headId, hairId }) => (
+  <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <path
+      d="M20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z"
+      fill={fill || "var(--avatar-hair, #000)"}
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+  </g>
+);
 
 const sharpBobYellowHighlightFront: PartComponent = ({ fill }) => (
   <g>
@@ -635,15 +682,10 @@ const sharpBobYellowHighlightFront: PartComponent = ({ fill }) => (
   </g>
 );
 
-const roundedMiddlePartFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+const roundedMiddlePartFront: PartComponent = ({ fill }) => {
   return (
     <path
-      d={
-        isFullHat
-          ? "M 15 30 Q 8 65, 12 95 L 30 95 Q 22 65, 28 30 Z"
-          : "M 15 20 C 30 10, 45 10, 50 15 C 55 10, 70 10, 85 20 L 80 32 Q 50 15, 20 32 Z"
-      }
+      d="M 15 20 C 30 10, 45 10, 50 15 C 55 10, 70 10, 85 20 L 80 32 Q 50 15, 20 32 Z"
       fill={fill || "var(--avatar-hair, #000)"}
       stroke="currentColor"
       strokeWidth="2"
@@ -651,78 +693,69 @@ const roundedMiddlePartFront: PartComponent = ({ fill, hatId }) => {
   );
 };
 
-const trapezoidCutFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const trapezoidCutFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const texturedPompadourFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 12 18 C 12 0, 40 -5, 52 5 C 65 -5, 95 0, 88 22 L 85 42 C 75 35, 60 38, 50 35 Q 25 35, 12 32 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const texturedPompadourFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 12 18 C 12 0, 40 -5, 52 5 C 65 -5, 95 0, 88 22 L 85 42 C 75 35, 60 38, 50 35 Q 25 35, 12 32 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const largeHairBowFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 10 20 C 5 0, 45 -10, 50 10 C 55 -10, 95 0, 90 20 L 95 35 Q 92 45, 80 42 L 20 42 Q 8 45, 5 35 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const largeHairBowFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 10 20 C 5 0, 45 -10, 50 10 C 55 -10, 95 0, 90 20 L 95 35 Q 92 45, 80 42 L 20 42 Q 8 45, 5 35 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const detailedHairBowFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 10 20 C 5 2, 45 -5, 50 12 C 55 -5, 95 2, 90 20 L 92 28 Q 90 32, 80 30 L 20 30 Q 10 32, 8 28 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const detailedHairBowFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 10 20 C 5 2, 45 -5, 50 12 C 55 -5, 95 2, 90 20 L 92 28 Q 90 32, 80 30 L 20 30 Q 10 32, 8 28 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const puffyMiddlePartFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 15 20 C 15 5, 30 -5, 50 5 C 70 -5, 85 5, 85 20 L 92 45 Q 85 35, 75 42 L 50 35 L 25 42 Q 15 35, 8 45 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const puffyMiddlePartFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 15 20 C 15 5, 30 -5, 50 5 C 70 -5, 85 5, 85 20 L 92 45 Q 85 35, 75 42 L 50 35 L 25 42 Q 15 35, 8 45 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const heartMiddlePartFront: PartComponent = ({ fill, hatId }) =>
-  hatId && hatId !== "none" && !SMALL_HATS.includes(hatId) ? null : (
-    <path
-      d="M 12 25 C 20 10, 45 5, 52 15 C 65 5, 90 10, 88 25 L 92 45 Q 92 65, 85 95 L 70 95 Q 78 70, 75 45 L 70 35 L 50 38 L 30 35 L 25 45 Q 22 70, 15 95 L 8 95 Q 8 65, 12 45 Z"
-      fill={fill || "var(--avatar-hair, #000)"}
-      stroke="currentColor"
-      strokeWidth="2"
-    />
-  );
+const heartMiddlePartFront: PartComponent = ({ fill }) => (
+  <path
+    d="M 12 25 C 20 10, 45 5, 52 15 C 65 5, 90 10, 88 25 L 92 45 Q 92 65, 85 95 L 70 95 Q 78 70, 75 45 L 70 35 L 50 38 L 30 35 L 25 45 Q 22 70, 15 95 L 8 95 Q 8 65, 12 45 Z"
+    fill={fill || "var(--avatar-hair, #000)"}
+    stroke="currentColor"
+    strokeWidth="2"
+  />
+);
 
-const longLocsFront: PartComponent = ({ fill, hatId }) => {
+const longLocsFront: PartComponent = ({ fill }) => {
   const hairColor = fill || "var(--avatar-hair, #000)";
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   return (
     <g>
       {/* Top scalp/hairline - Enhanced with tight texture */}
-      {!isFullHat && (
-        <g>
-          <path d="M 15 20 Q 50 5, 85 20 L 82 35 Q 50 25, 18 35 Z" fill={hairColor} stroke="black" strokeWidth="1" />
-          <path d="M 25 15 Q 50 8, 75 15" fill="none" stroke="black" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
-        </g>
-      )}
+      <g>
+        <path d="M 15 20 Q 50 5, 85 20 L 82 35 Q 50 25, 18 35 Z" fill={hairColor} stroke="black" strokeWidth="1" />
+        <path d="M 25 15 Q 50 8, 75 15" fill="none" stroke="black" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
+      </g>
 
       {/* Shadow layer for front strands */}
       <g stroke="rgba(0,0,0,0.3)" strokeWidth="6.5" strokeLinecap="round" fill="none">
@@ -783,24 +816,21 @@ const lowPonytailFront: PartComponent = ({ fill, headId, hairId }) => (
   </g>
 );
 
-const shortCurlyBobFront: PartComponent = ({ fill, hatId }) => {
+const shortCurlyBobFront: PartComponent = ({ fill }) => {
   const hairColor = fill || "var(--avatar-hair, #E8C872)";
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   return (
     <g>
       {/* Curly top */}
-      {!isFullHat && (
-        <g>
-          <path
-            d="M 15 28 C 22 8, 45 5, 50 15 C 55 5, 78 8, 85 28 L 80 38 Q 50 20, 20 38 Z"
-            fill={hairColor}
-            stroke="black"
-            strokeWidth="1.5"
-          />
-          {/* Curl texture on top */}
-          <path d="M 28 18 Q 35 12, 42 18 M 58 18 Q 65 12, 72 18" fill="none" stroke="black" opacity="0.12" strokeWidth="1" />
-        </g>
-      )}
+      <g>
+        <path
+          d="M 15 28 C 22 8, 45 5, 50 15 C 55 5, 78 8, 85 28 L 80 38 Q 50 20, 20 38 Z"
+          fill={hairColor}
+          stroke="black"
+          strokeWidth="1.5"
+        />
+        {/* Curl texture on top */}
+        <path d="M 28 18 Q 35 12, 42 18 M 58 18 Q 65 12, 72 18" fill="none" stroke="black" opacity="0.12" strokeWidth="1" />
+      </g>
       {/* Left curly side */}
       <g fill={hairColor} stroke="black" strokeWidth="1.5">
         <path d="M 12 30 Q 0 50, 8 75 Q 2 85, 15 95 L 28 88 Q 18 75, 22 55 Q 15 40, 18 30 Z" />
