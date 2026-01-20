@@ -3,11 +3,9 @@
 import React, { useState, useMemo, useRef } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
-import { Checkbox } from "@/components/ui/checkbox";
 import { generateShareableURL } from "@/lib/avatar/engine/url";
 import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
-import { cn } from "@/lib/utils/strings";
 
 import { AvatarPreview } from "./AvatarPreview";
 import { CategorySelector } from "./CategorySelector";

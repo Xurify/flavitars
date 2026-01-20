@@ -3,14 +3,16 @@ import { getHeadHatTransform } from "../parts";
 import { HeadId, HEAD_PATHS } from "../parts/head";
 import { HatId } from "../parts/hats";
 
+export const AVATAR_FILTER_PREFIX = "avatar-filter";
+
 interface AvatarFiltersProps {
   filterId: string;
-  clippingY: number;
+  clippingY?: number;
   headId: HeadId;
   hatId: HatId;
 }
 
-export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY, headId, hatId }) => {
+export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId, hatId }) => {
   return (
     <defs>
       {/* STYLE 1: CRUNCHY NOISE */}

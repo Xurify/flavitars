@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Press_Start_2P, VT323 } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
-import { Header } from "@/components/header";
 import "./globals.css";
 
 const pressStart2P = Press_Start_2P({
@@ -66,10 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${pressStart2P.variable} ${vt323.variable}`}>
       <body className="antialiased selection:bg-orange-500 selection:text-white font-retro bg-[#F5F0E6] text-foreground h-dvh flex flex-col overflow-hidden relative">
-        <Header />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </div>
+        <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="bottom-right" theme="light" richColors />
       </body>
     </html>
