@@ -405,10 +405,6 @@ const silverNecklace: PartComponent = () => (
     {/* Circular Charm */}
     <g transform="translate(0, 7)">
       <circle r="4.5" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="0.5" />
-      {/* Letter B */}
-      <text x="0" y="1.5" textAnchor="middle" fontSize="4" fontWeight="bold" fill="#475569" fontFamily="Arial, sans-serif">
-        B
-      </text>
     </g>
   </g>
 );
@@ -420,14 +416,6 @@ const goldNecklace: PartComponent = () => (
     {/* Circular Charm with A initial - Gold Style */}
     <g transform="translate(0, 7)">
       <circle r="5" fill="#FBBF24" stroke="#D97706" strokeWidth="0.5" />
-      {/* Letter A with diamonds/studs */}
-      <text x="0" y="2" textAnchor="middle" fontSize="5" fontWeight="bold" fill="#FFFBEB" fontFamily="serif">
-        A
-      </text>
-      {/* Decorative dots around/on the letter */}
-      <circle cx="-2" cy="0" r="0.4" fill="white" opacity="0.8" />
-      <circle cx="2" cy="0" r="0.4" fill="white" opacity="0.8" />
-      <circle cx="0" cy="-2.5" r="0.4" fill="white" opacity="0.8" />
       {/* Shine */}
       <circle cx="-2" cy="-2" r="1" fill="white" opacity="0.2" />
     </g>
