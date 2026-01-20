@@ -12,7 +12,14 @@ interface PathBreakdownProps {
   onDeleteCommand: (index: number) => void;
 }
 
-export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, onCommandUpdate, onDeleteCommand }: PathBreakdownProps) {
+export function PathBreakdown({
+  commands,
+  selectedNodeId,
+  nodes,
+  onNodeSelect,
+  onCommandUpdate,
+  onDeleteCommand,
+}: PathBreakdownProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLDivElement>(null);
 
@@ -60,26 +67,29 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
                     }
                   }}
                 >
-                  {/* Command Header */}
                   <div className="flex items-center gap-3 mb-2">
                     <span
                       className={`px-2 py-0.5 rounded text-xs font-bold ${
                         cmd.type === "Z" || cmd.type === "z"
                           ? "bg-zinc-700 text-zinc-300"
                           : cmd.type === "M" || cmd.type === "m"
-                          ? "bg-emerald-500/20 text-emerald-400"
-                          : cmd.type === "L" || cmd.type === "l" || cmd.type === "H" || cmd.type === "h" || cmd.type === "V" || cmd.type === "v"
-                          ? "bg-blue-500/20 text-blue-400"
-                          : cmd.type === "Q" || cmd.type === "q" || cmd.type === "C" || cmd.type === "c"
-                          ? "bg-purple-500/20 text-purple-400"
-                          : "bg-amber-500/20 text-amber-400"
+                            ? "bg-emerald-500/20 text-emerald-400"
+                            : cmd.type === "L" ||
+                                cmd.type === "l" ||
+                                cmd.type === "H" ||
+                                cmd.type === "h" ||
+                                cmd.type === "V" ||
+                                cmd.type === "v"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : cmd.type === "Q" || cmd.type === "q" || cmd.type === "C" || cmd.type === "c"
+                                ? "bg-purple-500/20 text-purple-400"
+                                : "bg-amber-500/20 text-amber-400"
                       }`}
                     >
                       {cmd.type}
                     </span>
                     <span className="text-sm font-medium text-zinc-200">{explanation.name}</span>
-                    
-                    {/* Color indicators for nodes */}
+
                     <div className="flex gap-1 ml-2">
                       {cmdNodes.map((node) => (
                         <div
@@ -92,7 +102,7 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
                         />
                       ))}
                     </div>
-                    
+
                     {commands.length > 1 && (
                       <button
                         onClick={(e) => {
@@ -103,16 +113,18 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
                         title="Delete Segment"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     )}
                   </div>
 
-                  {/* Command Description */}
                   <p className="text-xs text-zinc-400 mb-3">{explanation.description}</p>
 
-                  {/* Parameters */}
                   {cmd.params.length > 0 && (
                     <div className="bg-zinc-900/50 rounded-xl p-3 font-mono text-xs border border-zinc-800/50 shadow-inner">
                       <div className="grid grid-cols-2 gap-2">
@@ -144,12 +156,15 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
                     </div>
                   )}
 
-                  {/* Visual Explanation & Translation (Vertical Stack) */}
                   <div className="mt-5 space-y-4">
                     <div className="bg-zinc-950/30 p-3 rounded-xl border border-zinc-800/50">
                       <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
                         </svg>
                         Human Translation
                       </p>
@@ -159,10 +174,14 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
                     </div>
 
                     <div className="bg-zinc-950/30 p-3 rounded-xl border border-zinc-800/50">
-                       <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
                         </svg>
                         Visual Reference
                       </p>
@@ -196,7 +215,6 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
         }
       `}</style>
 
-      {/* Pro Tips Section */}
       <div className="p-4 border-t border-zinc-800 bg-amber-500/5 group">
         <div className="flex items-center gap-2 mb-2">
           <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -205,19 +223,28 @@ export function PathBreakdown({ commands, selectedNodeId, nodes, onNodeSelect, o
           <h3 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Avatar Editing Pro Tips</h3>
         </div>
         <ul className="text-[11px] text-zinc-400 space-y-1.5 list-disc pl-4 marker:text-amber-500/50">
-          <li>Use <span className="text-zinc-200">Quadratic (Q)</span> for smooth hair curves.</li>
-          <li>Close paths with <span className="text-zinc-200">Z</span> to enable fill colors.</li>
-          <li>Keep hair within <span className="text-zinc-200">X=10 to 90</span> for standard heads.</li>
-          <li>Hats clip at <span className="text-zinc-200">Y=28-40</span>; position hair accordingly!</li>
+          <li>
+            Use <span className="text-zinc-200">Quadratic (Q)</span> for smooth hair curves.
+          </li>
+          <li>
+            Close paths with <span className="text-zinc-200">Z</span> to enable fill colors.
+          </li>
+          <li>
+            Keep hair within <span className="text-zinc-200">X=10 to 90</span> for standard heads.
+          </li>
+          <li>
+            Hats clip at <span className="text-zinc-200">Y=28-40</span>; position hair accordingly!
+          </li>
         </ul>
       </div>
 
-      {/* Legend */}
       <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
         <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Command Legend</h3>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">M</span>
+            <span className="w-5 h-5 rounded bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
+              M
+            </span>
             <span className="text-zinc-400">Move to point</span>
           </div>
           <div className="flex items-center gap-2">
@@ -256,7 +283,9 @@ function CommandVisual({ type, params }: { type: string; params: number[] }) {
           <circle cx="10" cy="10" r="3" fill="currentColor" />
           <path d="M10 3 L10 7 M10 13 L10 17 M3 10 L7 10 M13 10 L17 10" stroke="currentColor" strokeWidth="1" opacity="0.5" />
         </svg>
-        <span>Moves pen to ({params[0]}, {params[1]}) without drawing</span>
+        <span>
+          Moves pen to ({params[0]}, {params[1]}) without drawing
+        </span>
       </div>
     );
   }
@@ -268,7 +297,9 @@ function CommandVisual({ type, params }: { type: string; params: number[] }) {
           <line x1="3" y1="17" x2="17" y2="3" stroke="currentColor" strokeWidth="2" />
           <circle cx="17" cy="3" r="2" fill="currentColor" />
         </svg>
-        <span>Draws straight line to ({params[0]}, {params[1]})</span>
+        <span>
+          Draws straight line to ({params[0]}, {params[1]})
+        </span>
       </div>
     );
   }
@@ -282,7 +313,9 @@ function CommandVisual({ type, params }: { type: string; params: number[] }) {
           <line x1="3" y1="17" x2="10" y2="3" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 1" />
           <line x1="17" y1="17" x2="10" y2="3" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 1" />
         </svg>
-        <span>Quadratic curve via control ({params[0]}, {params[1]}) to ({params[2]}, {params[3]})</span>
+        <span>
+          Quadratic curve via control ({params[0]}, {params[1]}) to ({params[2]}, {params[3]})
+        </span>
       </div>
     );
   }

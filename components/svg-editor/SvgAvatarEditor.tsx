@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AvatarCanvas } from "./AvatarCanvas";
-import { PathBreakdown } from "./PathBreakdown";
-import { CodeExport } from "./CodeExport";
 import { HairIds, HairId } from "@/lib/avatar/parts/hair";
 import { HatIds, HatId } from "@/lib/avatar/parts/hats";
 import { parsePath, serializePath, extractNodes, updateNodePosition, PathCommand, PathNode } from "@/lib/svg-editor/path-parser";
 import { getHairPathData } from "./hair-data";
+import { AvatarCanvas } from "./AvatarCanvas";
+import { PathBreakdown } from "./PathBreakdown";
+import { CodeExport } from "./CodeExport";
 import { LivePreview } from "./LivePreview";
 import { HistoryPanel } from "./HistoryPanel";
 
@@ -33,7 +33,7 @@ export function SvgAvatarEditor() {
   const [showHistory, setShowHistory] = useState(true);
   const [breakdownWidth, setBreakdownWidth] = useState(384);
   const [historyWidth, setHistoryWidth] = useState(240);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isResizingBreakdown, setIsResizingBreakdown] = useState(false);
   const [isResizingHistory, setIsResizingHistory] = useState(false);
 
@@ -50,7 +50,7 @@ export function SvgAvatarEditor() {
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   // Initialize history when hair/layer changes
-  React.useEffect(() => {
+  useEffect(() => {
     const initialCommands = parsePath(rawPathData).commands;
     setCommands(initialCommands);
     const initialEntry: HistoryEntry = {
@@ -83,7 +83,7 @@ export function SvgAvatarEditor() {
   };
 
   // Undo / Redo logic
-  const undo = React.useCallback(() => {
+  const undo = useCallback(() => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
       setHistoryIndex(prevIndex);
@@ -91,7 +91,7 @@ export function SvgAvatarEditor() {
     }
   }, [history, historyIndex]);
 
-  const redo = React.useCallback(() => {
+  const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const nextIndex = historyIndex + 1;
       setHistoryIndex(nextIndex);
@@ -100,7 +100,7 @@ export function SvgAvatarEditor() {
   }, [history, historyIndex]);
 
   // Keyboard Shortcuts
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
         e.preventDefault();
@@ -198,7 +198,7 @@ export function SvgAvatarEditor() {
   };
 
   // Performance-Optimized Resizing Logic
-  React.useEffect(() => {
+  useEffect(() => {
     const handleWindowMouseMove = (e: MouseEvent) => {
       if (isResizingBreakdown) {
         const newWidth = window.innerWidth - e.clientX - (showHistory ? historyWidth : 0);
@@ -236,7 +236,6 @@ export function SvgAvatarEditor() {
         isResizingBreakdown || isResizingHistory ? "cursor-col-resize select-none" : ""
       }`}
     >
-      {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
@@ -246,7 +245,6 @@ export function SvgAvatarEditor() {
         </Link>
 
         <div className="flex items-center gap-6">
-          {/* View Menu */}
           <div className="flex items-center gap-1 bg-zinc-950/50 p-1.5 rounded-xl border border-zinc-800 shadow-inner">
             <button
               onClick={() => setShowGrid(!showGrid)}
@@ -338,9 +336,7 @@ export function SvgAvatarEditor() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Edit Mode Toggle */}
         <aside className="w-72 border-r border-zinc-800 bg-zinc-900/40 flex flex-col">
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Edit Mode</label>
@@ -398,7 +394,6 @@ export function SvgAvatarEditor() {
             </div>
           </div>
 
-          {/* Hair Selector */}
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hair Style</label>
             <select
@@ -414,7 +409,6 @@ export function SvgAvatarEditor() {
             </select>
           </div>
 
-          {/* Hat Selector */}
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hat Overlay</label>
             <select
@@ -430,7 +424,6 @@ export function SvgAvatarEditor() {
             </select>
           </div>
 
-          {/* Layer Toggle */}
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Layer</label>
             <div className="flex gap-2">
@@ -453,7 +446,6 @@ export function SvgAvatarEditor() {
             </div>
           </div>
 
-          {/* View Options */}
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">View Options</label>
             <div className="space-y-2">
@@ -487,7 +479,6 @@ export function SvgAvatarEditor() {
             </div>
           </div>
 
-          {/* Selected Node Info */}
           {selectedNodeId && (
             <div className="p-4 border-b border-zinc-800 bg-amber-500/5 transition-all animate-in fade-in slide-in-from-left-2">
               <label className="block text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1">Selected Node</label>
@@ -495,7 +486,6 @@ export function SvgAvatarEditor() {
             </div>
           )}
 
-          {/* Live Preview Section */}
           <div className="mt-auto p-4 border-t border-zinc-800 bg-zinc-900/50">
             <LivePreview
               frontPath={layer === "front" ? pathString : getHairPathData(selectedHair, "front")}
@@ -505,7 +495,6 @@ export function SvgAvatarEditor() {
           </div>
         </aside>
 
-        {/* Center - Canvas */}
         <div className="flex-1 flex flex-col min-w-0">
           <AvatarCanvas
             pathString={pathString}
@@ -526,12 +515,10 @@ export function SvgAvatarEditor() {
           />
         </div>
 
-        {/* Right Panel - Path Breakdown & History */}
         <aside
           className="relative flex h-full transition-all duration-300 border-l border-zinc-800 bg-zinc-900/40"
           style={{ width: `${breakdownWidth + (showHistory ? historyWidth : 0)}px` }}
         >
-          {/* Resize Handle for Breakdown */}
           <div
             className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-amber-500 active:bg-amber-600 transition-all z-20"
             onMouseDown={() => setIsResizingBreakdown(true)}
@@ -553,7 +540,6 @@ export function SvgAvatarEditor() {
               className="relative flex flex-col shrink-0 overflow-hidden animate-in slide-in-from-right duration-300"
               style={{ width: `${historyWidth}px` }}
             >
-              {/* Resize Handle for History */}
               <div
                 className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-amber-500 active:bg-amber-600 transition-all z-20"
                 onMouseDown={() => setIsResizingHistory(true)}

@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useRef } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
+import Link from "next/link";
 import { generateShareableURL } from "@/lib/avatar/engine/url";
 import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
@@ -69,24 +70,24 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
       stateKey === "hat"
         ? "hatColor"
         : stateKey === "accessories"
-        ? "accessoryColor"
-        : stateKey === "hair"
-        ? "hairColor"
-        : stateKey === "body"
-        ? "bodyColor"
-        : stateKey + "Color"
+          ? "accessoryColor"
+          : stateKey === "hair"
+            ? "hairColor"
+            : stateKey === "body"
+              ? "bodyColor"
+              : stateKey + "Color"
     ) as keyof AvatarState;
 
     const paramColorKey = (
       stateKey === "hat"
         ? "hat_color"
         : stateKey === "accessories"
-        ? "accessory_color"
-        : stateKey === "hair"
-        ? "hair_color"
-        : stateKey === "body"
-        ? "body_color"
-        : stateKey + "_color"
+          ? "accessory_color"
+          : stateKey === "hair"
+            ? "hair_color"
+            : stateKey === "body"
+              ? "body_color"
+              : stateKey + "_color"
     ) as keyof typeof avatarSearchParams;
 
     if (allowedColors && !allowedColors.includes(avatarState[colorKey] as string)) {
@@ -146,7 +147,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
       const hasPreset = !!params.preset;
       const hasId = params.id !== null && params.id !== undefined;
       const otherParamsCount = Object.entries(params).filter(
-        ([key, value]) => key !== "preset" && key !== "id" && value !== null && value !== undefined
+        ([key, value]) => key !== "preset" && key !== "id" && value !== null && value !== undefined,
       ).length;
 
       let avatarId: string | number;
@@ -223,8 +224,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
                 <h2 className="text-base lg:text-lg font-black tracking-tight uppercase">Module: {currentCategory.label}</h2>
               </div>
               <span className="text-[8px] font-mono font-bold text-muted-foreground/50 uppercase">
-                INDEX: {Object.keys(currentCategory.items).indexOf(currentId) + 1} {/* TOTAL: */}{" "}
-                {Object.keys(currentCategory.items).length}
+                INDEX: {Object.keys(currentCategory.items).indexOf(currentId) + 1} {Object.keys(currentCategory.items).length}
               </span>
             </div>
 
@@ -266,7 +266,17 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
         </div>
       </main>
 
-      <footer className="border-t-2 border-border bg-card h-8 shrink-0 flex items-center justify-end px-4 text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.2em] overflow-hidden">
+      <footer className="border-t-2 border-border bg-card h-8 shrink-0 flex items-center justify-between px-4 text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.2em] overflow-hidden">
+        <Link href="/path-editor" className="flex items-center gap-1.5 hover:text-primary transition-colors">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
+          </svg>
+          Path Editor
+        </Link>
         <span>© 2025 FLAVITARS • XURIFY</span>
       </footer>
     </div>
@@ -312,7 +322,6 @@ const EditorColorPickers = ({
       disabled={avatarState.hat === "none" || avatarState.hat === "chefHat"}
     />
 
-    {/* Contain Hair checkbox removed */}
     <div className="border-t border-dashed border-border/20 pt-1" />
     <ColorPicker
       label="Accessories Accent"

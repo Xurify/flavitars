@@ -50,16 +50,13 @@ export function AvatarCanvas({
 
   const viewBox = `${-VIEW_PADDING} ${-VIEW_PADDING} ${CANVAS_SIZE + VIEW_PADDING * 2} ${CANVAS_SIZE + VIEW_PADDING * 2}`;
 
-  const getSvgCoords = useCallback(
-    (e: React.MouseEvent): { x: number; y: number } => {
-      if (!svgRef.current) return { x: 0, y: 0 };
-      const rect = svgRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
-      const y = ((e.clientY - rect.top) / rect.height) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
-      return { x, y };
-    },
-    []
-  );
+  const getSvgCoords = useCallback((e: React.MouseEvent): { x: number; y: number } => {
+    if (!svgRef.current) return { x: 0, y: 0 };
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
+    const y = ((e.clientY - rect.top) / rect.height) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
+    return { x, y };
+  }, []);
 
   const handleMouseDown = (node: PathNode) => (e: React.MouseEvent) => {
     if (editMode !== "node") return;
@@ -87,14 +84,14 @@ export function AvatarCanvas({
     // In a future update, this could be made more precise by splitting the specific segment.
     const newCommands = [...commands];
     const insertIdx = newCommands.length - 1; // Insert before 'Z' or at the end
-    
+
     newCommands.splice(insertIdx, 0, {
-      type: 'L',
+      type: "L",
       params: [Math.round(clickX), Math.round(clickY)],
       startIndex: 0,
-      endIndex: 0
+      endIndex: 0,
     });
-    
+
     onPathSplit(newCommands);
   };
 
@@ -115,8 +112,8 @@ export function AvatarCanvas({
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.key === "Delete" || e.key === "Backspace") && selectedNodeId) {
         if (document.activeElement?.tagName === "INPUT") return;
-        
-        const node = nodes.find(n => n.id === selectedNodeId);
+
+        const node = nodes.find((n) => n.id === selectedNodeId);
         if (node) {
           e.preventDefault();
           onNodeDelete(node.commandIndex);
@@ -149,12 +146,10 @@ export function AvatarCanvas({
 
   return (
     <div className="flex-1 flex items-center justify-center bg-zinc-950 relative overflow-hidden">
-      {/* Scale indicator */}
       <div className="absolute top-4 left-4 px-3 py-1.5 bg-zinc-800/80 rounded-lg text-xs font-mono text-zinc-400">
         {scale.toFixed(1)}x
       </div>
 
-      {/* Zoom controls */}
       <div className="absolute top-4 right-4 flex gap-2">
         <button
           onClick={() => setScale((s) => Math.min(8, s + 0.5))}
@@ -183,47 +178,21 @@ export function AvatarCanvas({
         onWheel={handleWheel}
         style={{ cursor: dragging ? "grabbing" : editMode === "drag" ? "move" : editMode === "split" ? "crosshair" : "default" }}
       >
-        {/* Grid */}
         {showGrid && (
           <g opacity="0.15">
             {Array.from({ length: 11 }).map((_, i) => (
               <React.Fragment key={i}>
-                <line
-                  x1={i * 10}
-                  y1={0}
-                  x2={i * 10}
-                  y2={CANVAS_SIZE}
-                  stroke="#fff"
-                  strokeWidth="0.5"
-                />
-                <line
-                  x1={0}
-                  y1={i * 10}
-                  x2={CANVAS_SIZE}
-                  y2={i * 10}
-                  stroke="#fff"
-                  strokeWidth="0.5"
-                />
+                <line x1={i * 10} y1={0} x2={i * 10} y2={CANVAS_SIZE} stroke="#fff" strokeWidth="0.5" />
+                <line x1={0} y1={i * 10} x2={CANVAS_SIZE} y2={i * 10} stroke="#fff" strokeWidth="0.5" />
               </React.Fragment>
             ))}
-            {/* Center lines */}
             <line x1={50} y1={0} x2={50} y2={CANVAS_SIZE} stroke="#f59e0b" strokeWidth="0.75" />
             <line x1={0} y1={50} x2={CANVAS_SIZE} y2={50} stroke="#f59e0b" strokeWidth="0.75" />
           </g>
         )}
 
-        {/* Avatar boundary indicator */}
-        <rect
-          x={0}
-          y={0}
-          width={CANVAS_SIZE}
-          height={CANVAS_SIZE}
-          fill="none"
-          stroke="#18181b"
-          strokeWidth="0.5"
-        />
+        <rect x={0} y={0} width={CANVAS_SIZE} height={CANVAS_SIZE} fill="none" stroke="#18181b" strokeWidth="0.5" />
 
-        {/* Ghost Head Silhouette (Context) */}
         <g opacity="0.1" pointerEvents="none">
           <path
             d="M20 40 Q 20 10, 50 10 Q 80 10, 80 40 L 80 70 Q 80 95, 50 95 Q 20 95, 20 70 Z"
@@ -236,7 +205,6 @@ export function AvatarCanvas({
           <path d="M40 75 Q 50 82, 60 75" fill="none" stroke="#fff" strokeWidth="1" />
         </g>
 
-        {/* Hair Path */}
         {pathString && (
           <path
             d={pathString}
@@ -249,24 +217,24 @@ export function AvatarCanvas({
           />
         )}
 
-        {/* Hat Overlay */}
         {showHat && selectedHat !== "none" && (
           <g opacity="0.4">
             <HatPreview hatId={selectedHat} />
           </g>
         )}
 
-        {/* Draggable Nodes */}
         {showNodes && (
           <g>
-            {/* Control point connection lines (Bézier handles) */}
             {nodes.map((node, i) => {
               if (node.type !== "control") return null;
-              
+
               // Find the next endpoint for this command
-              const nextEndpoint = nodes.slice(i + 1).find(n => n.commandIndex === node.commandIndex && n.type === "endpoint");
+              const nextEndpoint = nodes.slice(i + 1).find((n) => n.commandIndex === node.commandIndex && n.type === "endpoint");
               // Or find the previous endpoint (for the first control point of a Cubic curve)
-              const prevEndpoint = nodes.slice(0, i).reverse().find(n => n.type === "endpoint") || { x: 0, y: 0 };
+              const prevEndpoint = nodes
+                .slice(0, i)
+                .reverse()
+                .find((n) => n.type === "endpoint") || { x: 0, y: 0 };
 
               return (
                 <line
@@ -289,7 +257,6 @@ export function AvatarCanvas({
 
               return (
                 <g key={node.id}>
-                  {/* Node handle */}
                   <circle
                     cx={node.x}
                     cy={node.y}
@@ -299,32 +266,15 @@ export function AvatarCanvas({
                     strokeWidth={isSelected ? 1.5 : 0.5}
                     className="cursor-grab active:cursor-grabbing transition-all"
                     onMouseDown={handleMouseDown(node)}
-                    style={{ 
-                      filter: isSelected 
-                        ? `drop-shadow(0 0 6px ${isControl ? "#3b82f6" : "#f59e0b"})` 
-                        : "none" 
+                    style={{
+                      filter: isSelected ? `drop-shadow(0 0 6px ${isControl ? "#3b82f6" : "#f59e0b"})` : "none",
                     }}
                   />
 
-                  {/* Coordinate label on hover/select */}
                   {isSelected && (
                     <g pointerEvents="none">
-                      <rect 
-                        x={node.x + 5} 
-                        y={node.y - 12} 
-                        width="30" 
-                        height="8" 
-                        rx="2" 
-                        fill="rgba(0,0,0,0.8)" 
-                      />
-                      <text
-                        x={node.x + 8}
-                        y={node.y - 6}
-                        fontSize="4"
-                        fill="#fff"
-                        fontFamily="monospace"
-                        fontWeight="bold"
-                      >
+                      <rect x={node.x + 5} y={node.y - 12} width="30" height="8" rx="2" fill="rgba(0,0,0,0.8)" />
+                      <text x={node.x + 8} y={node.y - 6} fontSize="4" fill="#fff" fontFamily="monospace" fontWeight="bold">
                         {Math.round(node.x)},{Math.round(node.y)}
                       </text>
                     </g>

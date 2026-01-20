@@ -20,48 +20,26 @@ export function LivePreview({ frontPath, backPath, selectedHat, hairColor = "#4a
       </div>
 
       <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl">
-        {/* Filter for subtle wobble (optional, keeping it simple) */}
-        
-        {/* Layer 1: Back Hair */}
-        {backPath && (
-          <path d={backPath} fill={hairColor} />
-        )}
+        {backPath && <path d={backPath} fill={hairColor} />}
 
-        {/* Layer 2: Neck/Back of Head */}
-        <path
-          d="M35 85 Q 50 90, 65 85 L 65 95 H 35 Z"
-          fill="#E5C1B1"
-        />
+        <path d="M35 85 Q 50 90, 65 85 L 65 95 H 35 Z" fill="#E5C1B1" />
 
-        {/* Layer 3: Head Shape */}
-        <path
-          d="M20 40 Q 20 10, 50 10 Q 80 10, 80 40 L 80 70 Q 80 95, 50 95 Q 20 95, 20 70 Z"
-          fill="#F3D4C7"
-        />
+        <path d="M20 40 Q 20 10, 50 10 Q 80 10, 80 40 L 80 70 Q 80 95, 50 95 Q 20 95, 20 70 Z" fill="#F3D4C7" />
 
-        {/* Layer 4: Face Details */}
         <g opacity="0.8">
-          {/* Eyes */}
           <circle cx="38" cy="48" r="2.5" fill="#18181b" />
           <circle cx="62" cy="48" r="2.5" fill="#18181b" />
-          {/* Eyebrows */}
           <path d="M32 42 Q 38 40, 44 42" fill="none" stroke="#18181b" strokeWidth="1.5" strokeLinecap="round" />
           <path d="M56 42 Q 62 40, 68 42" fill="none" stroke="#18181b" strokeWidth="1.5" strokeLinecap="round" />
-          {/* Mouth */}
           <path d="M40 75 Q 50 82, 60 75" fill="none" stroke="#18181b" strokeWidth="1.5" strokeLinecap="round" />
         </g>
 
-        {/* Layer 5: Front Hair */}
-        {frontPath && (
-          <path d={frontPath} fill={hairColor} />
-        )}
+        {frontPath && <path d={frontPath} fill={hairColor} />}
 
-        {/* Layer 6: Hat (if any) */}
         {selectedHat !== "none" && (
-           <g transform={`translate(50, 50) scale(${hatClip?.scale || 1}) translate(-50, -50)`}>
-             {/* This is a placeholder for the actual hat component, rendering as a solid shape for context */}
-             <HatSilhouette hatId={selectedHat} />
-           </g>
+          <g transform={`translate(50, 50) scale(${hatClip?.scale || 1}) translate(-50, -50)`}>
+            <HatSilhouette hatId={selectedHat} />
+          </g>
         )}
       </svg>
     </div>

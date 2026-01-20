@@ -132,27 +132,29 @@ const ItemPreview: React.FC<ItemPreviewProps> = ({
             </g>
           ) : (
             <>
-              {/* 1. Hair Back - behind everything */}
               {BackComponent && (
                 <g className="text-slate-900 fill-current ">
                   <BackComponent fill={hairFill} headId="square" />
                 </g>
               )}
-              {/* 2. Head shape - in the middle, on top of hair back */}
               {showMannequin && (
                 <g className="pointer-events-none opacity-20">
                   <HeadShape fill={skinToneFill} headId={headId} />
                 </g>
               )}
-              {/* 3. Hair Front (ItemComponent) - on top of head, framing face */}
+              {showMannequin && (
+                <g className="pointer-events-none opacity-20">
+                  <HeadShape fill={skinToneFill} headId={headId} />
+                </g>
+              )}
               {(() => {
                 let resolvedFill = isHeadCategory
                   ? skinToneFill
                   : isHatCategory
-                  ? hatFill
-                  : categoryId === "body"
-                  ? bodyFill
-                  : hairFill;
+                    ? hatFill
+                    : categoryId === "body"
+                      ? bodyFill
+                      : hairFill;
                 let resolvedSecondaryFill = accessoryFill;
 
                 const allowedColors = ItemComponent.colors;
