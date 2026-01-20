@@ -604,13 +604,11 @@ export const Halo = createAvatarItem({
   name: "Halo",
   svg: ({ headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
-      <ellipse cx="50" cy="0" rx="30" ry="8" fill="none" stroke="#FDE047" strokeWidth="3" opacity="0.8">
-        <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" repeatCount="indefinite" />
-      </ellipse>
-      <path d="M50 0 L 50 15" stroke="#FDE047" strokeWidth="1" strokeDasharray="2 2" />
+      <ellipse cx="50" cy="0" rx="30" ry="8" fill="none" stroke="#FDE047" strokeWidth="3" opacity="0.8" />
     </g>
   ),
 });
+
 
 export const Hats: PartRegistry<HatId> = {
   none: { component: noneHat, label: "None" },
