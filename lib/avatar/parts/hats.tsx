@@ -595,8 +595,6 @@ export const Crown = createAvatarItem({
   svg: ({ headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
       <path d="M20 30 L 20 10 L 35 22 L 50 5 L 65 22 L 80 10 L 80 30 Z" fill="#FBBF24" stroke="#B45309" strokeWidth="1.5" />
-      <circle cx="50" cy="5" r="2.5" fill="#EF4444" />
-      <rect x="45" y="20" width="10" height="4" rx="1" fill="#3B82F6" stroke="#1E40AF" strokeWidth="0.5" />
     </g>
   ),
 });
