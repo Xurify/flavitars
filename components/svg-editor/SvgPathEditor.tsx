@@ -12,6 +12,8 @@ import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
 import { LivePreview } from "./LivePreview";
 import { HistoryPanel } from "./HistoryPanel";
+import { ProjectsPanel } from "./ProjectsPanel";
+import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 
 interface HistoryEntry {
   id: string;
@@ -20,7 +22,7 @@ interface HistoryEntry {
   label: string;
 }
 
-export function SvgAvatarEditor() {
+export function SvgPathEditor() {
   const [selectedHair, setSelectedHair] = useState<HairId>("sweptFringe");
   const [selectedHat, setSelectedHat] = useState<HatId>("none");
   const [layer, setLayer] = useState<"front" | "back">("back");
@@ -36,6 +38,19 @@ export function SvgAvatarEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isResizingBreakdown, setIsResizingBreakdown] = useState(false);
   const [isResizingHistory, setIsResizingHistory] = useState(false);
+  const [showProjectsPanel, setShowProjectsPanel] = useState(false);
+
+  const {
+    projects,
+    activeProject,
+    hasLoaded,
+    createProject,
+    updateActiveProject,
+    renameProject,
+    deleteProject,
+    loadProject,
+    duplicateProject,
+  } = useProjectsPersistence();
 
   // Get the raw path data for the selected hair + layer
   const rawPathData = useMemo(() => {
@@ -237,12 +252,20 @@ export function SvgAvatarEditor() {
       }`}
     >
       <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
-        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
-            <Image src="/images/icons/drew.png" alt="Flavitar Logo" fill className="object-cover" />
-          </div>
-          <h1 className="text-lg font-semibold tracking-tight">SVG Path Editor</h1>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
+              <Image src="/images/icons/drew.png" alt="Flavitar Logo" fill className="object-cover" />
+            </div>
+            <h1 className="text-lg font-semibold tracking-tight">SVG Path Editor</h1>
+          </Link>
+          {activeProject && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700/50 rounded-lg">
+              <div className="w-2 h-2 bg-amber-500 rounded-full" />
+              <span className="text-xs font-medium text-zinc-300">{activeProject.name}</span>
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-1 bg-zinc-950/50 p-1.5 rounded-xl border border-zinc-800 shadow-inner">
@@ -288,6 +311,21 @@ export function SvgAvatarEditor() {
               </svg>
             </button>
           </div>
+
+          <button
+            onClick={() => setShowProjectsPanel(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+            title="Manage Projects"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+              />
+            </svg>
+            Projects
+          </button>
 
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
             <CodeExport pathString={pathString} hairId={selectedHair} layer={layer} />
@@ -557,6 +595,32 @@ export function SvgAvatarEditor() {
           )}
         </aside>
       </div>
+
+      {showProjectsPanel && (
+        <ProjectsPanel
+          projects={projects}
+          activeProject={activeProject}
+          onCreateProject={(name) => {
+            createProject(name, selectedHair, selectedHat, layer, commands);
+            setShowProjectsPanel(false);
+          }}
+          onLoadProject={(projectId) => {
+            const project = projects.find((p) => p.id === projectId);
+            if (project) {
+              setSelectedHair(project.selectedHair);
+              setSelectedHat(project.selectedHat);
+              setLayer(project.layer);
+              setCommands(project.commands);
+              loadProject(projectId);
+            }
+            setShowProjectsPanel(false);
+          }}
+          onRenameProject={renameProject}
+          onDeleteProject={deleteProject}
+          onDuplicateProject={duplicateProject}
+          onClose={() => setShowProjectsPanel(false)}
+        />
+      )}
     </div>
   );
 }

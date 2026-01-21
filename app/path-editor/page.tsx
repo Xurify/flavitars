@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { SvgAvatarEditor } from "@/components/svg-editor/SvgAvatarEditor";
+import { SvgPathEditor } from "@/components/svg-editor/SvgPathEditor";
 
 export const metadata: Metadata = {
   title: "SVG Editor | Flavitars",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function EditsPage() {
   return (
     <main className="h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
-      <SvgAvatarEditor />
+      <SvgPathEditor />
     </main>
   );
 }
