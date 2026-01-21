@@ -6,6 +6,7 @@ import { Project } from "@/hooks/use-editor-persistence";
 interface ProjectsPanelProps {
   projects: Project[];
   activeProject: Project | null;
+  defaultName?: string;
   onCreateProject: (name: string) => void;
   onLoadProject: (projectId: string) => void;
   onRenameProject: (projectId: string, newName: string) => void;
@@ -17,6 +18,7 @@ interface ProjectsPanelProps {
 export function ProjectsPanel({
   projects,
   activeProject,
+  defaultName = "",
   onCreateProject,
   onLoadProject,
   onRenameProject,
@@ -24,7 +26,7 @@ export function ProjectsPanel({
   onDuplicateProject,
   onClose,
 }: ProjectsPanelProps) {
-  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectName, setNewProjectName] = useState(defaultName);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
 

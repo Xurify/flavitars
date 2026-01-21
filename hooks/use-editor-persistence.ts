@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { PathCommand } from "@/lib/svg-editor/path-parser";
 import { HairId } from "@/lib/avatar/parts/hair";
 import { HatId } from "@/lib/avatar/parts/hats";
@@ -39,11 +39,18 @@ function getInitialStore(): ProjectsStore {
 
 export function useProjectsPersistence() {
   const [store, setStore] = useState<ProjectsStore>(getInitialStore);
+  const storeRef = useRef<ProjectsStore>(store);
+  
+  useEffect(() => {
+    storeRef.current = store;
+  }, [store]);
+
   const [hasLoaded, setHasLoaded] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [pendingSave, setPendingSave] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [wasManualSave, setWasManualSave] = useState(false);
 
-  // Load from storage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -60,7 +67,6 @@ export function useProjectsPersistence() {
     }
   }, []);
 
-  // Save to storage when store changes (with debounce tracking)
   useEffect(() => {
     if (!hasLoaded) return;
     
@@ -72,6 +78,8 @@ export function useProjectsPersistence() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
         setHasUnsavedChanges(false);
         setPendingSave(false);
+        setLastSavedAt(new Date());
+        setWasManualSave(false);
       } catch (error) {
         console.error("Failed to save projects", error);
       }
@@ -80,7 +88,6 @@ export function useProjectsPersistence() {
     return () => clearTimeout(timeoutId);
   }, [store, hasLoaded]);
 
-  // Only warn on close if there are unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (hasUnsavedChanges || pendingSave) {
@@ -93,7 +100,7 @@ export function useProjectsPersistence() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges, pendingSave]);
 
-  const activeProject = store.projects.find((p) => p.id === store.activeProjectId) || null;
+  const activeProject = store.projects.find((project) => project.id === store.activeProjectId) || null;
 
   const createProject = useCallback(
     (
@@ -114,11 +121,15 @@ export function useProjectsPersistence() {
         commands,
       };
 
-      setStore((prev) => ({
-        ...prev,
-        activeProjectId: newProject.id,
-        projects: [...prev.projects, newProject],
-      }));
+      setStore((prev) => {
+        const next = {
+          ...prev,
+          activeProjectId: newProject.id,
+          projects: [...prev.projects, newProject],
+        };
+        storeRef.current = next;
+        return next;
+      });
 
       return newProject;
     },
@@ -127,32 +138,40 @@ export function useProjectsPersistence() {
 
   const updateActiveProject = useCallback(
     (selectedHair: HairId, selectedHat: HatId, layer: "front" | "back", commands: PathCommand[]) => {
-      if (!store.activeProjectId) return;
+      const currentStore = storeRef.current;
+      if (!currentStore.activeProjectId) return;
 
-      setStore((prev) => ({
-        ...prev,
-        projects: prev.projects.map((p) =>
-          p.id === prev.activeProjectId
-            ? { ...p, selectedHair, selectedHat, layer, commands, updatedAt: Date.now() }
-            : p
+      const updatedStore: ProjectsStore = {
+        ...currentStore,
+        projects: currentStore.projects.map((project) =>
+          project.id === currentStore.activeProjectId
+            ? { ...project, selectedHair, selectedHat, layer, commands, updatedAt: Date.now() }
+            : project
         ),
-      }));
+      };
+
+      setStore(updatedStore);
+      storeRef.current = updatedStore;
     },
-    [store.activeProjectId]
+    []
   );
 
   const renameProject = useCallback((projectId: string, newName: string) => {
-    setStore((prev) => ({
-      ...prev,
-      projects: prev.projects.map((p) =>
-        p.id === projectId ? { ...p, name: newName, updatedAt: Date.now() } : p
-      ),
-    }));
+    setStore((prev) => {
+      const next = {
+        ...prev,
+        projects: prev.projects.map((project) =>
+          project.id === projectId ? { ...project, name: newName, updatedAt: Date.now() } : project
+        ),
+      };
+      storeRef.current = next;
+      return next;
+    });
   }, []);
 
   const deleteProject = useCallback((projectId: string) => {
     setStore((prev) => {
-      const newProjects = prev.projects.filter((p) => p.id !== projectId);
+      const newProjects = prev.projects.filter((project) => project.id !== projectId);
       const newActiveId =
         prev.activeProjectId === projectId
           ? newProjects.length > 0
@@ -160,23 +179,30 @@ export function useProjectsPersistence() {
             : null
           : prev.activeProjectId;
 
-      return {
+      const next = {
         ...prev,
         activeProjectId: newActiveId,
         projects: newProjects,
       };
+      storeRef.current = next;
+      return next;
     });
   }, []);
 
   const loadProject = useCallback((projectId: string) => {
-    setStore((prev) => ({
-      ...prev,
-      activeProjectId: projectId,
-    }));
+    setStore((prev) => {
+      const next = {
+        ...prev,
+        activeProjectId: projectId,
+      };
+      storeRef.current = next;
+      return next;
+    });
   }, []);
 
   const duplicateProject = useCallback((projectId: string) => {
-    const project = store.projects.find((p) => p.id === projectId);
+    const currentStore = storeRef.current;
+    const project = currentStore.projects.find((project) => project.id === projectId);
     if (!project) return;
 
     const newProject: Project = {
@@ -187,22 +213,42 @@ export function useProjectsPersistence() {
       updatedAt: Date.now(),
     };
 
-    setStore((prev) => ({
-      ...prev,
-      activeProjectId: newProject.id,
-      projects: [...prev.projects, newProject],
-    }));
-  }, [store.projects]);
+    setStore((prev) => {
+      const next = {
+        ...prev,
+        activeProjectId: newProject.id,
+        projects: [...prev.projects, newProject],
+      };
+      storeRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const saveNow = useCallback(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(storeRef.current));
+      setHasUnsavedChanges(false);
+      setPendingSave(false);
+      setLastSavedAt(new Date());
+      setWasManualSave(true);
+    } catch (error) {
+      console.error("Failed to save projects", error);
+    }
+  }, []);
 
   return {
     projects: store.projects,
     activeProject,
     hasLoaded,
+    hasUnsavedChanges,
+    lastSavedAt,
+    wasManualSave,
     createProject,
     updateActiveProject,
     renameProject,
     deleteProject,
     loadProject,
     duplicateProject,
+    saveNow,
   };
 }

@@ -39,32 +39,125 @@ export function SvgPathEditor() {
   const [isResizingBreakdown, setIsResizingBreakdown] = useState(false);
   const [isResizingHistory, setIsResizingHistory] = useState(false);
   const [showProjectsPanel, setShowProjectsPanel] = useState(false);
+  const [showSavedMessage, setShowSavedMessage] = useState(false);
+  const [minLoadingFinished, setMinLoadingFinished] = useState(false);
 
   const {
     projects,
     activeProject,
     hasLoaded,
+    hasUnsavedChanges,
+    lastSavedAt,
+    wasManualSave,
     createProject,
     updateActiveProject,
     renameProject,
     deleteProject,
     loadProject,
     duplicateProject,
+    saveNow,
   } = useProjectsPersistence();
 
-  // Get the raw path data for the selected hair + layer
+  const formatLabel = (id: string): string => {
+    const spaced = id.replace(/([A-Z])/g, " $1").trim();
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  };
+
+  const formatDate = (date: Date): string => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinLoadingFinished(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (lastSavedAt && wasManualSave) {
+      setShowSavedMessage(true);
+      const timer = setTimeout(() => setShowSavedMessage(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastSavedAt, wasManualSave]);
+
+
+
   const rawPathData = useMemo(() => {
     return getHairPathData(selectedHair, layer);
   }, [selectedHair, layer]);
 
-  // Path state (Source of Truth)
+
   const [commands, setCommands] = useState<PathCommand[]>(() => parsePath(rawPathData).commands);
 
-  // History State
+
+  const hasCreatedInitialProject = useRef(false);
+  useEffect(() => {
+    if (hasLoaded && projects.length === 0 && !hasCreatedInitialProject.current) {
+      hasCreatedInitialProject.current = true;
+      const defaultName = `(Draft) ${formatLabel(selectedHair)} - ${new Date().toLocaleDateString()}`;
+      createProject(defaultName, selectedHair, selectedHat, layer, parsePath(rawPathData).commands);
+    }
+  }, [hasLoaded, projects.length, selectedHair, selectedHat, layer, rawPathData, createProject, formatLabel]);
+
+
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  // Initialize history when hair/layer changes
+
+  const lastSyncedCommands = useRef<string>('');
+  
+
+  useEffect(() => {
+    if (activeProject) {
+      lastSyncedCommands.current = JSON.stringify(activeProject.commands);
+    }
+  }, [activeProject?.id, selectedHair, layer]);
+
+  useEffect(() => {
+    if (!activeProject || !hasLoaded) return;
+    
+    const commandsJson = JSON.stringify(commands);
+    if (commandsJson === lastSyncedCommands.current) return;
+    
+    const timeoutId = setTimeout(() => {
+      lastSyncedCommands.current = commandsJson;
+      updateActiveProject(selectedHair, selectedHat, layer, commands);
+    }, 1000); 
+    
+    return () => clearTimeout(timeoutId);
+  }, [commands, selectedHair, selectedHat, layer, activeProject?.id, hasLoaded, updateActiveProject]);
+
+
+  useEffect(() => {
+    if (activeProject && hasLoaded) {
+      if (activeProject.selectedHair !== selectedHair) {
+        setSelectedHair(activeProject.selectedHair);
+      }
+      if (activeProject.selectedHat !== selectedHat) {
+        setSelectedHat(activeProject.selectedHat);
+      }
+      if (activeProject.layer !== layer) {
+        setLayer(activeProject.layer);
+      }
+      
+      setCommands(activeProject.commands);
+      
+
+      const initialEntry: HistoryEntry = {
+        id: Math.random().toString(36).substr(2, 9),
+        timestamp: Date.now(),
+        commands: activeProject.commands,
+        label: `Loaded ${activeProject.name}`,
+      };
+      setHistory([initialEntry]);
+      setHistoryIndex(0);
+      
+
+      lastSyncedCommands.current = JSON.stringify(activeProject.commands);
+    }
+  }, [activeProject?.id, hasLoaded, selectedHair, selectedHat, layer]);
+
+
   useEffect(() => {
     const initialCommands = parsePath(rawPathData).commands;
     setCommands(initialCommands);
@@ -79,7 +172,6 @@ export function SvgPathEditor() {
     setSelectedNodeId(null);
   }, [rawPathData, selectedHair, layer]);
 
-  // Function to push to history
   const pushToHistory = (newCommands: PathCommand[], label: string) => {
     const newEntry: HistoryEntry = {
       id: Math.random().toString(36).substr(2, 9),
@@ -89,7 +181,6 @@ export function SvgPathEditor() {
     };
 
     const newHistory = [...history.slice(0, historyIndex + 1), newEntry];
-    // Limit history to 50 items
     if (newHistory.length > 50) newHistory.shift();
 
     setHistory(newHistory);
@@ -97,7 +188,7 @@ export function SvgPathEditor() {
     setCommands(newCommands);
   };
 
-  // Undo / Redo logic
+
   const undo = useCallback(() => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
@@ -114,7 +205,7 @@ export function SvgPathEditor() {
     }
   }, [history, historyIndex]);
 
-  // Keyboard Shortcuts
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
@@ -130,19 +221,19 @@ export function SvgPathEditor() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [historyIndex, history, redo, undo]);
 
-  // Extract draggable nodes
+
   const nodes = useMemo(() => extractNodes(commands), [commands]);
 
-  // Serialized path string
+
   const pathString = useMemo(() => serializePath(commands), [commands]);
 
-  // Handle node drag
+
   const handleNodeDrag = (node: PathNode, newX: number, newY: number) => {
     const updated = updateNodePosition(commands, node, Math.round(newX), Math.round(newY));
     setCommands(updated);
   };
 
-  // Handle path unit drag (alignment)
+
   const handlePathDrag = (deltaX: number, deltaY: number) => {
     const updated = commands.map((cmd) => {
       const type = cmd.type;
@@ -152,7 +243,7 @@ export function SvgPathEditor() {
       // Re-map params based on coordinate type
       const newParams = [...cmd.params];
 
-      // Absolute commands: update all coordinates
+
       if (!isRelative) {
         if (upperType === "M" || upperType === "L" || upperType === "T") {
           newParams[0] += deltaX;
@@ -178,41 +269,40 @@ export function SvgPathEditor() {
           newParams[6] += deltaY;
         }
       }
-      // Relative commands: usually don't need update unless it's the starting 'm'
-      // but for simplicity, the path-parser primarily handles absolute for our editor
+
 
       return { ...cmd, params: newParams };
     });
     setCommands(updated);
   };
 
-  // Finalize drag (push to history)
+
   const handleDragEnd = () => {
     const label = editMode === "drag" ? "Re-position Path" : "Drag Node";
     pushToHistory(commands, label);
   };
 
-  // Handle direct command update from breakdown
+
   const handleCommandUpdate = (index: number, params: number[]) => {
     const updated = [...commands];
     updated[index] = { ...updated[index], params };
     pushToHistory(updated, `Update Command ${commands[index].type}`);
   };
 
-  // Delete command segment
+
   const handleDeleteCommand = (index: number) => {
-    if (commands.length <= 1) return; // Don't delete last segment
+    if (commands.length <= 1) return;
     const deletedType = commands[index].type;
     const updated = commands.filter((_, idx) => idx !== index);
     pushToHistory(updated, `Delete ${deletedType} Segment`);
   };
 
-  // Smart split at position (To be fully implemented via AvatarCanvas)
+
   const handlePathSplit = (newCommands: PathCommand[]) => {
     pushToHistory(newCommands, "Split Path");
   };
 
-  // Performance-Optimized Resizing Logic
+
   useEffect(() => {
     const handleWindowMouseMove = (e: MouseEvent) => {
       if (isResizingBreakdown) {
@@ -264,6 +354,11 @@ export function SvgPathEditor() {
               <div className="w-2 h-2 bg-amber-500 rounded-full" />
               <span className="text-xs font-medium text-zinc-300">{activeProject.name}</span>
             </div>
+          )}
+          {showSavedMessage && lastSavedAt && (
+            <span className="text-[10px] text-emerald-500 animate-in fade-in">
+              Saved
+            </span>
           )}
         </div>
 
@@ -327,6 +422,20 @@ export function SvgPathEditor() {
             Projects
           </button>
 
+          <button
+            onClick={() => {
+              updateActiveProject(selectedHair, selectedHat, layer, commands);
+              saveNow();
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg text-sm font-semibold transition-colors"
+            title="Save Now"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            Save
+          </button>
+
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
             <CodeExport pathString={pathString} hairId={selectedHair} layer={layer} />
             <button
@@ -374,7 +483,30 @@ export function SvgPathEditor() {
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      {!hasLoaded || !minLoadingFinished ? (
+        <div className="flex-1 flex flex-col items-center justify-center bg-zinc-950 backdrop-blur-sm animate-in fade-in duration-700">
+          <div className="flex flex-col items-center">
+
+            <div className="relative mb-8">
+              <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center p-3 shadow-2xl border border-zinc-800 relative z-10">
+                <Image src="/images/icons/drew.png" alt="Loading" width={40} height={40} className="rounded-lg opacity-80" />
+              </div>
+
+              <div className="absolute -inset-4 bg-amber-500/5 rounded-full blur-2xl animate-pulse" />
+            </div>
+            
+            <div className="text-center space-y-1">
+              <h2 className="text-zinc-300 font-semibold text-base tracking-wide animate-pulse">Initializing Workspace</h2>
+              <div className="flex gap-1 justify-center mt-4">
+                <div className="w-1 h-1 rounded-full bg-amber-500/30 animate-bounce [animation-delay:-0.3s]" />
+                <div className="w-1 h-1 rounded-full bg-amber-500/40 animate-bounce [animation-delay:-0.15s]" />
+                <div className="w-1 h-1 rounded-full bg-amber-500/50 animate-bounce" />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 flex overflow-hidden">
         <aside className="w-72 border-r border-zinc-800 bg-zinc-900/40 flex flex-col">
           <div className="p-4 border-b border-zinc-800">
             <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Edit Mode</label>
@@ -441,7 +573,7 @@ export function SvgPathEditor() {
             >
               {HairIds.map((id) => (
                 <option key={id} value={id}>
-                  {id.replace(/([A-Z])/g, " $1").trim()}
+                  {formatLabel(id)}
                 </option>
               ))}
             </select>
@@ -456,7 +588,7 @@ export function SvgPathEditor() {
             >
               {HatIds.map((id) => (
                 <option key={id} value={id}>
-                  {id === "none" ? "No Hat" : id.replace(/([A-Z])/g, " $1").trim()}
+                  {id === "none" ? "No Hat" : formatLabel(id)}
                 </option>
               ))}
             </select>
@@ -594,18 +726,20 @@ export function SvgPathEditor() {
             </div>
           )}
         </aside>
-      </div>
+        </div>
+      )}
 
       {showProjectsPanel && (
         <ProjectsPanel
           projects={projects}
           activeProject={activeProject}
+          defaultName={`${formatLabel(selectedHair)} - ${new Date().toLocaleDateString()}`}
           onCreateProject={(name) => {
             createProject(name, selectedHair, selectedHat, layer, commands);
             setShowProjectsPanel(false);
           }}
           onLoadProject={(projectId) => {
-            const project = projects.find((p) => p.id === projectId);
+            const project = projects.find((project) => project.id === projectId);
             if (project) {
               setSelectedHair(project.selectedHair);
               setSelectedHat(project.selectedHat);

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import AvatarEditor from "@/components/avatar/AvatarEditor";
 import { loadAvatarState } from "@/lib/avatar/config/params";
 import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
