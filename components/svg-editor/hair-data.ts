@@ -51,7 +51,7 @@ const HAIR_PATHS: Record<HairId, { front: string; back: string }> = {
     back: "M 18 25 C 5 40, 0 70, 15 95 L 85 95 C 100 70, 95 40, 82 25 Z",
   },
   longStraightLayered: {
-    front: "",
+    front: "M 15 15 C 8 35, 5 60, 12 95 L 25 35 Q 25 10, 15 15 Z M 85 15 C 92 35, 95 60, 88 95 L 75 35 Q 75 10, 85 15 Z M 12 15 Q 50 2, 88 15 L 80 35 Q 50 20, 20 35 Z",
     back: "M 15 25 C 5 40, 0 80, 10 115 L 90 115 C 100 80, 95 40, 85 25 Z",
   },
   longLocs: {

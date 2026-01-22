@@ -58,7 +58,6 @@ export function SvgPathEditor() {
     projects,
     activeProject,
     hasLoaded,
-    hasUnsavedChanges,
     lastSavedAt,
     wasManualSave,
     createProject,
@@ -71,14 +70,10 @@ export function SvgPathEditor() {
     closeProject,
   } = useProjectsPersistence();
 
-  const formatLabel = (id: string): string => {
+  const formatLabel = useCallback((id: string): string => {
     const spaced = id.replace(/([A-Z])/g, " $1").trim();
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-  };
-
-  const formatDate = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
+  }, []);
 
   useEffect(() => {
     setAvatarState((prev) => ({
@@ -127,7 +122,7 @@ export function SvgPathEditor() {
   const isDirty = useMemo(() => {
     if (!activeProject) return false;
     return JSON.stringify(commands) !== JSON.stringify(activeProject.commands);
-  }, [commands, activeProject?.commands]);
+  }, [commands, activeProject?.commands, activeProject]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

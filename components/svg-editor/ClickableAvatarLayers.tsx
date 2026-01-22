@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useId } from "react";
+import React, { useState } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors, resolveAvatarParts, resolveAvatarLogic } from "@/lib/utils/avatar-resolver";
 import { getHeadFacialTransform, getHatClipZone } from "@/lib/avatar/parts";

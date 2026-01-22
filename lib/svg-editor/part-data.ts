@@ -4,7 +4,6 @@
  */
 
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
-import { HairId } from "@/lib/avatar/parts/hair";
 import { HatId, HAT_CLIP_ZONES } from "@/lib/avatar/parts/hats";
 
 export type PartCategory =

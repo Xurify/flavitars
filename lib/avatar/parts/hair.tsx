@@ -330,7 +330,7 @@ const lowPonytailBack: PartComponent = ({ fill }) => (
 );
 
 const longStraightLayeredBack: PartComponent = ({ fill }) => {
-  const hairColor = fill || "var(--avatar-hair, #D4A574)";
+  const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g>
       {/* Long straight hair back */}
@@ -369,7 +369,40 @@ const shortCurlyBobBack: PartComponent = ({ fill }) => {
   );
 };
 
-const longStraightLayeredFront: PartComponent = () => null;
+const longStraightLayeredFront: PartComponent = ({ fill }) => {
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return (
+    <g>
+      <path
+        d="M 15 15 C 8 35, 5 60, 12 95 L 25 35 Q 25 10, 15 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 85 15 C 92 35, 95 60, 88 95 L 75 35 Q 75 10, 85 15 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M 15 18 C 25 8, 45 6, 50 12 C 55 6, 75 8, 85 18 L 80 35 Q 50 22, 20 35 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 50 12 V 28"
+        fill="none"
+        stroke="black"
+        opacity="0.15"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+};
 
 // --- FRONT COMPONENTS ---
 
