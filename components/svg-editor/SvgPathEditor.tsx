@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { HairIds, HairId } from "@/lib/avatar/parts/hair";
@@ -10,10 +10,12 @@ import { getHairPathData } from "./hair-data";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
-import { LivePreview } from "./LivePreview";
 import { HistoryPanel } from "./HistoryPanel";
 import { ProjectsPanel } from "./ProjectsPanel";
+import { ClickableAvatarPreview } from "./ClickableAvatarPreview";
 import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
+import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
+import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
 
 interface HistoryEntry {
   id: string;
@@ -23,9 +25,19 @@ interface HistoryEntry {
 }
 
 export function SvgPathEditor() {
-  const [selectedHair, setSelectedHair] = useState<HairId>("sweptFringe");
-  const [selectedHat, setSelectedHat] = useState<HatId>("none");
-  const [layer, setLayer] = useState<"front" | "back">("back");
+  const [avatarState, setAvatarState] = useState<AvatarState>(() => {
+    if (typeof window !== "undefined") {
+      return parseAvatarStateFromParams(new URLSearchParams(window.location.search));
+    }
+    return DEFAULT_AVATAR_STATE;
+  });
+  
+  const [selectedPart, setSelectedPart] = useState<SelectedPart | null>(null);
+  const [previewMode, setPreviewMode] = useState<"full" | "head-only">("full");
+  
+  const [selectedHair, setSelectedHair] = useState<HairId>(() => avatarState.hair);
+  const [selectedHat, setSelectedHat] = useState<HatId>(() => avatarState.hat);
+  const [layer, setLayer] = useState<"front" | "back">("front");
   const [showGrid, setShowGrid] = useState(true);
   const [showNodes, setShowNodes] = useState(true);
   const [showHat, setShowHat] = useState(true);
@@ -56,6 +68,7 @@ export function SvgPathEditor() {
     loadProject,
     duplicateProject,
     saveNow,
+    closeProject,
   } = useProjectsPersistence();
 
   const formatLabel = (id: string): string => {
@@ -66,6 +79,14 @@ export function SvgPathEditor() {
   const formatDate = (date: Date): string => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  useEffect(() => {
+    setAvatarState((prev) => ({
+      ...prev,
+      hair: selectedHair,
+      hat: selectedHat,
+    }));
+  }, [selectedHair, selectedHat]);
 
   useEffect(() => {
     const timer = setTimeout(() => setMinLoadingFinished(true), 1500);
@@ -103,59 +124,62 @@ export function SvgPathEditor() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-
-  const lastSyncedCommands = useRef<string>('');
-  
-
-  useEffect(() => {
-    if (activeProject) {
-      lastSyncedCommands.current = JSON.stringify(activeProject.commands);
-    }
-  }, [activeProject?.id, selectedHair, layer]);
+  const isDirty = useMemo(() => {
+    if (!activeProject) return false;
+    return JSON.stringify(commands) !== JSON.stringify(activeProject.commands);
+  }, [commands, activeProject?.commands]);
 
   useEffect(() => {
-    if (!activeProject || !hasLoaded) return;
-    
-    const commandsJson = JSON.stringify(commands);
-    if (commandsJson === lastSyncedCommands.current) return;
-    
-    const timeoutId = setTimeout(() => {
-      lastSyncedCommands.current = commandsJson;
-      updateActiveProject(selectedHair, selectedHat, layer, commands);
-    }, 1000); 
-    
-    return () => clearTimeout(timeoutId);
-  }, [commands, selectedHair, selectedHat, layer, activeProject?.id, hasLoaded, updateActiveProject]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        updateActiveProject(selectedHair, selectedHat, layer, commands);
+        saveNow();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [saveNow, updateActiveProject, selectedHair, selectedHat, layer, commands]);
 
 
   useEffect(() => {
     if (activeProject && hasLoaded) {
-      if (activeProject.selectedHair !== selectedHair) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasUrlHair = urlParams.has("hair");
+      
+      if (!hasUrlHair) {
         setSelectedHair(activeProject.selectedHair);
-      }
-      if (activeProject.selectedHat !== selectedHat) {
         setSelectedHat(activeProject.selectedHat);
-      }
-      if (activeProject.layer !== layer) {
         setLayer(activeProject.layer);
+        setCommands(activeProject.commands);
+      } else {
+        const hairFromUrl = urlParams.get("hair") as HairId;
+        const hatFromUrl = urlParams.get("hat") as HatId || "none";
+        setSelectedHair(hairFromUrl);
+        setSelectedHat(hatFromUrl);
+        setLayer("front");
+        
+        const pathData = getHairPathData(hairFromUrl, "front");
+        const initialCommands = parsePath(pathData).commands;
+        setCommands(initialCommands);
       }
-      
-      setCommands(activeProject.commands);
-      
 
       const initialEntry: HistoryEntry = {
         id: Math.random().toString(36).substr(2, 9),
         timestamp: Date.now(),
-        commands: activeProject.commands,
-        label: `Loaded ${activeProject.name}`,
+        commands: hasUrlHair 
+          ? parsePath(getHairPathData(urlParams.get("hair") as HairId, "front")).commands
+          : activeProject.commands,
+        label: hasUrlHair 
+          ? `Initial ${urlParams.get("hair")} (front)`
+          : `Loaded ${activeProject.name}`,
       };
       setHistory([initialEntry]);
       setHistoryIndex(0);
-      
 
-      lastSyncedCommands.current = JSON.stringify(activeProject.commands);
     }
-  }, [activeProject?.id, hasLoaded, selectedHair, selectedHat, layer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeProject?.id, hasLoaded]);
 
 
   useEffect(() => {
@@ -350,13 +374,15 @@ export function SvgPathEditor() {
             <h1 className="text-lg font-semibold tracking-tight">SVG Path Editor</h1>
           </Link>
           {activeProject && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700/50 rounded-lg">
-              <div className="w-2 h-2 bg-amber-500 rounded-full" />
-              <span className="text-xs font-medium text-zinc-300">{activeProject.name}</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700/50 rounded-lg group">
+              <div className={`w-2 h-2 rounded-full transition-all ${isDirty ? "bg-amber-500 animate-pulse scale-110 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-zinc-600"}`} />
+              <span className={`text-xs font-medium transition-colors ${isDirty ? "text-zinc-100" : "text-zinc-400"}`}>
+                {activeProject.name}{isDirty ? "*" : ""}
+              </span>
             </div>
           )}
           {showSavedMessage && lastSavedAt && (
-            <span className="text-[10px] text-emerald-500 animate-in fade-in">
+            <span className="text-xs text-emerald-500 animate-in fade-in">
               Saved
             </span>
           )}
@@ -427,13 +453,17 @@ export function SvgPathEditor() {
               updateActiveProject(selectedHair, selectedHat, layer, commands);
               saveNow();
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg text-sm font-semibold transition-colors"
-            title="Save Now"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
+              isDirty 
+                ? "bg-amber-500 hover:bg-amber-400 text-zinc-900 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-[1.02]" 
+                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700 grayscale-[0.5]"
+            }`}
+            title={isDirty ? "Save Unsaved Changes (Ctrl+S)" : "All Changes Saved"}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
-            Save
+            {isDirty ? "Save" : "Saved"}
           </button>
 
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
@@ -651,17 +681,73 @@ export function SvgPathEditor() {
 
           {selectedNodeId && (
             <div className="p-4 border-b border-zinc-800 bg-amber-500/5 transition-all animate-in fade-in slide-in-from-left-2">
-              <label className="block text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1">Selected Node</label>
+              <label className="block text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">Selected Node</label>
               <p className="text-sm font-mono text-zinc-200">{nodes.find((n) => n.id === selectedNodeId)?.label}</p>
             </div>
           )}
 
-          <div className="mt-auto p-4 border-t border-zinc-800 bg-zinc-900/50">
-            <LivePreview
-              frontPath={layer === "front" ? pathString : getHairPathData(selectedHair, "front")}
-              backPath={layer === "back" ? pathString : getHairPathData(selectedHair, "back")}
-              selectedHat={selectedHat}
+          <div className="mt-auto p-4 border-t border-zinc-800 bg-zinc-900/50 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider">Preview</label>
+              <div className="flex bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
+                <button
+                  onClick={() => setPreviewMode("full")}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                    previewMode === "full"
+                      ? "bg-amber-500 text-zinc-900"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  Full
+                </button>
+                <button
+                  onClick={() => setPreviewMode("head-only")}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                    previewMode === "head-only"
+                      ? "bg-amber-500 text-zinc-900"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  Head
+                </button>
+              </div>
+            </div>
+            
+            <ClickableAvatarPreview
+              state={avatarState}
+              selectedPart={selectedPart}
+              onPartSelect={(part) => {
+                setSelectedPart(part);
+                if (part.category === "hair") {
+                  setSelectedHair(avatarState.hair);
+                  setLayer(part.layer || "front");
+                }
+              }}
+              size="preview"
+              previewMode={previewMode}
+              showBackground={true}
+              showHoverEffects={true}
             />
+            
+            {selectedPart && (
+              <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-amber-400">
+                    {CATEGORY_DISPLAY_NAMES[selectedPart.category]}
+                    {selectedPart.layer && ` (${selectedPart.layer})`}
+                  </span>
+                  <button
+                    onClick={() => setSelectedPart(null)}
+                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="text-xs text-zinc-500 font-mono">{selectedPart.id}</span>
+              </div>
+            )}
           </div>
         </aside>
 
@@ -739,6 +825,9 @@ export function SvgPathEditor() {
             setShowProjectsPanel(false);
           }}
           onLoadProject={(projectId) => {
+            if (isDirty && !window.confirm("You have unsaved changes that will be lost. Continue?")) {
+              return;
+            }
             const project = projects.find((project) => project.id === projectId);
             if (project) {
               setSelectedHair(project.selectedHair);
@@ -752,6 +841,26 @@ export function SvgPathEditor() {
           onRenameProject={renameProject}
           onDeleteProject={deleteProject}
           onDuplicateProject={duplicateProject}
+          onCloseProject={() => {
+            if (isDirty && !window.confirm("You have unsaved changes that will be lost. Continue?")) {
+              return;
+            }
+            closeProject();
+            // Reset state to current hair's default
+            const pathData = getHairPathData(selectedHair, layer);
+            const initialCommands = parsePath(pathData).commands;
+            setCommands(initialCommands);
+            
+            const initialEntry: HistoryEntry = {
+              id: Math.random().toString(36).substr(2, 9),
+              timestamp: Date.now(),
+              commands: initialCommands,
+              label: `New Draft: ${selectedHair} (${layer})`,
+            };
+            setHistory([initialEntry]);
+            setHistoryIndex(0);
+            setShowProjectsPanel(false);
+          }}
           onClose={() => setShowProjectsPanel(false)}
         />
       )}

@@ -22,7 +22,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
       <div className="p-4 border-b border-zinc-800">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">History</h2>
-          <span className="text-[10px] font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">{history.length} steps</span>
+          <span className="text-xs font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">{history.length} steps</span>
         </div>
         <p className="text-xs text-zinc-500 mt-1">Jump to any previous state</p>
       </div>
@@ -65,14 +65,14 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
                       isCurrent ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-500"
                     }`}
                   >
-                    <span className="text-[10px] font-bold">{idx + 1}</span>
+                    <span className="text-xs font-bold">{idx + 1}</span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-medium truncate ${isCurrent ? "text-zinc-100" : "text-zinc-400"}`}>
                       {entry.label}
                     </p>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                    <p className="text-xs text-zinc-500 font-mono mt-0.5">
                       {new Date(entry.timestamp).toLocaleTimeString([], {
                         hour12: false,
                         hour: "2-digit",
@@ -93,25 +93,25 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
       <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Undo</span>
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Undo</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-400 font-sans shadow-sm">
+              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">
                 Ctrl
               </kbd>
-              <span className="text-zinc-600 text-[10px]">+</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-400 font-sans shadow-sm">
+              <span className="text-zinc-600 text-xs">+</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">
                 Z
               </kbd>
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Redo</span>
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Redo</span>
             <div className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-400 font-sans shadow-sm">
+              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">
                 Ctrl
               </kbd>
-              <span className="text-zinc-600 text-[10px]">+</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-[10px] text-zinc-400 font-sans shadow-sm">
+              <span className="text-zinc-600 text-xs">+</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">
                 Y
               </kbd>
             </div>

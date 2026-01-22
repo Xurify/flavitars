@@ -12,6 +12,7 @@ interface ProjectsPanelProps {
   onRenameProject: (projectId: string, newName: string) => void;
   onDeleteProject: (projectId: string) => void;
   onDuplicateProject: (projectId: string) => void;
+  onCloseProject: () => void;
   onClose: () => void;
 }
 
@@ -24,6 +25,7 @@ export function ProjectsPanel({
   onRenameProject,
   onDeleteProject,
   onDuplicateProject,
+  onCloseProject,
   onClose,
 }: ProjectsPanelProps) {
   const [newProjectName, setNewProjectName] = useState(defaultName);
@@ -35,6 +37,11 @@ export function ProjectsPanel({
       onCreateProject(newProjectName.trim());
       setNewProjectName("");
     }
+  };
+
+  const handleNewDraft = () => {
+    onCloseProject();
+    onClose();
   };
 
   const handleStartRename = (project: Project) => {
@@ -74,23 +81,42 @@ export function ProjectsPanel({
           </button>
         </div>
 
-        <div className="p-4 border-b border-zinc-800 bg-zinc-950/50">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              placeholder="New project name..."
-              className="flex-1 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50"
-            />
-            <button
-              onClick={handleCreate}
-              disabled={!newProjectName.trim()}
-              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-zinc-900 font-semibold rounded-lg text-sm transition-colors"
-            >
-              Create
-            </button>
+        <div className="p-6 border-b border-zinc-800 bg-zinc-950/50">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Active Session</span>
+              <button
+                onClick={handleNewDraft}
+                className="text-xs font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1.5 transition-colors uppercase tracking-widest"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                New Draft
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                placeholder="Name your session..."
+                className="flex-1 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50"
+              />
+              <button
+                onClick={handleCreate}
+                disabled={!newProjectName.trim()}
+                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-zinc-900 font-bold rounded-lg text-sm transition-colors whitespace-nowrap"
+              >
+                {activeProject ? "Save Copy" : "Save Project"}
+              </button>
+            </div>
+            {activeProject && (
+              <p className="text-xs text-zinc-500">
+                Currently attached to: <span className="text-amber-500/80 font-medium">{activeProject.name}</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -143,7 +169,7 @@ export function ProjectsPanel({
                             {project.name}
                           </p>
                         )}
-                        <p className="text-[11px] text-zinc-500 mt-0.5">
+                        <p className="text-xs text-zinc-500 mt-1">
                           {project.selectedHair} • {project.layer} • Updated {formatDate(project.updatedAt)}
                         </p>
                       </div>
@@ -211,8 +237,8 @@ export function ProjectsPanel({
           )}
         </div>
 
-        <div className="px-6 py-3 border-t border-zinc-800 bg-zinc-900/50">
-          <p className="text-[10px] text-zinc-500 text-center uppercase tracking-wider">
+        <div className="px-6 py-4 border-t border-zinc-800 bg-zinc-900/50">
+          <p className="text-xs text-zinc-500 text-center uppercase tracking-widest font-medium">
             {projects.length} project{projects.length !== 1 ? "s" : ""} saved locally
           </p>
         </div>

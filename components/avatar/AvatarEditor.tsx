@@ -40,6 +40,27 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     return resolvedState;
   }, [params, initialState]);
 
+  const pathEditorUrl = useMemo(() => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("hair", avatarState.hair);
+    searchParams.set("hat", avatarState.hat);
+    searchParams.set("head", avatarState.head);
+    searchParams.set("eyes", avatarState.eyes);
+    searchParams.set("eyebrows", avatarState.eyebrows);
+    searchParams.set("nose", avatarState.nose);
+    searchParams.set("mouth", avatarState.mouth);
+    searchParams.set("body", avatarState.body);
+    searchParams.set("extras", avatarState.extras);
+    searchParams.set("accessories", avatarState.accessories);
+    searchParams.set("texture", avatarState.texture);
+    searchParams.set("skin_tone", avatarState.skinTone);
+    searchParams.set("hair_color", avatarState.hairColor);
+    searchParams.set("hat_color", avatarState.hatColor);
+    searchParams.set("accessory_color", avatarState.accessoryColor);
+    searchParams.set("body_color", avatarState.bodyColor);
+    return `/path-editor?${searchParams.toString()}`;
+  }, [avatarState]);
+
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
   const previewRef = useRef<HTMLDivElement>(null);
   const controlsContainerRef = useRef<HTMLDivElement>(null);
@@ -267,7 +288,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
       </main>
 
       <footer className="border-t-2 border-border bg-card h-8 shrink-0 flex items-center justify-between px-4 text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.2em] overflow-hidden">
-        <Link href="/path-editor" className="flex items-center gap-1.5 hover:text-primary transition-colors">
+        <Link href={pathEditorUrl} className="flex items-center gap-1.5 hover:text-primary transition-colors">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path
               strokeLinecap="round"

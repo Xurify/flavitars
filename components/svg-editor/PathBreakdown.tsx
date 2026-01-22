@@ -158,7 +158,7 @@ export function PathBreakdown({
 
                   <div className="mt-5 space-y-4">
                     <div className="bg-zinc-950/30 p-3 rounded-xl border border-zinc-800/50">
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path
                             strokeLinecap="round"
@@ -174,7 +174,7 @@ export function PathBreakdown({
                     </div>
 
                     <div className="bg-zinc-950/30 p-3 rounded-xl border border-zinc-800/50">
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path
@@ -220,9 +220,9 @@ export function PathBreakdown({
           <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <h3 className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Avatar Editing Pro Tips</h3>
+          <h3 className="text-xs font-bold text-amber-500 uppercase tracking-widest">Avatar Editing Pro Tips</h3>
         </div>
-        <ul className="text-[11px] text-zinc-400 space-y-1.5 list-disc pl-4 marker:text-amber-500/50">
+        <ul className="text-xs text-zinc-400 space-y-1.5 list-disc pl-4 marker:text-amber-500/50">
           <li>
             Use <span className="text-zinc-200">Quadratic (Q)</span> for smooth hair curves.
           </li>

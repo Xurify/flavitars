@@ -224,6 +224,17 @@ export function useProjectsPersistence() {
     });
   }, []);
 
+  const closeProject = useCallback(() => {
+    setStore((prev) => {
+      const next = {
+        ...prev,
+        activeProjectId: null,
+      };
+      storeRef.current = next;
+      return next;
+    });
+  }, []);
+
   const saveNow = useCallback(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storeRef.current));
@@ -250,5 +261,6 @@ export function useProjectsPersistence() {
     loadProject,
     duplicateProject,
     saveNow,
+    closeProject,
   };
 }
