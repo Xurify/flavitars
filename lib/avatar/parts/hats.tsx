@@ -38,268 +38,266 @@ export interface HatClipZone {
   // SVG path defining the "forbidden zone" where hair cannot exist
   // This is the 2D footprint of the hat material
   clipPath: string;
-  
+
   // Y coordinate where hair can start appearing below the hat
   escapeY: number;
-  
+
   // X boundaries where side hair can appear (left, right)
   sideEscapeX: [number, number];
-  
+
   // Whether this hat allows back hair (ponytails through back opening)
   allowsBackHair: boolean;
-  
+
   // Whether this hat hides hair at all (false for decorative items)
   hidesHair: boolean;
-  
+
   // Transform scale for the clip path
   scale: number;
 }
 
-export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap"];
+export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap", "chefHat"];
 export const FLOATING_HATS: HatId[] = ["halo"];
 
-// Hair-revealing hats (don't clip hair)
-export const HAIR_VISIBLE_HATS: HatId[] = ["none", "halo", "patternedHeadband", "crown", "nurseCap", "propellerHat"];
-
 export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
-  none: { 
-    clipPath: '', 
-    escapeY: 0, 
-    sideEscapeX: [0, 100], 
-    allowsBackHair: true, 
+  none: {
+    clipPath: "",
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
     hidesHair: false,
-    scale: 1
+    scale: 1,
   },
-  
+
   // BEANIE: Covers top of head, hair escapes at temples and below
-  beanie: { 
-    clipPath: 'M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z',
+  beanie: {
+    clipPath: "M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z",
     escapeY: 35,
     sideEscapeX: [10, 90],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // BASEBALL CAP: Front bill extends right, back opening allows ponytail
-  baseballCap: { 
-    clipPath: 'M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z',
+  baseballCap: {
+    clipPath: "M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z",
     escapeY: 28,
     sideEscapeX: [12, 88],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // BUCKET HAT: Wide brim, covers more of the sides
-  bucketHat: { 
-    clipPath: 'M10 38 Q 10 5, 50 5 Q 90 5, 90 38 L 90 42 H 10 Z',
+  bucketHat: {
+    clipPath: "M10 38 Q 10 5, 50 5 Q 90 5, 90 38 L 90 42 H 10 Z",
     escapeY: 42,
     sideEscapeX: [5, 95],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // FLAGS CAP: Similar to baseball cap
-  flagsCap: { 
-    clipPath: 'M15 30 Q 15 0, 50 0 Q 85 0, 85 30 L 95 32 L 95 38 H 15 Z',
+  flagsCap: {
+    clipPath: "M15 30 Q 15 0, 50 0 Q 85 0, 85 30 L 95 32 L 95 38 H 15 Z",
     escapeY: 30,
     sideEscapeX: [10, 90],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.12
+    scale: 1.12,
   },
-  
+
   // HEADBAND: Does NOT hide hair, just a decorative strip
-  patternedHeadband: { 
-    clipPath: '',
+  patternedHeadband: {
+    clipPath: "",
     escapeY: 0,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: false,
-    scale: 1
+    scale: 1,
   },
-  
+
   // COWBOY HAT: Crown covers top, wide brim on sides
-  cowboyHat: { 
-    clipPath: 'M8 42 Q 8 20, 28 20 L 28 10 Q 50 -5, 72 10 L 72 20 Q 92 20, 92 42 Q 50 52, 8 42 Z',
+  cowboyHat: {
+    clipPath: "M8 42 Q 8 20, 28 20 L 28 10 Q 50 -5, 72 10 L 72 20 Q 92 20, 92 42 Q 50 52, 8 42 Z",
     escapeY: 42,
     sideEscapeX: [5, 95],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // DETECTIVE HAT: Similar to fedora
-  detectiveHat: { 
-    clipPath: 'M15 42 Q 15 10, 50 10 Q 85 10, 85 42 Q 50 48, 15 42 Z',
+  detectiveHat: {
+    clipPath: "M15 42 Q 15 10, 50 10 Q 85 10, 85 42 Q 50 48, 15 42 Z",
     escapeY: 42,
     sideEscapeX: [12, 88],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // NURSE CAP: Small decorative, doesn't hide hair
-  nurseCap: { 
-    clipPath: '',
+  nurseCap: {
+    clipPath: "",
     escapeY: 0,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: false,
-    scale: 1
+    scale: 1,
   },
-  
+
   // CHEF HAT: Tall puffy top
-  chefHat: { 
-    clipPath: 'M25 35 Q 20 0, 35 -15 Q 50 -20, 65 -15 Q 80 0, 75 35 L 75 40 H 25 Z',
-    escapeY: 40,
-    sideEscapeX: [20, 80],
-    allowsBackHair: false,
-    hidesHair: true,
-    scale: 1.1
+  chefHat: {
+    clipPath: "",
+    escapeY: 0,
+    sideEscapeX: [0, 100],
+    allowsBackHair: true,
+    hidesHair: false,
+    scale: 1,
   },
-  
+
   // ASTRONAUT HELMET: Full sphere enclosure
-  astronautHelmet: { 
-    clipPath: 'M 8 50 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0',
+  astronautHelmet: {
+    clipPath: "M 8 50 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0",
     escapeY: 100, // No escape - fully enclosed
     sideEscapeX: [50, 50], // No side escape
     allowsBackHair: false,
     hidesHair: true,
-    scale: 1
+    scale: 1,
   },
-  
+
   // MILITARY HELMET: Covers top and sides, hair only escapes below
-  militaryHelmet: { 
-    clipPath: 'M10 38 Q 10 0, 50 0 Q 90 0, 90 38 Q 50 42, 10 38 Z',
+  militaryHelmet: {
+    clipPath: "M10 38 Q 10 0, 50 0 Q 90 0, 90 38 Q 50 42, 10 38 Z",
     escapeY: 38,
     sideEscapeX: [8, 92],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // TOP HAT: Tall cylinder - clip path covers full head width to hide all side hair
-  topHat: { 
-    clipPath: 'M10 38 Q 10 0, 50 -20 Q 90 0, 90 38 Q 50 42, 10 38 Z',
+  topHat: {
+    clipPath: "M10 38 Q 10 0, 50 -20 Q 90 0, 90 38 Q 50 42, 10 38 Z",
     escapeY: 38,
     sideEscapeX: [8, 92],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // PIRATE HAT: Wide triangular
-  pirateHat: { 
-    clipPath: 'M10 35 Q 50 40, 90 35 L 80 8 Q 50 -5, 20 8 Z',
+  pirateHat: {
+    clipPath: "M10 35 Q 50 40, 90 35 L 80 8 Q 50 -5, 20 8 Z",
     escapeY: 40,
     sideEscapeX: [8, 92],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.15
+    scale: 1.15,
   },
-  
+
   // VIKING HELMET: Covers head with horns
-  vikingHelmet: { 
-    clipPath: 'M18 40 Q 18 0, 50 0 Q 82 0, 82 40 Q 50 45, 18 40 Z',
+  vikingHelmet: {
+    clipPath: "M18 40 Q 18 0, 50 0 Q 82 0, 82 40 Q 50 45, 18 40 Z",
     escapeY: 40,
     sideEscapeX: [15, 85],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.25
+    scale: 1.25,
   },
-  
+
   // SAMURAI HELMET: Full coverage with neck guard
-  samuraiHelmet: { 
-    clipPath: 'M15 50 Q 15 0, 50 0 Q 85 0, 85 50 L 90 60 H 10 L 15 50 Z',
+  samuraiHelmet: {
+    clipPath: "M15 50 Q 15 0, 50 0 Q 85 0, 85 50 L 90 60 H 10 L 15 50 Z",
     escapeY: 60,
     sideEscapeX: [10, 90],
     allowsBackHair: false,
     hidesHair: true,
-    scale: 1.25
+    scale: 1.25,
   },
-  
+
   // WIZARD HAT: Tall cone
-  wizardHat: { 
-    clipPath: 'M12 38 L 50 -50 L 88 38 Q 50 42, 12 38 Z',
+  wizardHat: {
+    clipPath: "M12 38 L 50 -50 L 88 38 Q 50 42, 12 38 Z",
     escapeY: 38,
     sideEscapeX: [10, 90],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // PROPELLER HAT: Small beanie with propeller, doesn't hide hair
-  propellerHat: { 
-    clipPath: '',
+  propellerHat: {
+    clipPath: "",
     escapeY: 0,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: false,
-    scale: 1.15
+    scale: 1.15,
   },
-  
+
   // BERET: Soft cap tilted to one side
-  beret: { 
-    clipPath: 'M20 32 Q 10 5, 50 5 Q 90 0, 85 32 Q 50 30, 20 32 Z',
+  beret: {
+    clipPath: "M20 32 Q 10 5, 50 5 Q 90 0, 85 32 Q 50 30, 20 32 Z",
     escapeY: 32,
     sideEscapeX: [18, 88],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1
+    scale: 1,
   },
-  
+
   // STRAW HAT: Wide brim
-  strawHat: { 
-    clipPath: 'M5 40 Q 5 15, 50 15 Q 95 15, 95 40 Q 50 50, 5 40 Z',
+  strawHat: {
+    clipPath: "M5 40 Q 5 15, 50 15 Q 95 15, 95 40 Q 50 50, 5 40 Z",
     escapeY: 40,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.15
+    scale: 1.15,
   },
-  
+
   // USHANKA: Covers top + ear flaps extending down
-  ushanka: { 
+  ushanka: {
     // Main body + Left flap + Right flap combined
-    clipPath: 'M20 35 Q 20 0, 50 0 Q 80 0, 80 35 L 80 38 H 20 Z M14 38 L 8 60 Q 15 65, 25 58 L 25 38 Z M86 38 L 92 60 Q 85 65, 75 58 L 75 38 Z',
+    clipPath:
+      "M20 35 Q 20 0, 50 0 Q 80 0, 80 35 L 80 38 H 20 Z M14 38 L 8 60 Q 15 65, 25 58 L 25 38 Z M86 38 L 92 60 Q 85 65, 75 58 L 75 38 Z",
     escapeY: 38, // Main body escape (flaps go lower)
     sideEscapeX: [8, 92], // Flaps at edges
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.1
+    scale: 1.1,
   },
-  
+
   // SKI MASK: Full face coverage
   skiMask: {
-    clipPath: 'M15 100 Q 15 10, 50 10 Q 85 10, 85 100 L 85 100 H 15 Z',
+    clipPath: "M15 100 Q 15 10, 50 10 Q 85 10, 85 100 L 85 100 H 15 Z",
     escapeY: 100, // No escape
     sideEscapeX: [50, 50], // No side escape
     allowsBackHair: false,
     hidesHair: true,
-    scale: 1
+    scale: 1,
   },
-  
+
   // CROWN: Decorative, doesn't hide hair
-  crown: { 
-    clipPath: '',
+  crown: {
+    clipPath: "",
     escapeY: 0,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: false,
-    scale: 1
+    scale: 1,
   },
-  
+
   // HALO: Floating ring, doesn't hide hair
-  halo: { 
-    clipPath: '',
+  halo: {
+    clipPath: "",
     escapeY: 0,
     sideEscapeX: [0, 100],
     allowsBackHair: true,
     hidesHair: false,
-    scale: 1
+    scale: 1,
   },
 };
 
@@ -307,17 +305,6 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
 export const getHatClipZone = (hatId: HatId | undefined): HatClipZone => {
   if (!hatId) return HAT_CLIP_ZONES.none;
   return HAT_CLIP_ZONES[hatId] || HAT_CLIP_ZONES.none;
-};
-
-// Legacy compatibility - maps to new system
-export const getHatPhysics = (hatId: HatId | undefined) => {
-  const zone = getHatClipZone(hatId);
-  return {
-    interiorMaskPath: zone.clipPath,
-    yOffset: 0,
-    hairBehavior: zone.hidesHair ? 'hide' : 'none',
-    squareStretch: zone.scale,
-  };
 };
 
 /**
@@ -334,7 +321,7 @@ export const getHeadHatTransform = (
   hatId: string | undefined,
   baseTranslateY: number = 0,
   squareStretch: number = 1.15,
-  uniformScale: boolean = false
+  uniformScale: boolean = false,
 ) => {
   const yOffsets: Record<string, number> = {
     square: 0,
@@ -401,7 +388,7 @@ export const Beanie = createAvatarItem({
       <path d="M20 15 Q 50 -10, 80 15 L 80 30 Q 50 35, 20 30 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2" />
       <path d="M30 5 V 25 M 40 0 V 23 M 50 -2 V 22 M 60 0 V 23 M 70 5 V 25" stroke="black" opacity="0.15" strokeWidth="1" />
     </g>
-  )
+  ),
 });
 
 export const BaseballCap = createAvatarItem({
@@ -419,21 +406,20 @@ export const BaseballCap = createAvatarItem({
         strokeLinejoin="round"
       />
     </g>
-  )
+  ),
 });
 
 export const BucketHat = createAvatarItem({
   id: "bucketHat",
   name: "Bucket Hat",
-  config: { clippingY: 22 },
+  config: { clippingY: 0 },
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 4, 1.1)}>
+    <g transform={getHeadHatTransform(headId, hatId, 0)}>
       <path d="M30 20 L 35 0 Q 50 -5, 65 0 L 70 20 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2.5" />
       <path d="M15 35 Q 50 25, 85 35 L 80 20 Q 50 15, 20 20 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2.5" />
     </g>
-  )
+  ),
 });
-
 
 export const Beret = createAvatarItem({
   id: "beret",
@@ -449,9 +435,8 @@ export const Beret = createAvatarItem({
       />
       <rect x="49" y="-20" width="2" height="6" fill="black" opacity="0.4" />
     </g>
-  )
+  ),
 });
-
 
 export const WizardHat = createAvatarItem({
   id: "wizardHat",
@@ -492,7 +477,7 @@ export const WizardHat = createAvatarItem({
       <rect x="38" y="-8" width="1.5" height="1.5" fill="#67E8F9" opacity="0.8" />
       <rect x="75" y="8" width="1.5" height="1.5" fill="#A78BFA" opacity="0.6" />
     </g>
-  )
+  ),
 });
 
 export const VikingHelmet = createAvatarItem({
@@ -519,7 +504,7 @@ export const VikingHelmet = createAvatarItem({
       <circle cx="50" cy="15" r="1.5" fill="black" opacity="0.4" />
       <circle cx="50" cy="25" r="1.5" fill="black" opacity="0.4" />
     </g>
-  )
+  ),
 });
 
 export const AstronautHelmet = createAvatarItem({
@@ -532,9 +517,8 @@ export const AstronautHelmet = createAvatarItem({
       <path d="M25 5 Q 50 -10, 75 5" stroke="white" opacity="0.4" strokeWidth="5" strokeLinecap="round" fill="none" />
       <rect x="15" y="48" width="70" height="12" rx="6" fill="#CBD5E1" stroke="currentColor" strokeWidth="2.5" />
     </g>
-  )
+  ),
 });
-
 
 export const PropellerHat = createAvatarItem({
   id: "propellerHat",
@@ -551,7 +535,7 @@ export const PropellerHat = createAvatarItem({
       <path d="M38 0 H 62" stroke="#FACC15" strokeWidth="4.5" strokeLinecap="round" />
       <circle cx="50" cy="0" r="1.5" fill="black" />
     </g>
-  )
+  ),
 });
 
 export const ChefHat = createAvatarItem({
@@ -563,7 +547,7 @@ export const ChefHat = createAvatarItem({
       <path d="M30 15 Q 20 0, 35 -10 Q 50 -15, 65 -10 Q 80 0, 70 15 Z" fill="white" stroke="currentColor" strokeWidth="2.5" />
       <rect x="30" y="15" width="40" height="15" fill={"white"} stroke="currentColor" strokeWidth="2.5" />
     </g>
-  )
+  ),
 });
 
 export const PirateHat = createAvatarItem({
@@ -593,7 +577,7 @@ export const PirateHat = createAvatarItem({
         <line x1="1.5" y1="1" x2="1.5" y2="3" stroke="black" strokeWidth="0.5" opacity="0.3" />
       </g>
     </g>
-  )
+  ),
 });
 
 export const SamuraiHelmet = createAvatarItem({
@@ -608,15 +592,14 @@ export const SamuraiHelmet = createAvatarItem({
       <circle cx="50" cy="5" r="4" fill="#FBBF24" stroke="currentColor" strokeWidth="1.5" />
       <rect x="25" y="25" width="50" height="6" fill="black" opacity="0.4" />
     </g>
-  )
+  ),
 });
-
 
 export const TopHat = createAvatarItem({
   id: "topHat",
   name: "Top Hat",
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 9, 1.1)}>
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
       <rect x="30" y="-15" width="40" height="30" fill="black" stroke="currentColor" strokeWidth="2.5" />
       <rect x="20" y="15" width="60" height="6" rx="2" fill="black" stroke="currentColor" strokeWidth="2.5" />
       {/* Ribbon - Controlled by Hat Color */}
@@ -634,21 +617,16 @@ export const CowboyHat = createAvatarItem({
   svg: ({ fill, headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, -8, 1.1)}>
       {/* Increased overlap: the crown (top part) now extends further down (L 70 30) */}
-      <path 
-        d="M35 15 Q 50 -10, 65 15 L 72 30 Q 50 25, 28 30 Z" 
-        fill={fill || "#78350F"} 
-        stroke="currentColor" 
-        strokeWidth="2" 
-      />
+      <path d="M35 15 Q 50 -10, 65 15 L 72 30 Q 50 25, 28 30 Z" fill={fill || "#78350F"} stroke="currentColor" strokeWidth="2" />
       {/* Brim: Adjusted to meet the crown better */}
       <path
         d="M15 35 Q 15 22, 30 22 H 70 Q 85 22, 85 35 Q 50 48, 15 35 Z"
-        fill={fill || "#78350F"} 
+        fill={fill || "#78350F"}
         stroke="currentColor"
         strokeWidth="2"
       />
     </g>
-  )
+  ),
 });
 // Note: Colors are not yet migrated to item config, keeping strictly 1:1 for now.
 // Ideally colors would move to `AvatarItem.colors` property.
@@ -657,36 +635,35 @@ export const DetectiveHat = createAvatarItem({
   id: "detectiveHat",
   name: "Detective Hat",
   tags: ["brown", "black", "khaki"],
-  config: { clippingY: 35 },
+  config: { clippingY: 0 },
   svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+    <g transform={getHeadHatTransform(headId, hatId, -2, 1.1)}>
       <path d="M20 15 Q 50 -5, 80 15 L 80 35 H 20 Z" fill="#78350F" stroke="currentColor" strokeWidth="2.5" />
       <path d="M15 35 H 85 Q 85 42, 50 42 Q 15 42, 15 35" fill="#78350F" stroke="currentColor" strokeWidth="2.5" />
       <rect x="20" y="28" width="60" height="4" fill="black" opacity="0.2" />
     </g>
-  )
+  ),
 });
 
 export const NurseCap = createAvatarItem({
   id: "nurseCap",
   name: "Nurse Cap",
-  // no-clipping hat, config empty/implicit
   svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 7, 1.1)}>
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
       <path d="M35 15 L 40 5 H 60 L 65 15 Z" fill="white" stroke="currentColor" strokeWidth="2" />
       <rect x="47" y="8.5" width="6" height="2" rx="0.5" fill="red" />
       <rect x="49" y="6.5" width="2" height="6" rx="0.5" fill="red" />
     </g>
-  )
+  ),
 });
 
 export const MilitaryHelmet = createAvatarItem({
   id: "militaryHelmet",
   name: "Military Helmet",
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
-      <path d="M25 15 Q 50 -5, 75 15 L 80 30 H 20 Z" fill={fill || "#365314"} stroke="currentColor" strokeWidth="2.5" />
-      <path d="M25 18 H 75" stroke="black" opacity="0.2" strokeWidth="1" strokeDasharray="3 3" />
+    <g transform={getHeadHatTransform(headId, hatId, -2, 1.1)}>
+      <path d="M25 15 Q 50 -5, 75 15 L 80 30 H 20 Z" fill={"#52663bff"} stroke="currentColor" strokeWidth="2.5" />
+      <path d="M25 18 H 75" stroke="#181a17ff" opacity="1" strokeWidth="1" strokeDasharray="3 3" />
     </g>
   ),
 });
@@ -805,13 +782,18 @@ export const FlagsCap = createAvatarItem({
       {/* Brim - more defined with highlights and shadows */}
       <g>
         <path d="M18 38 H 82 Q 85 41, 50 43 Q 15 41, 18 38" fill="#111111" stroke="black" strokeWidth="1" />
-        <path d="M20 38.5 H 80 Q 82 39.5, 50 41 Q 18 39.5, 20 38.5" fill="none" stroke="#333333" strokeWidth="0.8" opacity="0.6" />
+        <path
+          d="M20 38.5 H 80 Q 82 39.5, 50 41 Q 18 39.5, 20 38.5"
+          fill="none"
+          stroke="#333333"
+          strokeWidth="0.8"
+          opacity="0.6"
+        />
         <path d="M18 41 Q 50 44, 82 41" fill="none" stroke="black" strokeWidth="1.5" opacity="0.8" />
       </g>
     </g>
-  )
+  ),
 });
-
 
 export const Crown = createAvatarItem({
   id: "crown",
@@ -832,7 +814,6 @@ export const Halo = createAvatarItem({
     </g>
   ),
 });
-
 
 export const Hats: PartRegistry<HatId> = {
   none: { component: noneHat, label: "None" },
