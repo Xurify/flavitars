@@ -2,20 +2,40 @@
 
 import React, { useState } from "react";
 import { HairId } from "@/lib/avatar/parts/hair";
+import { HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
 
 interface CodeExportProps {
   pathString: string;
   hairId: HairId;
   layer: "front" | "back";
+  hatId: HatId;
 }
 
-export function CodeExport({ pathString, hairId, layer }: CodeExportProps) {
+export function CodeExport({ pathString, hairId, layer, hatId }: CodeExportProps) {
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const isWearingAHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
   const componentName = `${hairId}${layer === "front" ? "Front" : "Back"}`;
 
-  const code = `const ${componentName}: PartComponent = ({ fill }) => (
+  const code = isWearingAHat
+    ? `/**
+ * Implementation Note: Add this logic to the ${componentName} component
+ * 
+ * const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+ * 
+ * if (hasHat) {
+ *   return (
+ *     <path
+ *       d="${pathString}"
+ *       fill={fill || "var(--avatar-hair, #000)"}
+ *       stroke="currentColor"
+ *       strokeWidth="2"
+ *     />
+ *   );
+ * }
+ */`
+    : `const ${componentName}: PartComponent = ({ fill }) => (
   <path
     d="${pathString}"
     fill={fill || "var(--avatar-hair, #000)"}
@@ -53,7 +73,8 @@ export function CodeExport({ pathString, hairId, layer }: CodeExportProps) {
               <div>
                 <h3 className="text-lg font-semibold text-zinc-100">Export Component</h3>
                 <p className="text-sm text-zinc-400 mt-0.5">
-                  Copy this code to <code className="text-amber-400">hair.tsx</code>
+                  Copy this code to <code className="text-amber-400">hair.tsx</code> (
+                  {isWearingAHat ? "Tucked Hair" : "Full Hair"})
                 </p>
               </div>
               <button

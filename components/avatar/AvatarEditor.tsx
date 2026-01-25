@@ -58,7 +58,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     searchParams.set("hair_color", avatarState.hairColor);
     searchParams.set("hat_color", avatarState.hatColor);
     searchParams.set("accessory_color", avatarState.accessoryColor);
-    searchParams.set("body_color", avatarState.body_color || avatarState.bodyColor);
+    searchParams.set("body_color", avatarState.bodyColor);
     return `/path-editor?${searchParams.toString()}`;
   }, [avatarState]);
 
@@ -280,7 +280,12 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
             </div>
 
             <footer className="shrink-0 bg-background border-t-2 border-border lg:border-t-0">
-              <ActionBar onRandomize={handleRandomize} onReset={handleReset} onCopyLink={handleCopyLink} onExport={handleExport} />
+              <ActionBar
+                onRandomize={handleRandomize}
+                onReset={handleReset}
+                onCopyLink={handleCopyLink}
+                onExport={handleExport}
+              />
             </footer>
           </div>
         </main>

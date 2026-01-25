@@ -1,29 +1,35 @@
-/**
- * Hair Data Extractor
- * Provides raw SVG path data for each hairstyle and layer.
- * This is a simplified mapping - in production you might parse the actual components.
- */
-
 import { HairId } from "@/lib/avatar/parts/hair";
+import { SMALL_HATS, HatId } from "@/lib/avatar/parts/hats";
+
+type PathVariant = string | { noHat: string; hat: string };
 
 // Map of hair styles to their path data
-// Format: { [hairId]: { front: string, back: string } }
-const HAIR_PATHS: Record<HairId, { front: string; back: string }> = {
+// Format: { [hairId]: { front: PathVariant, back: PathVariant } }
+const HAIR_PATHS: Record<HairId, { front: PathVariant; back: PathVariant }> = {
   bald: { front: "", back: "" },
   buzzCut: {
     front: "M20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z",
     back: "",
   },
   flatTopShort: {
-    front: "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z",
-    back: "M15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z",
+    front: {
+      noHat: "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z",
+      hat: "M20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z",
+    },
+    back: {
+      noHat: "M15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z",
+      hat: "M22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z",
+    },
   },
   shortJaggedCrop: {
     front: "M12 18 Q 50 5, 88 18 L 90 32 L 78 28 L 70 38 L 58 30 L 50 40 L 42 30 L 30 38 L 22 28 L 10 32 Z",
     back: "M20 15 L 10 40 Q 10 70, 15 95 L 85 95 Q 90 70, 90 40 L 80 15 Z",
   },
   sidePartShort: {
-    front: "M14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+    front: {
+      noHat: "M14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+      hat: "M14 26 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+    },
     back: "",
   },
   bobCutSharp: {
@@ -59,7 +65,10 @@ const HAIR_PATHS: Record<HairId, { front: string; back: string }> = {
     back: "M 12 20 Q 50 45, 8 100 L 92 100 Q 95 45, 88 20 Z",
   },
   messySideSwept: {
-    front: "M 10 20 L 15 4 C 28 -5, 42 -5, 48 2 Q 78 0, 95 12 L 91 32 C 78 18, 55 18, 42 22 Q 25 25, 12 28 Z",
+    front: {
+      noHat: "M 10 20 L 15 4 C 28 -5, 42 -5, 48 2 Q 78 0, 95 12 L 91 32 C 78 18, 55 18, 42 22 Q 25 25, 12 28 Z",
+      hat: "M 12 28 Q 25 25, 42 25 C 55 25, 78 25, 88 32 C 85 35, 75 35, 60 38 Q 30 40, 12 28 Z",
+    },
     back: "M 10 25 C -20 45, -25 90, 15 100 C 25 105, 35 100, 45 105 C 55 100, 65 105, 75 102 C 85 105, 125 90, 80 15 L 90 25 L 65 5 Z",
   },
   roundedCurls: {
@@ -83,8 +92,14 @@ const HAIR_PATHS: Record<HairId, { front: string; back: string }> = {
     back: "M 18 20 C 0 45, 0 95, 15 95 L 35 90 L 50 95 L 65 90 L 85 95 C 100 95, 100 45, 82 20 Z",
   },
   sweptFringe: {
-    front: "M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
-    back: "M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
+    front: {
+      noHat: "M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
+      hat: "M22 32 Q 40 26, 65 30 L 60 42 Q 40 35, 28 52 L 22 40 Z",
+    },
+    back: {
+      noHat: "M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
+      hat: "M12 26 Q 8 45, 5 70 Q 4 85, 10 100 L 90 100 Q 96 85, 95 70 Q 92 45, 88 26 Q 50 30, 12 26 Z",
+    },
   },
   singleTopKnot: {
     front: "M 10 25 Q 50 2, 90 25 L 90 35 Q 50 22, 10 35 Z",
@@ -128,10 +143,25 @@ const HAIR_PATHS: Record<HairId, { front: string; back: string }> = {
   },
 };
 
-export function getHairPathData(hairId: HairId, layer: "front" | "back"): string {
+export function getHairPathData(hairId: HairId, layer: "front" | "back", hatId: HatId = "none"): string {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return "";
-  return layer === "front" ? paths.front : paths.back;
+
+  const variant = layer === "front" ? paths.front : paths.back;
+
+  if (typeof variant === "string") {
+    return variant;
+  }
+
+  const hasPhysicalHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
+  return hasPhysicalHat ? variant.hat : variant.noHat;
+}
+
+export function hasHairVariants(hairId: HairId, layer: "front" | "back"): boolean {
+  const paths = HAIR_PATHS[hairId];
+  if (!paths) return false;
+  const variant = layer === "front" ? paths.front : paths.back;
+  return typeof variant !== "string";
 }
 
 export function getAllHairIds(): HairId[] {
