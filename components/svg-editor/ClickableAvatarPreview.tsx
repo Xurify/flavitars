@@ -17,6 +17,10 @@ interface ClickableAvatarPreviewProps {
   showBackground?: boolean;
   showHoverEffects?: boolean;
   previewMode?: "full" | "head-only";
+  pathOverride?: {
+    path: string;
+    layer: "front" | "back";
+  };
 }
 
 const sizeClasses = {
@@ -37,6 +41,7 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
   showBackground = true,
   showHoverEffects = true,
   previewMode = "full",
+  pathOverride,
 }) => {
   const { hairColor } = resolveAvatarColors(state);
 
@@ -79,6 +84,7 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
             selectedPart={selectedPart}
             onPartSelect={onPartSelect}
             showHoverEffects={showHoverEffects}
+            pathOverride={pathOverride}
           />
         </g>
       </svg>

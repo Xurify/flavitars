@@ -722,6 +722,10 @@ export function SvgPathEditor() {
               previewMode={previewMode}
               showBackground={true}
               showHoverEffects={true}
+              pathOverride={{
+                path: pathString,
+                layer: layer,
+              }}
             />
             
             {selectedPart && (

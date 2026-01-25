@@ -12,6 +12,10 @@ interface ClickableAvatarLayersProps {
   selectedPart: SelectedPart | null;
   onPartSelect: (part: SelectedPart) => void;
   showHoverEffects?: boolean;
+  pathOverride?: {
+    path: string;
+    layer: PartLayer;
+  };
 }
 
 interface ClickableLayerProps {
@@ -72,6 +76,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
   selectedPart,
   onPartSelect,
   showHoverEffects = true,
+  pathOverride,
 }) => {
   const { skinTone, hairColor, hatColor, accessoryColor, bodyColor, facialFeaturesColor } = resolveAvatarColors(state);
   const {
@@ -114,7 +119,17 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         className="hair-back-set"
       >
         <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined}>
-          <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
+          {pathOverride && pathOverride.layer === "back" ? (
+            <path
+              d={pathOverride.path}
+              fill={hairColor}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          ) : (
+            <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
+          )}
         </g>
       </ClickableLayer>
 
@@ -208,7 +223,17 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         className="hair-front-set"
       >
         <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined}>
-          <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
+          {pathOverride && pathOverride.layer === "front" ? (
+            <path
+              d={pathOverride.path}
+              fill={hairColor}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          ) : (
+            <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
+          )}
         </g>
       </ClickableLayer>
 
