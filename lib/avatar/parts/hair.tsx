@@ -646,7 +646,7 @@ const flatTopShortFront: PartComponent = ({ fill, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   return (
     <path
-      d={hasHat ? "M20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z" : "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z"}
+      d={hasHat ? "M20 25 Q50 -6 80 25 L80 38 L20 38 Z" : "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z"}
       fill={fill || "var(--avatar-hair, #000)"}
       stroke="currentColor"
       strokeWidth="2"

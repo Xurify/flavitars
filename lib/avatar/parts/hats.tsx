@@ -599,7 +599,7 @@ export const TopHat = createAvatarItem({
   id: "topHat",
   name: "Top Hat",
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+    <g transform={getHeadHatTransform(headId, hatId, 4, 1.1)}>
       <rect x="30" y="-15" width="40" height="30" fill="black" stroke="currentColor" strokeWidth="2.5" />
       <rect x="20" y="15" width="60" height="6" rx="2" fill="black" stroke="currentColor" strokeWidth="2.5" />
       {/* Ribbon - Controlled by Hat Color */}
