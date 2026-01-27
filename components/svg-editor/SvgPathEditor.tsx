@@ -131,9 +131,9 @@ export function SvgPathEditor() {
   }, [commands, activeProject?.commands, activeProject]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-        e.preventDefault();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        event.preventDefault();
         updateActiveProject(selectedHair, selectedHat, layer, commands);
         saveNow();
       }
@@ -226,12 +226,12 @@ export function SvgPathEditor() {
   }, [history, historyIndex]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
-        e.preventDefault();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+        event.preventDefault();
         undo();
-      } else if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "Z"))) {
-        e.preventDefault();
+      } else if ((event.ctrlKey || event.metaKey) && (event.key === "y" || (event.shiftKey && event.key === "Z"))) {
+        event.preventDefault();
         redo();
       }
     };
@@ -312,14 +312,14 @@ export function SvgPathEditor() {
   };
 
   useEffect(() => {
-    const handleWindowMouseMove = (e: MouseEvent) => {
+    const handleWindowMouseMove = (event: MouseEvent) => {
       if (isResizingBreakdown) {
-        const newWidth = window.innerWidth - e.clientX - (showHistory ? historyWidth : 0);
+        const newWidth = window.innerWidth - event.clientX - (showHistory ? historyWidth : 0);
         if (newWidth >= 280 && newWidth <= 800) {
           setBreakdownWidth(newWidth);
         }
       } else if (isResizingHistory) {
-        const newWidth = window.innerWidth - e.clientX;
+        const newWidth = window.innerWidth - event.clientX;
         if (newWidth >= 200 && newWidth <= 600) {
           setHistoryWidth(newWidth);
         }
@@ -589,7 +589,7 @@ export function SvgPathEditor() {
               <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hair Style</label>
               <select
                 value={selectedHair}
-                onChange={(e) => setSelectedHair(e.target.value as HairId)}
+                onChange={(event) => setSelectedHair(event.target.value as HairId)}
                 className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               >
                 {HairIds.map((id) => (
@@ -604,8 +604,8 @@ export function SvgPathEditor() {
               <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hat Overlay</label>
               <select
                 value={selectedHat}
-                onChange={(e) => {
-                  setSelectedHat(e.target.value as HatId);
+                onChange={(event) => {
+                  setSelectedHat(event.target.value as HatId);
                   // Reset variant override when hat changes to follow hat logic again
                   setUseHatVariant(null);
                 }}
@@ -648,7 +648,7 @@ export function SvgPathEditor() {
                   <input
                     type="checkbox"
                     checked={showGrid}
-                    onChange={(e) => setShowGrid(e.target.checked)}
+                    onChange={(event) => setShowGrid(event.target.checked)}
                     className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
                   />
                   <span className="text-sm">Show Grid</span>
@@ -657,7 +657,7 @@ export function SvgPathEditor() {
                   <input
                     type="checkbox"
                     checked={showNodes}
-                    onChange={(e) => setShowNodes(e.target.checked)}
+                    onChange={(event) => setShowNodes(event.target.checked)}
                     className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
                   />
                   <span className="text-sm">Show Nodes</span>
@@ -666,7 +666,7 @@ export function SvgPathEditor() {
                   <input
                     type="checkbox"
                     checked={showHat}
-                    onChange={(e) => setShowHat(e.target.checked)}
+                    onChange={(event) => setShowHat(event.target.checked)}
                     className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
                   />
                   <span className="text-sm">Show Hat</span>
@@ -676,7 +676,7 @@ export function SvgPathEditor() {
                     <input
                       type="checkbox"
                       checked={effectiveUseHatVariant}
-                      onChange={(e) => setUseHatVariant(e.target.checked)}
+                      onChange={(event) => setUseHatVariant(event.target.checked)}
                       className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
                     />
                     <div className="flex flex-col">
@@ -688,7 +688,7 @@ export function SvgPathEditor() {
                   <input
                     type="checkbox"
                     checked={showPreview}
-                    onChange={(e) => setShowPreview(e.target.checked)}
+                    onChange={(event) => setShowPreview(event.target.checked)}
                     className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
                   />
                   <span className="text-sm group-hover:text-zinc-100 transition-colors">Show Mini Preview</span>

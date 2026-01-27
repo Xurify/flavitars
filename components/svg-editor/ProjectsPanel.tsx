@@ -99,8 +99,8 @@ export function ProjectsPanel({
               <input
                 type="text"
                 value={newProjectName}
-                onChange={(e) => setNewProjectName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                onChange={(event) => setNewProjectName(event.target.value)}
+                onKeyDown={(event) => event.key === "Enter" && handleCreate()}
                 placeholder="Name your session..."
                 className="flex-1 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50"
               />
@@ -158,9 +158,9 @@ export function ProjectsPanel({
                           <input
                             type="text"
                             value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
+                            onChange={(event) => setEditingName(event.target.value)}
                             onBlur={handleConfirmRename}
-                            onKeyDown={(e) => e.key === "Enter" && handleConfirmRename()}
+                            onKeyDown={(event) => event.key === "Enter" && handleConfirmRename()}
                             autoFocus
                             className="w-full px-2 py-1 bg-zinc-800 border border-amber-500/50 rounded text-sm text-zinc-100 focus:outline-none"
                           />

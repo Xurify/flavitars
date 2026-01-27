@@ -50,31 +50,31 @@ export function AvatarCanvas({
 
   const viewBox = `${-VIEW_PADDING} ${-VIEW_PADDING} ${CANVAS_SIZE + VIEW_PADDING * 2} ${CANVAS_SIZE + VIEW_PADDING * 2}`;
 
-  const getSvgCoords = useCallback((e: React.MouseEvent): { x: number; y: number } => {
+  const getSvgCoords = useCallback((event: React.MouseEvent): { x: number; y: number } => {
     if (!svgRef.current) return { x: 0, y: 0 };
     const rect = svgRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
-    const y = ((e.clientY - rect.top) / rect.height) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
+    const x = ((event.clientX - rect.left) / rect.width) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
+    const y = ((event.clientY - rect.top) / rect.height) * (CANVAS_SIZE + VIEW_PADDING * 2) - VIEW_PADDING;
     return { x, y };
   }, []);
 
-  const handleMouseDown = (node: PathNode) => (e: React.MouseEvent) => {
+  const handleMouseDown = (node: PathNode) => (event: React.MouseEvent) => {
     if (editMode !== "node") return;
-    e.stopPropagation();
+    event.stopPropagation();
     setDragging(node);
     onNodeSelect(node.id);
   };
 
-  const handlePathMouseDown = (e: React.MouseEvent) => {
+  const handlePathMouseDown = (event: React.MouseEvent) => {
     if (editMode === "drag") {
-      e.stopPropagation();
-      const { x, y } = getSvgCoords(e);
+      event.stopPropagation();
+      const { x, y } = getSvgCoords(event);
       setIsPathDragging(true);
       setDragStartPos({ x, y });
       onNodeSelect(null);
     } else if (editMode === "split") {
-      e.stopPropagation();
-      const { x, y } = getSvgCoords(e);
+      event.stopPropagation();
+      const { x, y } = getSvgCoords(event);
       splitPathAt(x, y);
     }
   };
@@ -95,8 +95,8 @@ export function AvatarCanvas({
     onPathSplit(newCommands);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { x, y } = getSvgCoords(e);
+  const handleMouseMove = (event: React.MouseEvent) => {
+    const { x, y } = getSvgCoords(event);
 
     if (editMode === "node" && dragging) {
       onNodeDrag(dragging, x, y);
@@ -109,13 +109,13 @@ export function AvatarCanvas({
   };
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "Delete" || e.key === "Backspace") && selectedNodeId) {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === "Delete" || event.key === "Backspace") && selectedNodeId) {
         if (document.activeElement?.tagName === "INPUT") return;
 
         const node = nodes.find((n) => n.id === selectedNodeId);
         if (node) {
-          e.preventDefault();
+          event.preventDefault();
           onNodeDelete(node.commandIndex);
           onNodeSelect(null);
         }
@@ -138,9 +138,9 @@ export function AvatarCanvas({
     onNodeSelect(null);
   };
 
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.5 : 0.5;
+  const handleWheel = (event: React.WheelEvent) => {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -0.5 : 0.5;
     setScale((s) => Math.max(2, Math.min(8, s + delta)));
   };
 

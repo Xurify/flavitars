@@ -105,8 +105,8 @@ export function PathBreakdown({
 
                     {commands.length > 1 && (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
+                        onClick={(event) => {
+                          event.stopPropagation();
                           onDeleteCommand(idx);
                         }}
                         className="ml-auto p-1.5 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
@@ -141,10 +141,10 @@ export function PathBreakdown({
                               <input
                                 type="number"
                                 value={Math.round(value)}
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={(e) => {
+                                onClick={(event) => event.stopPropagation()}
+                                onChange={(event) => {
                                   const newParams = [...cmd.params];
-                                  newParams[paramIdx] = Number(e.target.value);
+                                  newParams[paramIdx] = Number(event.target.value);
                                   onCommandUpdate(idx, newParams);
                                 }}
                                 className="w-12 bg-transparent text-amber-400 font-bold text-right focus:outline-none focus:ring-1 focus:ring-amber-500/30 rounded px-1 transition-all hover:bg-zinc-700/50"
