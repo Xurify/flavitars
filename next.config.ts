@@ -56,6 +56,9 @@ const securityHeadersConfig = () => {
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  devIndicators: {
+    position: 'bottom-right',
+  },
   rewrites: async () => [
     {
       source: "/:id([a-zA-Z0-9_-]{1,128}).svg",
