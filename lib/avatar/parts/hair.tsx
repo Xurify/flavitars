@@ -124,12 +124,16 @@ const sweptFringeBack: PartComponent = ({ fill, hatId }) => {
 
 const singleTopKnotBack: PartComponent = () => null;
 
-const doubleSpaceBunsBack: PartComponent = ({ fill }) => (
-  <g>
-    <circle cx="15" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-    <circle cx="85" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-  </g>
-);
+const doubleSpaceBunsBack: PartComponent = ({ fill, hatId }) => {
+  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
+  if (hasHat) return null;
+  return (
+    <g>
+      <circle cx="15" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <circle cx="85" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+    </g>
+  );
+};
 
 const sidePartShortBack: PartComponent = () => null;
 
@@ -469,20 +473,7 @@ const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   );
 };
 
-const largeAfroFront: PartComponent = ({ hatId }) => {
-  const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  // Afro Front is typically volume. Only render if NO HAT.
-  if (hasHat) return null;
-
-  return null; // Original was null?
-  // Wait, if original was null, does Afro have a front?
-  // Checking original file... line 435 said "const largeAfroFront: PartComponent = () => null;"
-  // So Afro is all Back?
-  // If so, I need to check largeAfroBack again.
-  // largeAfroBack was handled in lines 87-95.
-  // It effectively disappears if hat.
-  // So largeAfro is fine.
-};
+const largeAfroFront: PartComponent = () => null;
 
 const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
@@ -511,9 +502,17 @@ const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
 
 const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  // If hat, render nothing (fully hidden) or just base?
-  // Base is effectively messy fringe.
-  if (hasHat) return null; // Assuming hat covers it completely.
+
+  if (hasHat) {
+    return (
+      <path
+        d="M14 28 Q 50 18, 86 28 L 86 36 Q 50 26, 14 36 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    );
+  }
 
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -530,7 +529,17 @@ const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
 
 const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  if (hasHat) return null; // Buns hidden
+
+  if (hasHat) {
+    return (
+      <path
+        d="M14 28 Q 50 18, 86 28 L 86 36 Q 50 28, 14 36 Z"
+        fill={fill || "var(--avatar-hair, #000)"}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    );
+  }
 
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -588,13 +597,6 @@ const bowlCutRoundFront: PartComponent = ({ fill }) => {
 
 const messySideSweptFront: PartComponent = ({ fill, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  if (hasHat) return null; // Hidden by hat logic in Back component (merged above) or duplicate?
-  // Wait, I edited EXTENSIVELY above.
-  // The 'messySideSweptBack' editing in previous chunk actually targeted line 398 which is 'messySideSweptBack'.
-  // This chunk targets 'messySideSweptFront' at 516.
-  // Since I merged them in my previous chunk thinking it was Front (my bad), I should be careful.
-  // Actually, messySideSwept HAS both Front and Back components.
-  // Use simple flattened path for Front.
   return (
     <path
       d={

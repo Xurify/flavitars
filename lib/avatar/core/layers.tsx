@@ -53,8 +53,8 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
         </g>
       </g>
 
-      {/* LAYER 4: Front Hair - clipped by hat zone to prevent overflow */}
-      <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined} className="hair-front-set">
+      {/* LAYER 4: Front Hair - hat z-ordering (layer 6) covers overlap naturally */}
+      <g className="hair-front-set">
         <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
 

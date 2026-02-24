@@ -1,7 +1,7 @@
 import React from "react";
 import { getHeadHatTransform } from "../parts";
 import { HeadId, HEAD_PATHS } from "../parts/head";
-import { HatId } from "../parts/hats";
+import { HatId, getHatClipZone } from "../parts/hats";
 
 export const AVATAR_FILTER_PREFIX = "avatar-filter";
 
@@ -13,6 +13,9 @@ interface AvatarFiltersProps {
 }
 
 export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId, hatId }) => {
+  const clipZone = getHatClipZone(hatId);
+  const shouldClipHair = hatId && hatId !== "none" && clipZone.hidesHair && !!clipZone.clipPath;
+
   return (
     <defs>
       {/* STYLE 1: CRUNCHY NOISE */}
@@ -82,6 +85,13 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
         <rect x="0" y="0" width="100" height="100" fill="black" />
         <circle cx="50" cy="15" r="41" fill="white" transform={getHeadHatTransform(headId, hatId, 35, 1)} />
       </mask>
+
+      {shouldClipHair && (
+        <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse" x="-50" y="-50" width="200" height="200">
+          <rect x="-50" y="-50" width="200" height="200" fill="white" />
+          <path d={clipZone.clipPath} fill="black" />
+        </mask>
+      )}
     </defs>
   );
 };
