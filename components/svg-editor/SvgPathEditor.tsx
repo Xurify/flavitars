@@ -112,6 +112,11 @@ export function SvgPathEditor() {
   }, [selectedHair, layer, effectiveUseHatVariant]);
 
   const [commands, setCommands] = useState<PathCommand[]>(() => parsePath(rawPathData).commands);
+  const commandsRef = useRef<PathCommand[]>(commands);
+
+  useEffect(() => {
+    commandsRef.current = commands;
+  }, [commands]);
 
   const hasCreatedInitialProject = useRef(false);
   useEffect(() => {
@@ -244,13 +249,13 @@ export function SvgPathEditor() {
 
   const pathString = useMemo(() => serializePath(commands), [commands]);
 
-  const handleNodeDrag = (node: PathNode, newX: number, newY: number) => {
-    const updated = updateNodePosition(commands, node, Math.round(newX), Math.round(newY));
+  const handleNodeDrag = useCallback((node: PathNode, newX: number, newY: number) => {
+    const updated = updateNodePosition(commandsRef.current, node, Math.round(newX), Math.round(newY));
     setCommands(updated);
-  };
+  }, []);
 
-  const handlePathDrag = (deltaX: number, deltaY: number) => {
-    const updated = commands.map((cmd) => {
+  const handlePathDrag = useCallback((deltaX: number, deltaY: number) => {
+    const updated = commandsRef.current.map((cmd) => {
       const type = cmd.type;
       const upperType = type.toUpperCase();
       const isRelative = type === type.toLowerCase() && type !== "Z" && type !== "z";
@@ -287,12 +292,13 @@ export function SvgPathEditor() {
       return { ...cmd, params: newParams };
     });
     setCommands(updated);
-  };
+  }, []);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     const label = editMode === "drag" ? "Re-position Path" : "Drag Node";
-    pushToHistory(commands, label);
-  };
+    pushToHistory(commandsRef.current, label);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editMode]);
 
   const handleCommandUpdate = (index: number, params: number[]) => {
     const updated = [...commands];
@@ -456,6 +462,7 @@ export function SvgPathEditor() {
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
             <CodeExport
               pathString={pathString}
+              originalPathString={rawPathData}
               hairId={selectedHair}
               layer={layer}
               hatId={effectiveUseHatVariant ? "topHat" : "none"}

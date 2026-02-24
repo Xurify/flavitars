@@ -218,7 +218,7 @@ export function AvatarCanvas({
         )}
 
         {showHat && selectedHat !== "none" && (
-          <g opacity="0.4">
+          <g opacity="0.4" pointerEvents="none">
             <HatPreview hatId={selectedHat} />
           </g>
         )}

@@ -1,23 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { HairId } from "@/lib/avatar/parts/hair";
 import { HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CodeIcon, ClipboardIcon, CheckIcon } from "lucide-react";
+import { parsePath, serializePath } from "@/lib/svg-editor/path-parser";
 
 interface CodeExportProps {
   pathString: string;
+  originalPathString: string;
   hairId: HairId;
   layer: "front" | "back";
   hatId: HatId;
 }
 
-export function CodeExport({ pathString, hairId, layer, hatId }: CodeExportProps): React.JSX.Element {
+export function CodeExport({ pathString, originalPathString, hairId, layer, hatId }: CodeExportProps): React.JSX.Element {
   const [copied, setCopied] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const isWearingAHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
+
+  const normalizedOriginal = useMemo(
+    () => serializePath(parsePath(originalPathString).commands),
+    [originalPathString],
+  );
+  const isModified = pathString !== normalizedOriginal;
   const componentName = `${hairId}${layer === "front" ? "Front" : "Back"}`;
 
   const code = isWearingAHat
@@ -144,10 +152,25 @@ export function CodeExport({ pathString, hairId, layer, hatId }: CodeExportProps
             </pre>
           </div>
 
-          <div className="mt-4">
-            <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Raw Path String</label>
-            <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3">
-              <code className="text-xs text-zinc-400 break-all font-mono">{pathString}</code>
+          <div className="mt-4 flex flex-col gap-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Original Path</label>
+              <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-20 overflow-y-auto">
+                <code className="text-xs text-zinc-500 break-all font-mono">{normalizedOriginal || "—"}</code>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
+                Edited Path
+                {isModified && (
+                  <span className="ml-2 text-amber-500 normal-case tracking-normal">modified</span>
+                )}
+              </label>
+              <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-20 overflow-y-auto">
+                <code className={`text-xs break-all font-mono ${isModified ? "text-amber-400/80" : "text-zinc-500"}`}>
+                  {pathString}
+                </code>
+              </div>
             </div>
           </div>
         </div>

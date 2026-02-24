@@ -488,8 +488,6 @@ const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
 
   if (hasHat) {
-    // Hat variant: Smaller bangs peeking out from under the hat front edge
-    // These are lower and smaller than the no-hat version
     return (
       <path
         d="M22 32 Q 40 26, 65 30 L 60 42 Q 40 35, 28 52 L 22 40 Z"
