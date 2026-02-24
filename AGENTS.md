@@ -16,3 +16,10 @@ Next.js 16 with React 19 and App Router. Standard structure: `app/` (routes), `c
 - **Validation**: Zod for schemas
 - **State**: nuqs for URL search params
 - **Errors**: Avoid unescaped entities in JSX
+
+## Cursor Cloud specific instructions
+
+- **Bun runtime**: Bun is not pre-installed on cloud VMs. The update script handles installation via `curl -fsSL https://bun.sh/install | bash`. After install, Bun is at `~/.bun/bin/bun`; ensure `PATH` includes `$HOME/.bun/bin`.
+- **Build command gotcha**: `bun build` invokes Bun's bundler (not Next.js). Use `bun run build` to run the Next.js build.
+- **No external services**: The app is fully self-contained — no databases, Docker, env vars, or API keys needed. `bun install && bun run dev` is sufficient.
+- **Dev server**: Runs on `http://localhost:3000`. Avatar API is at `/api/avatar/[id]` (returns SVG).
