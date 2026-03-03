@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useTransition } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import Link from "next/link";
@@ -63,11 +63,16 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
   }, [avatarState]);
 
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
+  const [deferredCategory, setDeferredCategory] = useState<AvatarCategory>("head");
+  const [isCategoryPending, startCategoryTransition] = useTransition();
   const previewRef = useRef<HTMLDivElement>(null);
   const controlsContainerRef = useRef<HTMLDivElement>(null);
 
   const handleCategoryChange = (id: string) => {
     setActiveCategory(id as AvatarCategory);
+    startCategoryTransition(() => {
+      setDeferredCategory(id as AvatarCategory);
+    });
     if (controlsContainerRef.current) {
       controlsContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -187,7 +192,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     }
   };
 
-  const currentCategory = CATEGORIES.find((category) => category.id === activeCategory)!;
+  const currentCategory = CATEGORIES.find((category) => category.id === deferredCategory)!;
   const currentId = avatarState[currentCategory.stateKey] as string;
   const previewFill = HAIR_COLORS.find((accent) => accent.id === avatarState.hairColor)?.color || HAIR_COLORS[0].color;
 
@@ -247,6 +252,10 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
                 </span>
               </div>
 
+              <div
+                className="transition-opacity duration-150"
+                style={{ opacity: isCategoryPending ? 0.6 : 1 }}
+              >
               <ItemGrid
                 items={currentCategory.items}
                 backItems={currentCategory.backItems}
@@ -266,6 +275,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
                 categoryId={currentCategory.id}
                 headId={avatarState.head}
               />
+              </div>
 
               <div className="lg:hidden mt-8 space-y-6 bg-card/30 p-4 border-2 border-border/50 rounded-lg">
                 <h3 className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-2">Configure Colors</h3>
