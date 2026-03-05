@@ -1,11 +1,14 @@
-import { HairId } from "@/lib/avatar/parts/hair";
-import { SMALL_HATS, HatId } from "@/lib/avatar/parts/hats";
+import type { HairId } from "./hair-ids";
+import { SMALL_HATS, type HatId } from "./hats";
 
-type PathVariant = string | { noHat: string; hat: string };
+export type HairLayer = "front" | "back";
 
-// Map of hair styles to their path data
-// Format: { [hairId]: { front: PathVariant, back: PathVariant } }
-const HAIR_PATHS: Record<HairId, { front: PathVariant; back: PathVariant }> = {
+type HairPathSingle = string;
+type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
+
+type HairPathEntry = { front: HairPathVariant; back: HairPathVariant };
+
+export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   bald: { front: "", back: "" },
   buzzCut: {
     front: "M20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z",
@@ -94,7 +97,7 @@ const HAIR_PATHS: Record<HairId, { front: PathVariant; back: PathVariant }> = {
   sweptFringe: {
     front: {
       noHat: "M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
-      hat: "M22 32 Q 40 26, 65 30 L 60 42 Q 40 35, 28 52 L 22 40 Z",
+      hat: "M20.25 25.7 Q38.25 19.7 63.25 23.7 L58.25 35.7 Q38.25 28.7 26.25 45.7 L20.25 33.7 Z",
     },
     back: {
       noHat: "M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
@@ -143,11 +146,11 @@ const HAIR_PATHS: Record<HairId, { front: PathVariant; back: PathVariant }> = {
   },
 };
 
-export function getHairPathData(hairId: HairId, layer: "front" | "back", hatId: HatId = "none"): string {
+export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId = "none"): string {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return "";
 
-  const variant = layer === "front" ? paths.front : paths.back;
+  const variant: HairPathVariant = layer === "front" ? paths.front : paths.back;
 
   if (typeof variant === "string") {
     return variant;
@@ -157,10 +160,10 @@ export function getHairPathData(hairId: HairId, layer: "front" | "back", hatId: 
   return hasPhysicalHat ? variant.hat : variant.noHat;
 }
 
-export function hasHairVariants(hairId: HairId, layer: "front" | "back"): boolean {
+export function hasHairVariants(hairId: HairId, layer: HairLayer): boolean {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return false;
-  const variant = layer === "front" ? paths.front : paths.back;
+  const variant: HairPathVariant = layer === "front" ? paths.front : paths.back;
   return typeof variant !== "string";
 }
 

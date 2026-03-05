@@ -3,10 +3,10 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { HairIds, HairId } from "@/lib/avatar/parts/hair";
+import { HairIds, HairId } from "@/lib/avatar/parts/hair-ids";
 import { HatIds, HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
 import { parsePath, serializePath, extractNodes, updateNodePosition, PathCommand, PathNode } from "@/lib/svg-editor/path-parser";
-import { getHairPathData, hasHairVariants } from "./hair-data";
+import { getHairPathData, hasHairVariants } from "@/lib/avatar/parts/hair-paths";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
