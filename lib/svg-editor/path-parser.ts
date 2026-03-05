@@ -80,6 +80,11 @@ export function serializePath(commands: PathCommand[]): string {
     .join(' ');
 }
 
+export function commandsEqual(a: PathCommand[], b: PathCommand[]): boolean {
+  if (a.length !== b.length) return false;
+  return serializePath(a) === serializePath(b);
+}
+
 export interface PathNode {
   id: string;
   commandIndex: number;

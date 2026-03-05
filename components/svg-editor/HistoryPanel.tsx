@@ -17,12 +17,17 @@ interface HistoryPanelProps {
 }
 
 export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelProps) {
+  const canUndo = history.length > 0 && currentIndex > 0;
+  const canRedo = history.length > 0 && currentIndex < history.length - 1;
+
   return (
     <div className="flex flex-col h-full bg-zinc-900/30 border-l border-zinc-800">
       <div className="p-4 border-b border-zinc-800">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider">History</h2>
-          <span className="text-xs font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">{history.length} steps</span>
+          <span className="text-xs font-bold text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">
+            {history.length} steps
+          </span>
         </div>
         <p className="text-xs text-zinc-500 mt-1">Jump to any previous state</p>
       </div>
@@ -43,7 +48,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
             <p className="text-sm text-zinc-500 italic">No history yet</p>
           </div>
         ) : (
-          <div className="flex flex-col-reverse">
+          <div className="flex flex-col-reverse" style={{ contain: "layout" }}>
             {history.map((entry, idx) => {
               const isCurrent = idx === currentIndex;
               const isFuture = idx > currentIndex;
@@ -52,16 +57,17 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
                 <button
                   key={entry.id}
                   onClick={() => onRevert(idx)}
-                  className={`flex items-center gap-3 p-4 text-left transition-all border-l-2 hover:bg-zinc-800/40 ${
+                  className={`flex items-center gap-3 p-4 text-left border-l-2 hover:bg-zinc-800/40 ${
                     isCurrent
                       ? "bg-amber-500/10 border-amber-500"
                       : isFuture
                         ? "border-transparent opacity-40 grayscale"
                         : "border-transparent text-zinc-400 group"
                   }`}
+                  style={{ contain: "layout paint" }}
                 >
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                       isCurrent ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-500"
                     }`}
                   >
@@ -82,7 +88,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
                     </p>
                   </div>
 
-                  {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />}
+                  {isCurrent && <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />}
                 </button>
               );
             })}
@@ -92,7 +98,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
 
       <div className="p-4 border-t border-zinc-800 bg-zinc-900/50">
         <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1">
+          <div className={`flex flex-col gap-1 ${canUndo ? "" : "opacity-50"}`}>
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Undo</span>
             <div className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">
@@ -104,7 +110,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
               </kbd>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className={`flex flex-col gap-1 ${canRedo ? "" : "opacity-50"}`}>
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Redo</span>
             <div className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-400 font-sans shadow-sm">

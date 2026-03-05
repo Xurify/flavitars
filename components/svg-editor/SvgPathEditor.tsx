@@ -5,7 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { HairIds, HairId } from "@/lib/avatar/parts/hair-ids";
 import { HatIds, HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
-import { parsePath, serializePath, extractNodes, updateNodePosition, PathCommand, PathNode } from "@/lib/svg-editor/path-parser";
+import {
+  parsePath,
+  serializePath,
+  commandsEqual,
+  extractNodes,
+  updateNodePosition,
+  PathCommand,
+  PathNode,
+} from "@/lib/svg-editor/path-parser";
 import { getHairPathData, hasHairVariants } from "@/lib/avatar/parts/hair-paths";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
@@ -17,6 +25,8 @@ import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
+
+const MAX_HISTORY = 100;
 
 interface HistoryEntry {
   id: string;
@@ -128,8 +138,20 @@ export function SvgPathEditor() {
     }
   }, [hasLoaded, projects.length, selectedHair, selectedHat, layer, rawPathData, createProject, formatLabel]);
 
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [historyState, setHistoryState] = useState<{ history: HistoryEntry[]; index: number }>({
+    history: [],
+    index: -1,
+  });
+  const historyRef = useRef<HistoryEntry[]>([]);
+  const historyIndexRef = useRef(-1);
+
+  const history = historyState.history;
+  const historyIndex = historyState.index;
+
+  useEffect(() => {
+    historyRef.current = history;
+    historyIndexRef.current = historyIndex;
+  }, [history, historyIndex]);
 
   const isDirty = useMemo(() => {
     if (!activeProject) return false;
@@ -179,8 +201,7 @@ export function SvgPathEditor() {
           : activeProject.commands,
         label: hasUrlHair ? `Initial ${urlParams.get("hair")} (front)` : `Loaded ${activeProject.name}`,
       };
-      setHistory([initialEntry]);
-      setHistoryIndex(0);
+      setHistoryState({ history: [initialEntry], index: 0 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProject?.id, hasLoaded]);
@@ -194,42 +215,52 @@ export function SvgPathEditor() {
       commands: initialCommands,
       label: `Initial ${selectedHair} (${layer})`,
     };
-    setHistory([initialEntry]);
-    setHistoryIndex(0);
+    setHistoryState({ history: [initialEntry], index: 0 });
     setSelectedNodeId(null);
   }, [rawPathData, selectedHair, layer]);
 
-  const pushToHistory = (newCommands: PathCommand[], label: string) => {
+  const pushToHistory = useCallback((newCommands: PathCommand[], label: string) => {
+    const currentHistory = historyRef.current;
+    const currentIndex = historyIndexRef.current;
+    const headCommands = currentHistory[currentIndex]?.commands;
+    if (headCommands && commandsEqual(newCommands, headCommands)) return;
     const newEntry: HistoryEntry = {
       id: Math.random().toString(36).substr(2, 9),
       timestamp: Date.now(),
       commands: newCommands,
       label,
     };
-
-    const newHistory = [...history.slice(0, historyIndex + 1), newEntry];
-    if (newHistory.length > 50) newHistory.shift();
-
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
+    const redoBranchDiscarded = currentHistory.slice(0, currentIndex + 1);
+    const newHistory = [...redoBranchDiscarded, newEntry];
+    if (newHistory.length > MAX_HISTORY) newHistory.shift();
+    const nextIndex = newHistory.length - 1;
+    historyRef.current = newHistory;
+    historyIndexRef.current = nextIndex;
+    setHistoryState({ history: newHistory, index: nextIndex });
     setCommands(newCommands);
-  };
+  }, []);
 
   const undo = useCallback(() => {
-    if (historyIndex > 0) {
-      const prevIndex = historyIndex - 1;
-      setHistoryIndex(prevIndex);
-      setCommands(history[prevIndex].commands);
+    const currentHistory = historyRef.current;
+    const currentIndex = historyIndexRef.current;
+    if (currentIndex > 0) {
+      const prevIndex = currentIndex - 1;
+      historyIndexRef.current = prevIndex;
+      setHistoryState((prev) => ({ ...prev, index: prevIndex }));
+      setCommands(currentHistory[prevIndex].commands);
     }
-  }, [history, historyIndex]);
+  }, []);
 
   const redo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const nextIndex = historyIndex + 1;
-      setHistoryIndex(nextIndex);
-      setCommands(history[nextIndex].commands);
+    const currentHistory = historyRef.current;
+    const currentIndex = historyIndexRef.current;
+    if (currentIndex < currentHistory.length - 1) {
+      const nextIndex = currentIndex + 1;
+      historyIndexRef.current = nextIndex;
+      setHistoryState((prev) => ({ ...prev, index: nextIndex }));
+      setCommands(currentHistory[nextIndex].commands);
     }
-  }, [history, historyIndex]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -244,7 +275,7 @@ export function SvgPathEditor() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [historyIndex, history, redo, undo]);
+  }, [undo, redo]);
 
   const nodes = useMemo(() => extractNodes(commands), [commands]);
 
@@ -443,21 +474,21 @@ export function SvgPathEditor() {
               updateActiveProject(selectedHair, selectedHat, layer, commands);
               saveNow();
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all border shrink-0 ${
               isDirty
                 ? "bg-amber-500 hover:bg-amber-400 text-zinc-900 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-[1.02]"
                 : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700 grayscale-[0.5]"
             }`}
             title={isDirty ? "Save Unsaved Changes (Ctrl+S)" : "All Changes Saved"}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
               />
             </svg>
-            {isDirty ? "Save" : "Saved"}
+            <span className="inline-block min-w-14 text-left">{isDirty ? "Save" : "Saved"}</span>
           </button>
 
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
@@ -593,59 +624,59 @@ export function SvgPathEditor() {
               </div>
             </div>
 
-            <div className="p-4 border-b border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hair Style</label>
-              <select
-                value={selectedHair}
-                onChange={(event) => setSelectedHair(event.target.value as HairId)}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-              >
-                {HairIds.map((id) => (
-                  <option key={id} value={id}>
-                    {formatLabel(id)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="p-4 border-b border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Hat Overlay</label>
-              <select
-                value={selectedHat}
-                onChange={(event) => {
-                  setSelectedHat(event.target.value as HatId);
-                  // Reset variant override when hat changes to follow hat logic again
-                  setUseHatVariant(null);
-                }}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-              >
-                {HatIds.map((id) => (
-                  <option key={id} value={id}>
-                    {id === "none" ? "No Hat" : formatLabel(id)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="p-4 border-b border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Layer</label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setLayer("front")}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    layer === "front" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                  }`}
+            <div className="p-4 border-b border-zinc-800 space-y-3">
+              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Part</label>
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Hair Style</label>
+                <select
+                  value={selectedHair}
+                  onChange={(event) => setSelectedHair(event.target.value as HairId)}
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 >
-                  Front
-                </button>
-                <button
-                  onClick={() => setLayer("back")}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    layer === "back" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                  }`}
+                  {HairIds.map((id) => (
+                    <option key={id} value={id}>
+                      {formatLabel(id)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Hat Overlay</label>
+                <select
+                  value={selectedHat}
+                  onChange={(event) => {
+                    setSelectedHat(event.target.value as HatId);
+                    setUseHatVariant(null);
+                  }}
+                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 >
-                  Back
-                </button>
+                  {HatIds.map((id) => (
+                    <option key={id} value={id}>
+                      {id === "none" ? "No Hat" : formatLabel(id)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Layer</label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setLayer("front")}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      layer === "front" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    }`}
+                  >
+                    Front
+                  </button>
+                  <button
+                    onClick={() => setLayer("back")}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      layer === "back" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    }`}
+                  >
+                    Back
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -703,13 +734,6 @@ export function SvgPathEditor() {
                 </label>
               </div>
             </div>
-
-            {selectedNodeId && (
-              <div className="p-4 border-b border-zinc-800 bg-amber-500/5 transition-all animate-in fade-in slide-in-from-left-2">
-                <label className="block text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">Selected Node</label>
-                <p className="text-sm font-mono text-zinc-200">{nodes.find((n) => n.id === selectedNodeId)?.label}</p>
-              </div>
-            )}
 
             {showPreview && (
               <div className="mt-auto p-4 border-t border-zinc-800 bg-zinc-900/50 flex flex-col gap-3">
@@ -834,7 +858,8 @@ export function SvgPathEditor() {
                   history={history}
                   currentIndex={historyIndex}
                   onRevert={(index) => {
-                    setHistoryIndex(index);
+                    historyIndexRef.current = index;
+                    setHistoryState((prev) => ({ ...prev, index }));
                     setCommands(history[index].commands);
                   }}
                 />
@@ -886,8 +911,7 @@ export function SvgPathEditor() {
               commands: initialCommands,
               label: `New Draft: ${selectedHair} (${layer})`,
             };
-            setHistory([initialEntry]);
-            setHistoryIndex(0);
+            setHistoryState({ history: [initialEntry], index: 0 });
             setShowProjectsPanel(false);
           }}
           onClose={() => setShowProjectsPanel(false)}

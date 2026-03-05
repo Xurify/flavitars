@@ -149,10 +149,18 @@ export function AvatarCanvas({
     setScale((s) => Math.max(2, Math.min(8, s + delta)));
   };
 
+  const selectedNodeLabel = selectedNodeId ? nodes.find((n) => n.id === selectedNodeId)?.label : null;
+
   return (
     <div className="flex-1 flex items-center justify-center bg-zinc-950 relative overflow-hidden">
-      <div className="absolute top-4 left-4 px-3 py-1.5 bg-zinc-800/80 rounded-lg text-xs font-mono text-zinc-400">
-        {scale.toFixed(1)}x
+      <div className="absolute top-4 left-4 flex items-center gap-2">
+        <div className="px-3 py-1.5 bg-zinc-800/80 rounded-lg text-xs font-mono text-zinc-400">
+          {scale.toFixed(1)}x
+        </div>
+        <div className="px-3 py-1.5 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center gap-2 min-w-32">
+          <span className="text-xs font-medium text-amber-500 uppercase tracking-wider shrink-0">Node</span>
+          <span className="text-xs font-mono text-zinc-300 truncate">{selectedNodeLabel ?? "—"}</span>
+        </div>
       </div>
 
       <div className="absolute top-4 right-4 flex gap-2">
