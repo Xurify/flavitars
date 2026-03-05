@@ -674,7 +674,7 @@ export const StrawHat = createAvatarItem({
   tags: ["khaki", "brown", "black"],
   config: { clippingY: 20 },
   svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 6, 1.15)}>
+    <g transform={getHeadHatTransform(headId, hatId, -10, 1.15)}>
       <path d="M30 15 Q 50 -5, 70 15 L 75 30 Q 50 25, 25 30 Z" fill="#FDE68A" stroke="currentColor" strokeWidth="2" />
       <path d="M10 30 Q 50 20, 90 30 Q 95 40, 50 40 Q 5 40, 10 30" fill="#FDE68A" stroke="currentColor" strokeWidth="2" />
       <path d="M30 22 Q 50 18, 70 22" fill={fill || "#B91C1C"} stroke="black" opacity="0.1" strokeWidth="1" />
