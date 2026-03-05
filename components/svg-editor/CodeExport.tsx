@@ -11,7 +11,7 @@ interface CodeExportProps {
   pathString: string;
   originalPathString: string;
   hairId: HairId;
-  layer: "front" | "back";
+  layer: "front" | "back" | "highlight";
   hatId: HatId;
 }
 

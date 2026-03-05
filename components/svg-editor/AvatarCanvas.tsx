@@ -23,6 +23,8 @@ interface AvatarCanvasProps {
   onDragEnd?: () => void;
   commands: PathCommand[];
   editMode: "node" | "drag" | "split";
+  highlightPath?: string;
+  currentLayer?: string;
 }
 
 const CANVAS_SIZE = 100;
@@ -46,6 +48,8 @@ export function AvatarCanvas({
   onDragEnd,
   commands,
   editMode,
+  highlightPath,
+  currentLayer,
 }: AvatarCanvasProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dragging, setDragging] = useState<PathNode | null>(null);
@@ -221,12 +225,24 @@ export function AvatarCanvas({
         {pathString && (
           <path
             d={pathString}
-            fill="#4a4a4a"
-            stroke={editMode === "drag" ? "#f59e0b" : "#a1a1aa"}
+            fill={currentLayer === "highlight" ? "#FDE68A" : "#4a4a4a"}
+            stroke={editMode === "drag" ? "#f59e0b" : currentLayer === "highlight" ? "#b45309" : "#a1a1aa"}
             strokeWidth={editMode === "drag" ? "2" : "1.5"}
             opacity="0.9"
             className={editMode === "drag" ? "cursor-move" : ""}
             onMouseDown={handlePathMouseDown}
+          />
+        )}
+
+        {highlightPath && currentLayer !== "highlight" && (
+          <path
+            d={highlightPath}
+            fill="#FDE68A"
+            stroke="#b45309"
+            strokeWidth="1"
+            opacity="0.4"
+            pointerEvents="none"
+            strokeDasharray="2 2"
           />
         )}
 

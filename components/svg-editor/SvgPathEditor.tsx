@@ -14,7 +14,7 @@ import {
   PathCommand,
   PathNode,
 } from "@/lib/svg-editor/path-parser";
-import { getHairPathData, hasHairVariants } from "@/lib/avatar/parts/hair-paths";
+import { getHairPathData, hasHairVariants, hasHairHighlight, getHairHighlightPath } from "@/lib/avatar/parts/hair-paths";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
@@ -48,7 +48,7 @@ export function SvgPathEditor() {
 
   const [selectedHair, setSelectedHair] = useState<HairId>(() => avatarState.hair);
   const [selectedHat, setSelectedHat] = useState<HatId>(() => avatarState.hat);
-  const [layer, setLayer] = useState<"front" | "back">("front");
+  const [layer, setLayer] = useState<"front" | "back" | "highlight">("front");
   const [showGrid, setShowGrid] = useState(true);
   const [showNodes, setShowNodes] = useState(true);
   const [showHat, setShowHat] = useState(true);
@@ -110,11 +110,13 @@ export function SvgPathEditor() {
   }, [lastSavedAt, wasManualSave]);
 
   const hasVariants = useMemo(() => hasHairVariants(selectedHair, layer), [selectedHair, layer]);
+  const hasHighlight = useMemo(() => hasHairHighlight(selectedHair), [selectedHair]);
 
   const effectiveUseHatVariant = useMemo(() => {
+    if (layer === "highlight") return false;
     if (useHatVariant !== null) return useHatVariant;
     return selectedHat !== "none" && !SMALL_HATS.includes(selectedHat);
-  }, [useHatVariant, selectedHat]);
+  }, [useHatVariant, selectedHat, layer]);
 
   const rawPathData = useMemo(() => {
     // Pass a known "physical" hat ID if we want the hat variant
@@ -282,6 +284,8 @@ export function SvgPathEditor() {
   const nodes = useMemo(() => extractNodes(commands), [commands]);
 
   const pathString = useMemo(() => serializePath(commands), [commands]);
+
+  const highlightPathString = useMemo(() => getHairHighlightPath(selectedHair), [selectedHair]);
 
   const handleNodeDrag = useCallback((node: PathNode, newX: number, newY: number) => {
     const updated = updateNodePosition(commandsRef.current, node, Math.round(newX), Math.round(newY));
@@ -661,7 +665,7 @@ export function SvgPathEditor() {
               </div>
               <div>
                 <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Layer</label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={() => setLayer("front")}
                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -678,6 +682,19 @@ export function SvgPathEditor() {
                   >
                     Back
                   </button>
+                  {hasHighlight && (
+                    <button
+                      onClick={() => setLayer("highlight")}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        layer === "highlight"
+                          ? "bg-yellow-400 text-zinc-900"
+                          : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                      }`}
+                      title="Edit the highlight accent path"
+                    >
+                      Highlight
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -823,6 +840,8 @@ export function SvgPathEditor() {
               onDragEnd={handleDragEnd}
               commands={commands}
               editMode={editMode}
+              highlightPath={highlightPathString}
+              currentLayer={layer}
             />
           </div>
 
@@ -903,7 +922,7 @@ export function SvgPathEditor() {
             }
             closeProject();
             // Reset state to current hair's default
-            const pathData = getHairPathData(selectedHair, layer);
+            const pathData = getHairPathData(selectedHair, layer, "none");
             const initialCommands = parsePath(pathData).commands;
             setCommands(initialCommands);
 

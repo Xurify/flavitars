@@ -12,7 +12,7 @@ export interface Project {
   updatedAt: number;
   selectedHair: HairId;
   selectedHat: HatId;
-  layer: "front" | "back";
+  layer: "front" | "back" | "highlight";
   commands: PathCommand[];
 }
 
@@ -107,7 +107,7 @@ export function useProjectsPersistence() {
       name: string,
       selectedHair: HairId,
       selectedHat: HatId,
-      layer: "front" | "back",
+      layer: "front" | "back" | "highlight",
       commands: PathCommand[]
     ): Project => {
       const newProject: Project = {
@@ -137,7 +137,7 @@ export function useProjectsPersistence() {
   );
 
   const updateActiveProject = useCallback(
-    (selectedHair: HairId, selectedHat: HatId, layer: "front" | "back", commands: PathCommand[]) => {
+    (selectedHair: HairId, selectedHat: HatId, layer: "front" | "back" | "highlight", commands: PathCommand[]) => {
       const currentStore = storeRef.current;
       if (!currentStore.activeProjectId) return;
 

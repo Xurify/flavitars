@@ -1,12 +1,13 @@
 import type { HairId } from "./hair-ids";
 import { SMALL_HATS, type HatId } from "./hats";
 
-export type HairLayer = "front" | "back";
+export type HairLayer = "front" | "back" | "highlight";
 
 type HairPathSingle = string;
 type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
 
-type HairPathEntry = { front: HairPathVariant; back: HairPathVariant };
+type HighlightVariant = string | { noHat: string; hat: string };
+type HairPathEntry = { front: HairPathVariant; back: HairPathVariant; highlight?: HighlightVariant };
 
 export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   bald: {
@@ -55,8 +56,18 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "M 10 20 C -10 40, -5 80, 15 95 L 30 88 L 50 95 L 70 88 L 85 95 C 110 80, 105 40, 90 20 Z",
   },
   sharpBobYellowHighlight: {
-    front: "M 16 15 Q 10 50, 16 95 L 24 95 Q 18 50, 22 15 Z M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z",
-    back: "M 15 25 L 5 45 Q 8 75, 12 95 L 88 95 Q 92 75, 95 45 L 85 25 Z",
+    front: {
+      noHat: "M 12 15 L 16 15 Q 10 50, 16 95 L 24 95 Q 18 50, 22 15 Z M 12 15 Q 50 2, 90 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z",
+      hat:  "M 22 26 Q 10 50, 16 95 L 24 95 Q 18 50, 33 23 Z M 25 22 Q 50 2, 76 17 L 82 35 L 68 22 L 50 35 L 25 23 L 18 35 Z",
+    },
+    back: {
+      noHat: "M 15 25 L 5 45 Q 8 75, 12 95 L 88 95 Q 92 75, 95 45 L 85 25 Z",
+      hat: "M 22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z",
+    },
+    highlight: {
+      noHat: "M 16 15 Q 10 50, 16 95 L 24 95 Q 18 50, 22 15 Z",
+      hat: "M 22 26 Q 10 50, 16 95 L 24 95 Q 18 50, 26 26 Z",
+    },
   },
   shortCurlyBob: {
     front: "M 15 28 C 22 8, 45 5, 50 15 C 55 5, 78 8, 85 28 L 80 38 Q 50 20, 20 38 Z M 12 30 Q 0 50, 8 75 Q 2 85, 15 95 L 28 88 Q 18 75, 22 55 Q 15 40, 18 30 Z M 88 30 Q 100 50, 92 75 Q 98 85, 85 95 L 72 88 Q 82 75, 78 55 Q 85 40, 82 30 Z",
@@ -149,9 +160,13 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   },
 };
 
-export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId = "none"): string {
+export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId): string {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return "";
+
+  if (layer === "highlight") {
+    return paths.highlight ?? "";
+  }
 
   const variant: HairPathVariant = layer === "front" ? paths.front : paths.back;
 
@@ -163,9 +178,22 @@ export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId =
   return hasPhysicalHat ? variant.hat : variant.noHat;
 }
 
+export function getHairHighlightPath(hairId: HairId, hatId: HatId = "none"): string {
+  const highlight = HAIR_PATHS[hairId]?.highlight;
+  if (!highlight) return "";
+  if (typeof highlight === "string") return highlight;
+  const hasPhysicalHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
+  return hasPhysicalHat ? highlight.hat : highlight.noHat;
+}
+
+export function hasHairHighlight(hairId: HairId): boolean {
+  return !!(HAIR_PATHS[hairId]?.highlight);
+}
+
 export function hasHairVariants(hairId: HairId, layer: HairLayer): boolean {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return false;
+  if (layer === "highlight") return false;
   const variant: HairPathVariant = layer === "front" ? paths.front : paths.back;
   return typeof variant !== "string";
 }

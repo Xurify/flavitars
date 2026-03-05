@@ -1,6 +1,6 @@
 import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
 import { getHeadHairTransform, SMALL_HATS } from "./hats";
-import { getHairPathData } from "./hair-paths";
+import { getHairPathData, getHairHighlightPath } from "./hair-paths";
 import { HairIds, type HairId } from "./hair-ids";
 
 export { HairIds, type HairId };
@@ -9,8 +9,8 @@ export { HairIds, type HairId };
 
 const baldBack: PartComponent = () => null;
 
-const bobCutSharpBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bobCutSharp", "back");
+const bobCutSharpBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bobCutSharp", "back", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
@@ -20,8 +20,8 @@ const bobCutSharpBack: PartComponent = ({ fill }) => {
   );
 };
 
-const bobCutStraightBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bobCutStraight", "back");
+const bobCutStraightBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bobCutStraight", "back", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
@@ -31,8 +31,8 @@ const bobCutStraightBack: PartComponent = ({ fill }) => {
   );
 };
 
-const shavedSidesLongBackBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shavedSidesLongBack", "back");
+const shavedSidesLongBackBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shavedSidesLongBack", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
@@ -41,7 +41,7 @@ const spikyMohawkBack: PartComponent = () => null;
 
 const largeAfroBack: PartComponent = ({ fill, hatId }) => {
   if (hatId && hatId !== "none" && !SMALL_HATS.includes(hatId)) return null;
-  const d = getHairPathData("largeAfro", "back");
+  const d = getHairPathData("largeAfro", "back", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
@@ -70,38 +70,38 @@ const doubleSpaceBunsBack: PartComponent = ({ fill }) => (
 
 const sidePartShortBack: PartComponent = () => null;
 
-const jaggedFringeBobBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("jaggedFringeBob", "back");
+const jaggedFringeBobBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("jaggedFringeBob", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const bowlCutRoundBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bowlCutRound", "back");
+const bowlCutRoundBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bowlCutRound", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const messySideSweptBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("messySideSwept", "back");
+const messySideSweptBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("messySideSwept", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const roundedCurlsBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("roundedCurls", "back");
+const roundedCurlsBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("roundedCurls", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const shortJaggedCropBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shortJaggedCrop", "back");
+const shortJaggedCropBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortJaggedCrop", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const aviatorFlapsBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("aviatorFlaps", "back");
+const aviatorFlapsBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("aviatorFlaps", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
@@ -114,56 +114,56 @@ const flatTopShortBack: PartComponent = ({ fill, hatId }) => {
 
 const buzzCutBack: PartComponent = () => null;
 
-const sharpBobYellowHighlightBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("sharpBobYellowHighlight", "back");
+const sharpBobYellowHighlightBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("sharpBobYellowHighlight", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const roundedMiddlePartBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("roundedMiddlePart", "back");
+const roundedMiddlePartBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("roundedMiddlePart", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const trapezoidCutBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("trapezoidCut", "back");
+const trapezoidCutBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("trapezoidCut", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const texturedPompadourBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("texturedPompadour", "back");
+const texturedPompadourBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("texturedPompadour", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const largeHairBowBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("largeHairBow", "back");
+const largeHairBowBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("largeHairBow", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const detailedHairBowBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("detailedHairBow", "back");
+const detailedHairBowBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("detailedHairBow", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const puffyMiddlePartBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("puffyMiddlePart", "back");
+const puffyMiddlePartBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("puffyMiddlePart", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const heartMiddlePartBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("heartMiddlePart", "back");
+const heartMiddlePartBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("heartMiddlePart", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const longLocsBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("longLocs", "back");
+const longLocsBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("longLocs", "back", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
@@ -175,14 +175,14 @@ const longLocsBack: PartComponent = ({ fill }) => {
   );
 };
 
-const lowPonytailBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("lowPonytail", "back");
+const lowPonytailBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("lowPonytail", "back", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const longStraightLayeredBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("longStraightLayered", "back");
+const longStraightLayeredBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("longStraightLayered", "back", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
@@ -199,8 +199,8 @@ const longStraightLayeredBack: PartComponent = ({ fill }) => {
   );
 };
 
-const shortCurlyBobBack: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shortCurlyBob", "back");
+const shortCurlyBobBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortCurlyBob", "back", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #E8C872)";
   return (
@@ -216,8 +216,8 @@ const shortCurlyBobBack: PartComponent = ({ fill }) => {
   );
 };
 
-const longStraightLayeredFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("longStraightLayered", "front");
+const longStraightLayeredFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("longStraightLayered", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
@@ -232,22 +232,22 @@ const longStraightLayeredFront: PartComponent = ({ fill }) => {
 
 const baldFront: PartComponent = () => null;
 
-const bobCutSharpFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bobCutSharp", "front");
+const bobCutSharpFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bobCutSharp", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const bobCutStraightFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bobCutStraight", "front");
+const bobCutStraightFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bobCutStraight", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const shavedSidesLongBackFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shavedSidesLongBack", "front");
+const shavedSidesLongBackFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shavedSidesLongBack", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
@@ -256,7 +256,7 @@ const shavedSidesLongBackFront: PartComponent = ({ fill }) => {
 const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   if (hasHat) return null;
-  const d = getHairPathData("spikyMohawk", "front");
+  const d = getHairPathData("spikyMohawk", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -267,17 +267,8 @@ const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
 
 const largeAfroFront: PartComponent = ({ hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  // Afro Front is typically volume. Only render if NO HAT.
   if (hasHat) return null;
-
-  return null; // Original was null?
-  // Wait, if original was null, does Afro have a front?
-  // Checking original file... line 435 said "const largeAfroFront: PartComponent = () => null;"
-  // So Afro is all Back?
-  // If so, I need to check largeAfroBack again.
-  // largeAfroBack was handled in lines 87-95.
-  // It effectively disappears if hat.
-  // So largeAfro is fine.
+  return null;
 };
 
 const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
@@ -289,7 +280,7 @@ const sweptFringeFront: PartComponent = ({ fill, hatId }) => {
 const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   if (hasHat) return null;
-  const d = getHairPathData("singleTopKnot", "front");
+  const d = getHairPathData("singleTopKnot", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -302,7 +293,7 @@ const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
 const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
   if (hasHat) return null;
-  const d = getHairPathData("doubleSpaceBuns", "front");
+  const d = getHairPathData("doubleSpaceBuns", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -319,14 +310,14 @@ const sidePartShortFront: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const jaggedFringeBobFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("jaggedFringeBob", "front");
+const jaggedFringeBobFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("jaggedFringeBob", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
-const bowlCutRoundFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("bowlCutRound", "front");
+const bowlCutRoundFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("bowlCutRound", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />;
@@ -338,20 +329,20 @@ const messySideSweptFront: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const roundedCurlsFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("roundedCurls", "front");
+const roundedCurlsFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("roundedCurls", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const shortJaggedCropFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shortJaggedCrop", "front");
+const shortJaggedCropFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortJaggedCrop", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const aviatorFlapsFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("aviatorFlaps", "front");
+const aviatorFlapsFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("aviatorFlaps", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
@@ -368,8 +359,8 @@ const flatTopShortFront: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const buzzCutFront: PartComponent = ({ fill, headId, hairId }) => {
-  const d = getHairPathData("buzzCut", "front");
+const buzzCutFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
+  const d = getHairPathData("buzzCut", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -378,61 +369,62 @@ const buzzCutFront: PartComponent = ({ fill, headId, hairId }) => {
   );
 };
 
-const sharpBobYellowHighlightFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("sharpBobYellowHighlight", "front");
+const sharpBobYellowHighlightFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("sharpBobYellowHighlight", "front", hatId ?? "none");
+  const highlight = getHairHighlightPath("sharpBobYellowHighlight", hatId ?? "none");
   if (!d) return null;
   return (
     <g>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-      <path d="M 16 15 Q 10 50, 16 95 L 24 95 Q 18 50, 22 15 Z" fill="#FDE68A" stroke="black" strokeWidth="1.5" />
+      {highlight && <path d={highlight} fill="#FDE68A" stroke="black" strokeWidth="1.5" />}
     </g>
   );
 };
 
-const roundedMiddlePartFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("roundedMiddlePart", "front");
+const roundedMiddlePartFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("roundedMiddlePart", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const trapezoidCutFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("trapezoidCut", "front");
+const trapezoidCutFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("trapezoidCut", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const texturedPompadourFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("texturedPompadour", "front");
+const texturedPompadourFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("texturedPompadour", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const largeHairBowFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("largeHairBow", "front");
+const largeHairBowFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("largeHairBow", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const detailedHairBowFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("detailedHairBow", "front");
+const detailedHairBowFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("detailedHairBow", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const puffyMiddlePartFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("puffyMiddlePart", "front");
+const puffyMiddlePartFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("puffyMiddlePart", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const heartMiddlePartFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("heartMiddlePart", "front");
+const heartMiddlePartFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("heartMiddlePart", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const longLocsFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("longLocs", "front");
+const longLocsFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("longLocs", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
@@ -478,8 +470,8 @@ const longLocsFront: PartComponent = ({ fill }) => {
   );
 };
 
-const lowPonytailFront: PartComponent = ({ fill, headId, hairId }) => {
-  const d = getHairPathData("lowPonytail", "front");
+const lowPonytailFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
+  const d = getHairPathData("lowPonytail", "front", hatId ?? "none");
   if (!d) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1)}>
@@ -488,8 +480,8 @@ const lowPonytailFront: PartComponent = ({ fill, headId, hairId }) => {
   );
 };
 
-const shortCurlyBobFront: PartComponent = ({ fill }) => {
-  const d = getHairPathData("shortCurlyBob", "front");
+const shortCurlyBobFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortCurlyBob", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #E8C872)";
   return (

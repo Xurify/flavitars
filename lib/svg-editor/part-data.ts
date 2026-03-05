@@ -18,7 +18,7 @@ export type PartCategory =
   | "accessories"
   | "extras";
 
-export type PartLayer = "front" | "back";
+export type PartLayer = "front" | "back" | "highlight";
 
 export interface SelectedPart {
   category: PartCategory;

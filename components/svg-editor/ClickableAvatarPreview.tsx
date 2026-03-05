@@ -19,7 +19,7 @@ interface ClickableAvatarPreviewProps {
   previewMode?: "full" | "head-only";
   pathOverride?: {
     path: string;
-    layer: "front" | "back";
+    layer: "front" | "back" | "highlight";
   };
 }
 
