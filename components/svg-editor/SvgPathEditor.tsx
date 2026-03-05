@@ -567,13 +567,13 @@ export function SvgPathEditor() {
         </div>
       ) : (
         <div className="flex-1 flex overflow-hidden">
-          <aside className="w-72 border-r border-zinc-800 bg-zinc-900/40 flex flex-col overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-            <div className="p-4 border-b border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Edit Mode</label>
-              <div className="flex bg-zinc-950 p-2 rounded-xl border border-zinc-800">
+          <aside className="w-72 border-r border-zinc-800 bg-zinc-900/40 flex flex-col min-h-0 overflow-hidden">
+            <div className="p-3 border-b border-zinc-800 shrink-0">
+              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Edit Mode</label>
+              <div className="flex bg-zinc-950 p-1.5 rounded-xl border border-zinc-800">
                 <button
                   onClick={() => setEditMode("node")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     editMode === "node"
                       ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
                       : "text-zinc-500 hover:text-zinc-300"
@@ -590,7 +590,7 @@ export function SvgPathEditor() {
                 </button>
                 <button
                   onClick={() => setEditMode("drag")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     editMode === "drag"
                       ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
                       : "text-zinc-500 hover:text-zinc-300"
@@ -609,7 +609,7 @@ export function SvgPathEditor() {
                 </button>
                 <button
                   onClick={() => setEditMode("split")}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     editMode === "split"
                       ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
                       : "text-zinc-500 hover:text-zinc-300"
