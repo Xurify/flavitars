@@ -5,7 +5,7 @@ import { HairId } from "@/lib/avatar/parts/hair";
 import { HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CodeIcon, ClipboardIcon, CheckIcon } from "lucide-react";
-import { parsePath, serializePath } from "@/lib/svg-editor/path-parser";
+import { formatPathReadable, parsePath, serializePath } from "@/lib/svg-editor/path-parser";
 
 interface CodeExportProps {
   pathString: string;
@@ -15,85 +15,67 @@ interface CodeExportProps {
   hatId: HatId;
 }
 
-export function CodeExport({ pathString, originalPathString, hairId, layer, hatId }: CodeExportProps): React.JSX.Element {
-  const [copied, setCopied] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+function useCopyFeedback(): [(text: string, key: string) => Promise<void>, string | null] {
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const copy = async (text: string, key: string): Promise<void> => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
+  };
+  return [copy, copiedKey];
+}
 
-  const isWearingAHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
+export function CodeExport({ pathString, originalPathString, hairId: _hairId, layer: _layer, hatId: _hatId }: CodeExportProps): React.JSX.Element {
+  const [handleCopy, copiedKey] = useCopyFeedback();
+  const [isOpen, setIsOpen] = useState(false);
 
   const normalizedOriginal = useMemo(
     () => serializePath(parsePath(originalPathString).commands),
     [originalPathString],
   );
   const isModified = pathString !== normalizedOriginal;
-  const componentName = `${hairId}${layer === "front" ? "Front" : "Back"}`;
 
-  const code = isWearingAHat
-    ? `/**
- * Implementation Note: Add this logic to the ${componentName} component
- * 
- * const hasHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
- * 
- * if (hasHat) {
- *   return (
- *     <path
- *       d="${pathString}"
- *       fill={fill || "var(--avatar-hair, #000)"}
- *       stroke="currentColor"
- *       strokeWidth="2"
- *     />
- *   );
- * }
- */`
-    : `const ${componentName}: PartComponent = ({ fill }) => (
-  <path
-    d="${pathString}"
-    fill={fill || "var(--avatar-hair, #000)"}
-    stroke="currentColor"
-    strokeWidth="2"
-  />
-);`;
+  const displayOriginal = useMemo(() => formatPathReadable(originalPathString), [originalPathString]);
+  const displayEdited = useMemo(() => formatPathReadable(pathString), [pathString]);
 
-  const handleCopy = async (): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Failed to copy:", error);
-    }
-  };
+  const copyOriginal = () => handleCopy(displayOriginal, "original");
+  const copyEdited = () => handleCopy(displayEdited, "edited");
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg text-sm font-semibold transition-colors">
+        <button className="flex items-center h-9 shrink-0 gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg text-sm font-semibold transition-colors border border-amber-400">
           <CodeIcon className="w-4 h-4" />
           Export Code
         </button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-2xl bg-zinc-900 border-zinc-700 p-0 overflow-hidden">
-        <DialogHeader className="px-6 py-4 border-b border-zinc-800 bg-zinc-900/80 items-start">
-          <DialogTitle className="text-lg font-semibold text-zinc-100">Export Component</DialogTitle>
+      <DialogContent className="max-w-[min(42rem,calc(100vw-2rem))]! w-full bg-zinc-900 border-zinc-700 p-0 overflow-hidden flex flex-col">
+        <DialogHeader className="px-6 py-4 border-b border-zinc-800 bg-zinc-900/80 items-start shrink-0">
+          <DialogTitle className="text-lg font-semibold text-zinc-100">Export Path</DialogTitle>
           <p className="text-sm text-zinc-400 mt-0.5">
-            Copy this code to <code className="text-amber-400">hair.tsx</code> ({isWearingAHat ? "Tucked Hair" : "Full Hair"})
+            Copy path strings to <code className="text-amber-400">hair-paths.ts</code>. Paths match file format for easy
+            find/replace.
           </p>
         </DialogHeader>
 
-        <div className="p-6">
-          <div className="bg-zinc-950 rounded-xl border border-zinc-800 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-800 bg-zinc-900/50">
-              <span className="text-xs font-mono text-zinc-500">{componentName}.tsx</span>
+        <div className="p-6 flex flex-col gap-4 min-h-0 min-w-0">
+          <div className="min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider shrink-0">Original Path</label>
               <button
-                onClick={handleCopy}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  copied
+                onClick={copyOriginal}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
+                  copiedKey === "original"
                     ? "bg-emerald-500/20 text-emerald-400"
                     : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
                 }`}
               >
-                {copied ? (
+                {copiedKey === "original" ? (
                   <>
                     <CheckIcon className="w-3.5 h-3.5" />
                     Copied!
@@ -106,76 +88,50 @@ export function CodeExport({ pathString, originalPathString, hairId, layer, hatI
                 )}
               </button>
             </div>
-            <pre className="p-4 text-sm overflow-x-auto">
-              <code className="text-zinc-300">
-                <span className="text-purple-400">const</span> <span className="text-amber-400">{componentName}</span>
-                <span className="text-zinc-500">: PartComponent</span> <span className="text-zinc-500">=</span>{" "}
-                <span className="text-zinc-400">
-                  ({"{ "}fill{" }"})
-                </span>{" "}
-                <span className="text-purple-400">=&gt;</span> <span className="text-zinc-400">(</span>
-                {"\n"}
-                {"  "}
-                <span className="text-zinc-400">&lt;</span>
-                <span className="text-emerald-400">path</span>
-                {"\n"}
-                {"    "}
-                <span className="text-blue-400">d</span>
-                <span className="text-zinc-500">=</span>
-                <span className="text-amber-300">
-                  &quot;{pathString.slice(0, 50)}
-                  {pathString.length > 50 ? "..." : ""}&quot;
-                </span>
-                {"\n"}
-                {"    "}
-                <span className="text-blue-400">fill</span>
-                <span className="text-zinc-500">=</span>
-                <span className="text-zinc-400">{"{"}</span>
-                <span className="text-zinc-300">fill || &quot;var(--avatar-hair, #000)&quot;</span>
-                <span className="text-zinc-400">{"}"}</span>
-                {"\n"}
-                {"    "}
-                <span className="text-blue-400">stroke</span>
-                <span className="text-zinc-500">=</span>
-                <span className="text-amber-300">&quot;currentColor&quot;</span>
-                {"\n"}
-                {"    "}
-                <span className="text-blue-400">strokeWidth</span>
-                <span className="text-zinc-500">=</span>
-                <span className="text-amber-300">&quot;2&quot;</span>
-                {"\n"}
-                {"  "}
-                <span className="text-zinc-400">/&gt;</span>
-                {"\n"}
-                <span className="text-zinc-400">);</span>
+            <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-24 min-w-0 overflow-hidden">
+              <code className="text-xs text-zinc-500 font-mono whitespace-nowrap block">
+                {displayOriginal || "—"}
               </code>
-            </pre>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-3">
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Original Path</label>
-              <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-20 overflow-y-auto">
-                <code className="text-xs text-zinc-500 break-all font-mono">{normalizedOriginal || "—"}</code>
-              </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider shrink-0">
                 Edited Path
                 {isModified && (
                   <span className="ml-2 text-amber-500 normal-case tracking-normal">modified</span>
                 )}
               </label>
-              <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-20 overflow-y-auto">
-                <code className={`text-xs break-all font-mono ${isModified ? "text-amber-400/80" : "text-zinc-500"}`}>
-                  {pathString}
-                </code>
-              </div>
+              <button
+                onClick={copyEdited}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
+                  copiedKey === "edited"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
+                }`}
+              >
+                {copiedKey === "edited" ? (
+                  <>
+                    <CheckIcon className="w-3.5 h-3.5" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                    Copy
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="bg-zinc-950 rounded-lg border border-zinc-800 p-3 max-h-24 min-w-0 overflow-hidden">
+              <code className={`text-xs font-mono whitespace-nowrap block ${isModified ? "text-amber-400/80" : "text-zinc-500"}`}>
+                {displayEdited}
+              </code>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-zinc-800 bg-zinc-900/50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-zinc-800 bg-zinc-900/50 shrink-0">
           <button
             onClick={() => setIsOpen(false)}
             className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
@@ -183,10 +139,10 @@ export function CodeExport({ pathString, originalPathString, hairId, layer, hatI
             Close
           </button>
           <button
-            onClick={handleCopy}
+            onClick={copyEdited}
             className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-900 rounded-lg text-sm font-semibold transition-colors"
           >
-            Copy to Clipboard
+            Copy edited path
           </button>
         </div>
       </DialogContent>

@@ -9,29 +9,32 @@ type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
 type HairPathEntry = { front: HairPathVariant; back: HairPathVariant };
 
 export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
-  bald: { front: "", back: "" },
+  bald: {
+    front: "",
+    back: "",
+  },
   buzzCut: {
-    front: "M20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z",
+    front: "M 20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z",
     back: "",
   },
   flatTopShort: {
     front: {
-      noHat: "M12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z",
-      hat: "M20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z",
+      noHat: "M 12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z",
+      hat: "M 20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z",
     },
     back: {
-      noHat: "M15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z",
-      hat: "M22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z",
+      noHat: "M 15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z",
+      hat: "M 22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z",
     },
   },
   shortJaggedCrop: {
-    front: "M12 18 Q 50 5, 88 18 L 90 32 L 78 28 L 70 38 L 58 30 L 50 40 L 42 30 L 30 38 L 22 28 L 10 32 Z",
-    back: "M20 15 L 10 40 Q 10 70, 15 95 L 85 95 Q 90 70, 90 40 L 80 15 Z",
+    front: "M 17 15 Q 50 5, 83 15 L 84 35 L 78 28 L 70 38 L 58 30 L 50 40 L 42 30 L 30 38 L 22 28 L 17 35 Z",
+    back: "M 20 15 L 10 40 Q 10 70, 15 95 L 85 95 Q 90 70, 90 40 L 80 15 Z",
   },
   sidePartShort: {
     front: {
-      noHat: "M14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
-      hat: "M14 26 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+      noHat: "M 14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+      hat: "M 14 26 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
     },
     back: "",
   },
@@ -45,7 +48,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   },
   jaggedFringeBob: {
     front: "M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z",
-    back: "M15 15 Q 5 45, 10 95 L 90 95 Q 95 45, 85 15 Z",
+    back: "M 15 15 Q 5 45, 10 95 L 90 95 Q 95 45, 85 15 Z",
   },
   bowlCutRound: {
     front: "M 12 18 Q 45 4, 88 15 L 82 35 C 65 25, 45 35, 30 45 L 18 35 Z M 15 25 C -5 55, -2 88, 22 100 L 42 95 Q 18 65, 15 25 Z M 85 25 C 105 55, 102 88, 78 100 L 58 95 Q 82 65, 85 25 Z",
@@ -96,12 +99,12 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   },
   sweptFringe: {
     front: {
-      noHat: "M14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
-      hat: "M20.25 25.7 Q38.25 19.7 63.25 23.7 L58.25 35.7 Q38.25 28.7 26.25 45.7 L20.25 33.7 Z",
+      noHat: "M 14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
+      hat: "M 20.25 25.7 Q 38.25 19.7, 63.25 23.7 L 58.25 35.7 Q 38.25 28.7, 26.25 45.7 L 20.25 33.7 Z",
     },
     back: {
-      noHat: "M10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
-      hat: "M12 26 Q 8 45, 5 70 Q 4 85, 10 100 L 90 100 Q 96 85, 95 70 Q 92 45, 88 26 Q 50 30, 12 26 Z",
+      noHat: "M 10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
+      hat: "M 12 26 Q 8 45, 5 70 Q 4 85, 10 100 L 90 100 Q 96 85, 95 70 Q 92 45, 88 26 Q 50 30, 12 26 Z",
     },
   },
   singleTopKnot: {
@@ -109,7 +112,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "",
   },
   doubleSpaceBuns: {
-    front: "M10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
+    front: "M 10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
     back: "",
   },
   lowPonytail: {
@@ -121,7 +124,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "M 5 50 A 45 45 0 1 1 95 50 A 45 45 0 1 1 5 50",
   },
   spikyMohawk: {
-    front: "M22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
+    front: "M 22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
     back: "",
   },
   shavedSidesLongBack: {
@@ -129,8 +132,8 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "M 20 25 C 5 45, 5 95, 20 95 L 35 90 L 50 95 L 65 90 L 80 95 C 95 95, 95 45, 80 25 Z",
   },
   aviatorFlaps: {
-    front: "M15 15 Q 50 0, 85 15 L 85 35 Q 50 25, 15 35 Z",
-    back: "M15 25 Q 0 40, 5 75 Q 15 80, 20 70 L 25 35 Z M85 25 Q 100 40, 95 75 Q 85 80, 80 70 L 75 35 Z",
+    front: "M 15 15 Q 50 0, 85 15 L 85 35 Q 50 25, 15 35 Z",
+    back: "M 15 25 Q 0 40, 5 75 Q 15 80, 20 70 L 25 35 Z M 85 25 Q 100 40, 95 75 Q 85 80, 80 70 L 75 35 Z",
   },
   texturedPompadour: {
     front: "M 12 18 C 12 0, 40 -5, 52 5 C 65 -5, 95 0, 88 22 L 85 42 C 75 35, 60 38, 50 35 Q 25 35, 12 32 Z",

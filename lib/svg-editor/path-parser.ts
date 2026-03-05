@@ -80,6 +80,57 @@ export function serializePath(commands: PathCommand[]): string {
     .join(' ');
 }
 
+const READABLE_GROUP: Record<PathCommandType, number> = {
+  M: 2,
+  m: 2,
+  L: 2,
+  l: 2,
+  H: 1,
+  h: 1,
+  V: 1,
+  v: 1,
+  Q: 2,
+  q: 2,
+  C: 2,
+  c: 2,
+  S: 2,
+  s: 2,
+  A: 7,
+  a: 7,
+  Z: 0,
+  z: 0,
+};
+
+/**
+ * Serialize path with a consistent readable style: space after each command letter,
+ * and commas between logical groups (e.g. Q control, end and C c1, c2, end).
+ * Same semantics as serializePath; use for display or when copying into source.
+ */
+export function serializePathReadable(commands: PathCommand[]): string {
+  return commands
+    .map((cmd) => {
+      if (cmd.params.length === 0) return cmd.type;
+      const groupSize = READABLE_GROUP[cmd.type] ?? 0;
+      if (groupSize <= 0) return `${cmd.type}${cmd.params.join(' ')}`;
+      const parts: string[] = [];
+      for (let i = 0; i < cmd.params.length; i += groupSize) {
+        parts.push(cmd.params.slice(i, i + groupSize).join(' '));
+      }
+      return `${cmd.type} ${parts.join(', ')}`;
+    })
+    .join(' ');
+}
+
+/**
+ * Parse a path and return it in the same readable format as serializePathReadable.
+ * Use when copying paths into hair-paths.ts so they are easy to read and consistent.
+ */
+export function formatPathReadable(pathString: string): string {
+  if (!pathString.trim()) return pathString;
+  const { commands } = parsePath(pathString);
+  return serializePathReadable(commands);
+}
+
 export function commandsEqual(a: PathCommand[], b: PathCommand[]): boolean {
   if (a.length !== b.length) return false;
   return serializePath(a) === serializePath(b);

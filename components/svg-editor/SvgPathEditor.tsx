@@ -158,6 +158,8 @@ export function SvgPathEditor() {
     return JSON.stringify(commands) !== JSON.stringify(activeProject.commands);
   }, [commands, activeProject?.commands, activeProject]);
 
+  const showDirty = hasLoaded && isDirty;
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
@@ -410,10 +412,10 @@ export function SvgPathEditor() {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1 bg-zinc-950/50 p-1.5 rounded-xl border border-zinc-800 shadow-inner">
+          <div className="flex items-center gap-1 h-9 bg-zinc-950/50 p-1.5 rounded-xl border border-zinc-800 shadow-inner">
             <button
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-2 rounded-lg transition-all ${showGrid ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showGrid ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
               title="Toggle Show Grid"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -423,7 +425,7 @@ export function SvgPathEditor() {
             </button>
             <button
               onClick={() => setShowNodes(!showNodes)}
-              className={`p-2 rounded-lg transition-all ${showNodes ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showNodes ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
               title="Toggle Show Nodes"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -433,7 +435,7 @@ export function SvgPathEditor() {
             </button>
             <button
               onClick={() => setShowHat(!showHat)}
-              className={`p-2 rounded-lg transition-all ${showHat ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showHat ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
               title="Toggle Hat Visibility"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -445,7 +447,7 @@ export function SvgPathEditor() {
             <div className="w-px h-4 bg-zinc-800 mx-1" />
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className={`p-2 rounded-lg transition-all ${showHistory ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
+              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showHistory ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
               title="Toggle History Panel"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -456,7 +458,7 @@ export function SvgPathEditor() {
 
           <button
             onClick={() => setShowProjectsPanel(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+            className="flex items-center h-9 shrink-0 gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
             title="Manage Projects"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -474,12 +476,12 @@ export function SvgPathEditor() {
               updateActiveProject(selectedHair, selectedHat, layer, commands);
               saveNow();
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all border shrink-0 ${
-              isDirty
-                ? "bg-amber-500 hover:bg-amber-400 text-zinc-900 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-[1.02]"
+            className={`flex items-center justify-center h-9 shrink-0 gap-1.5 min-w-[95px] px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
+              showDirty
+                ? "bg-amber-500 hover:bg-amber-400 text-zinc-900 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
                 : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700 grayscale-[0.5]"
             }`}
-            title={isDirty ? "Save Unsaved Changes (Ctrl+S)" : "All Changes Saved"}
+            title={showDirty ? "Save Unsaved Changes (Ctrl+S)" : "All Changes Saved"}
           >
             <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
               <path
@@ -488,7 +490,7 @@ export function SvgPathEditor() {
                 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
               />
             </svg>
-            <span className="inline-block min-w-14 text-left">{isDirty ? "Save" : "Saved"}</span>
+            <span>{showDirty ? "Save" : "Saved"}</span>
           </button>
 
           <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
@@ -505,7 +507,7 @@ export function SvgPathEditor() {
                 setCopiedPath(true);
                 setTimeout(() => setCopiedPath(false), 2000);
               }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border flex items-center gap-2 ${
+              className={`flex items-center h-9 shrink-0 gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
                 copiedPath
                   ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
                   : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700"
@@ -536,7 +538,7 @@ export function SvgPathEditor() {
                 const resetCommands = parsePath(rawPathData).commands;
                 pushToHistory(resetCommands, "Reset Path");
               }}
-              className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+              className="flex items-center h-9 shrink-0 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
             >
               Reset Path
             </button>
