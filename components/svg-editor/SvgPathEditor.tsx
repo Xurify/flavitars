@@ -15,6 +15,7 @@ import { ProjectsPanel } from "./ProjectsPanel";
 import { ClickableAvatarPreview } from "./ClickableAvatarPreview";
 import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
+import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
 
 interface HistoryEntry {
@@ -785,6 +786,8 @@ export function SvgPathEditor() {
               showNodes={showNodes}
               showHat={showHat}
               selectedHat={selectedHat}
+              headId={avatarState.head}
+              hatFill={resolveAvatarColors(avatarState).hatColor}
               selectedNodeId={selectedNodeId}
               onNodeSelect={setSelectedNodeId}
               onNodeDrag={handleNodeDrag}

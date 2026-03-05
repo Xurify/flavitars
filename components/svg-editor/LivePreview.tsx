@@ -46,19 +46,9 @@ export function LivePreview({ frontPath, backPath, selectedHat, hairColor = "#4a
   );
 }
 
-function HatSilhouette({ hatId }: { hatId: string }) {
-  // Simplified realistic silhouettes for the preview
-  const shapes: Record<string, string> = {
-    beanie: "M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z",
-    baseballCap: "M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z",
-    cowboyHat: "M8 42 Q 8 20, 28 20 L 28 10 Q 50 -5, 72 10 L 72 20 Q 92 20, 92 42 Q 50 52, 8 42 Z",
-    topHat: "M28 35 V 0 H 72 V 35 M 15 35 H 85 V 40 H 15 Z",
-    bucketHat: "M10 42 Q 10 5, 50 5 Q 90 5, 90 42 L 95 45 H 5 Z",
-    astronautHelmet: "M 8 50 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0",
-    chefHat: "M25 35 Q 20 0, 35 -15 Q 50 -20, 65 -15 Q 80 0, 75 35 L 75 40 H 25 Z",
-    wizardHat: "M12 38 L 50 -50 L 88 38 Q 50 42, 12 38 Z",
-  };
+function HatSilhouette({ hatId }: { hatId: HatId }) {
+  const clipPath = HAT_CLIP_ZONES[hatId]?.clipPath ?? "";
+  if (!clipPath) return null;
 
-  const path = shapes[hatId] || "";
-  return <path d={path} fill="#27272a" stroke="#18181b" strokeWidth="1" />;
+  return <path d={clipPath} fill="#27272a" stroke="#18181b" strokeWidth="1" />;
 }

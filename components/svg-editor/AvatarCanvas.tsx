@@ -2,7 +2,8 @@
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { PathNode, PathCommand } from "@/lib/svg-editor/path-parser";
-import { HatId } from "@/lib/avatar/parts/hats";
+import { HeadId } from "@/lib/avatar/parts/head";
+import { HatId, HAT_CLIP_ZONES, Hats } from "@/lib/avatar/parts/hats";
 
 interface AvatarCanvasProps {
   pathString: string;
@@ -11,6 +12,8 @@ interface AvatarCanvasProps {
   showNodes: boolean;
   showHat: boolean;
   selectedHat: HatId;
+  headId?: string;
+  hatFill?: string;
   selectedNodeId: string | null;
   onNodeSelect: (id: string | null) => void;
   onNodeDrag: (node: PathNode, newX: number, newY: number) => void;
@@ -32,6 +35,8 @@ export function AvatarCanvas({
   showNodes,
   showHat,
   selectedHat,
+  headId = "angular",
+  hatFill = "#71717a",
   selectedNodeId,
   onNodeSelect,
   onNodeDrag,
@@ -218,8 +223,8 @@ export function AvatarCanvas({
         )}
 
         {showHat && selectedHat !== "none" && (
-          <g opacity="0.4" pointerEvents="none">
-            <HatPreview hatId={selectedHat} />
+          <g opacity="0.5" pointerEvents="none">
+            <HatPreview hatId={selectedHat} headId={headId} hatFill={hatFill} />
           </g>
         )}
 
@@ -289,19 +294,18 @@ export function AvatarCanvas({
   );
 }
 
-function HatPreview({ hatId }: { hatId: HatId }) {
-  // Simplified hat shapes for preview
-  const hatShapes: Record<string, string> = {
-    beanie: "M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z",
-    baseballCap: "M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z",
-    cowboyHat: "M8 42 Q 8 20, 28 20 L 28 10 Q 50 -5, 72 10 L 72 20 Q 92 20, 92 42 Q 50 52, 8 42 Z",
-    topHat: "M30 -15 H 70 V 35 H 20 V 28 H 80 V 35 H 30 Z",
-    wizardHat: "M12 38 L 50 -50 L 88 38 Q 50 42, 12 38 Z",
-    astronautHelmet: "M 8 50 a 42 42 0 1 1 84 0 a 42 42 0 1 1 -84 0",
-  };
-
-  const shape = hatShapes[hatId];
-  if (!shape) return null;
-
-  return <path d={shape} fill="#f59e0b" stroke="#d97706" strokeWidth="1" />;
+function HatPreview({ hatId, headId, hatFill }: { hatId: HatId; headId: string; hatFill: string }) {
+  const HatComponent = Hats[hatId]?.component;
+  if (HatComponent) {
+    return (
+      <HatComponent
+        fill={hatFill}
+        headId={headId as HeadId}
+        hatId={hatId}
+      />
+    );
+  }
+  const clipPath = HAT_CLIP_ZONES[hatId]?.clipPath ?? "";
+  if (!clipPath) return null;
+  return <path d={clipPath} fill="#f59e0b" stroke="#d97706" strokeWidth="1" />;
 }
