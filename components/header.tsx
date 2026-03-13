@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ProductionLink } from "@/components/ProductionLink";
 
 export function Header() {
   return (
@@ -12,6 +13,7 @@ export function Header() {
           <h1 className="text-lg font-black tracking-tight text-foreground uppercase">Flavitars</h1>
         </div>
       </Link>
+      <ProductionLink />
     </header>
   );
 }
