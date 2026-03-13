@@ -97,6 +97,10 @@ export function SvgPathEditor() {
   }, [selectedHair, selectedHat]);
 
   useEffect(() => {
+    layerCommandsRef.current = {};
+  }, [selectedHair, selectedHat]);
+
+  useEffect(() => {
     const timer = setTimeout(() => setMinLoadingFinished(true), 1500);
     return () => clearTimeout(timer);
   }, []);
@@ -126,6 +130,7 @@ export function SvgPathEditor() {
 
   const [commands, setCommands] = useState<PathCommand[]>(() => parsePath(rawPathData).commands);
   const commandsRef = useRef<PathCommand[]>(commands);
+  const layerCommandsRef = useRef<Partial<Record<"front" | "back" | "highlight", PathCommand[]>>>({});
 
   useEffect(() => {
     commandsRef.current = commands;
@@ -184,6 +189,7 @@ export function SvgPathEditor() {
         setSelectedHat(activeProject.selectedHat);
         setLayer(activeProject.layer);
         setCommands(activeProject.commands);
+        layerCommandsRef.current[activeProject.layer] = activeProject.commands;
       } else {
         const hairFromUrl = urlParams.get("hair") as HairId;
         const hatFromUrl = (urlParams.get("hat") as HatId) || "none";
@@ -211,7 +217,11 @@ export function SvgPathEditor() {
   }, [activeProject?.id, hasLoaded]);
 
   useEffect(() => {
-    const initialCommands = parsePath(rawPathData).commands;
+    const hatIdForData = effectiveUseHatVariant ? "topHat" : "none";
+    const pathDataForLayer = getHairPathData(selectedHair, layer, hatIdForData as HatId);
+    const canonicalCommands = parsePath(pathDataForLayer).commands;
+    const savedForLayer = layerCommandsRef.current[layer];
+    const initialCommands = savedForLayer ?? canonicalCommands;
     setCommands(initialCommands);
     const initialEntry: HistoryEntry = {
       id: Math.random().toString(36).substr(2, 9),
@@ -221,7 +231,7 @@ export function SvgPathEditor() {
     };
     setHistoryState({ history: [initialEntry], index: 0 });
     setSelectedNodeId(null);
-  }, [rawPathData, selectedHair, layer]);
+  }, [selectedHair, layer, effectiveUseHatVariant]);
 
   const pushToHistory = useCallback((newCommands: PathCommand[], label: string) => {
     const currentHistory = historyRef.current;
@@ -667,7 +677,10 @@ export function SvgPathEditor() {
                 <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Layer</label>
                 <div className="flex gap-2 flex-wrap">
                   <button
-                    onClick={() => setLayer("front")}
+                    onClick={() => {
+                      layerCommandsRef.current[layer] = [...commands];
+                      setLayer("front");
+                    }}
                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       layer === "front" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
                     }`}
@@ -675,7 +688,10 @@ export function SvgPathEditor() {
                     Front
                   </button>
                   <button
-                    onClick={() => setLayer("back")}
+                    onClick={() => {
+                      layerCommandsRef.current[layer] = [...commands];
+                      setLayer("back");
+                    }}
                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       layer === "back" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
                     }`}
@@ -684,7 +700,10 @@ export function SvgPathEditor() {
                   </button>
                   {hasHighlight && (
                     <button
-                      onClick={() => setLayer("highlight")}
+                      onClick={() => {
+                        layerCommandsRef.current[layer] = [...commands];
+                        setLayer("highlight");
+                      }}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         layer === "highlight"
                           ? "bg-yellow-400 text-zinc-900"
@@ -785,6 +804,7 @@ export function SvgPathEditor() {
                     setSelectedPart(part);
                     if (part.category === "hair") {
                       setSelectedHair(avatarState.hair);
+                      layerCommandsRef.current[layer] = [...commands];
                       setLayer(part.layer || "front");
                     }
                   }}
@@ -921,7 +941,7 @@ export function SvgPathEditor() {
               return;
             }
             closeProject();
-            // Reset state to current hair's default
+            layerCommandsRef.current = {};
             const pathData = getHairPathData(selectedHair, layer, "none");
             const initialCommands = parsePath(pathData).commands;
             setCommands(initialCommands);
