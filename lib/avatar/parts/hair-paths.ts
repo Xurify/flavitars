@@ -93,8 +93,14 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "M 15 25 C 0 45, 0 90, 30 100 C 40 105, 50 100, 70 100 C 100 90, 100 45, 85 25 L 65 8 Z",
   },
   trapezoidCut: {
-    front: "M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z",
-    back: "M 15 20 L 5 45 Q 8 95, 12 95 L 88 95 Q 92 95, 95 45 L 85 20 Z",
+    front: {
+      noHat: "M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z",
+      hat: "M 22 18 C 25 5, 65 2, 79 17 L 78 40 Q 60 15, 20 38 Z",
+    },
+    back: {
+      noHat: "M 15 20 L 5 45 Q 8 95, 12 95 L 88 95 Q 92 95, 95 45 L 85 20 Z",
+      hat: "M 20 20 L 12 49 Q 8 95, 12 95 L 88 95 Q 92 95, 88 49 L 79 21 Z",
+    },
   },
   roundedMiddlePart: {
     front: "M 15 20 C 30 10, 45 10, 50 15 C 55 10, 70 10, 85 20 L 80 32 Q 50 15, 20 32 Z",
