@@ -7,7 +7,8 @@
 import { HAIR_PATHS } from "../lib/avatar/parts/hair-paths";
 import { formatPathReadable } from "../lib/svg-editor/path-parser";
 import { writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const lines: string[] = [
   'import type { HairId } from "./hair-ids";',
@@ -70,6 +71,7 @@ lines.push("export function getAllHairIds(): HairId[] {");
 lines.push("  return Object.keys(HAIR_PATHS) as HairId[];");
 lines.push("}");
 
-const outPath = join(import.meta.dir, "..", "lib", "avatar", "parts", "hair-paths.ts");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const outPath = join(__dirname, "..", "lib", "avatar", "parts", "hair-paths.ts");
 writeFileSync(outPath, lines.join("\n") + "\n", "utf8");
 console.log("Formatted", outPath);
