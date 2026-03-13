@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ProductionLink } from "@/components/ProductionLink";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
@@ -13,7 +15,9 @@ export function Header() {
           <h1 className="text-lg font-black tracking-tight text-foreground uppercase">Flavitars</h1>
         </div>
       </Link>
-      <ProductionLink />
+      <Suspense fallback={<Button variant="outline" size="sm" disabled>Open in production</Button>}>
+        <ProductionLink />
+      </Suspense>
     </header>
   );
 }
