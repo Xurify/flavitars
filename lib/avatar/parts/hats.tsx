@@ -426,7 +426,7 @@ export const Beret = createAvatarItem({
   name: "Beret",
   config: { clippingY: 25 },
   svg: ({ fill, headId, hatId }) => (
-    <g transform={`${getHeadHatTransform(headId, hatId, 25, 1)} rotate(-10, 50, 15)`}>
+    <g transform={`${getHeadHatTransform(headId, hatId, 10, 1)} rotate(-10, 50, 15)`}>
       <path
         d="M15 15 Q 10 -5, 50 -15 Q 95 -10, 90 20 Q 50 15, 15 15 Z"
         fill={fill || "#991B1B"}
