@@ -101,8 +101,14 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "M 15 20 L 8 45 Q 10 95, 12 95 L 88 95 Q 90 95, 92 45 L 85 20 Z",
   },
   puffyMiddlePart: {
-    front: "M 15 20 C 15 5, 30 -5, 50 5 C 70 -5, 85 5, 85 20 L 92 45 Q 85 35, 75 42 L 50 35 L 25 42 Q 15 35, 8 45 Z",
-    back: "M 15 25 Q 5 50, 10 95 L 90 95 Q 95 50, 85 25 Z",
+    front: {
+      noHat: "M 15 20 C 15 5, 30 -5, 50 5 C 70 -5, 85 5, 85 20 L 92 45 Q 85 35, 75 42 L 50 35 L 25 42 Q 15 35, 8 45 Z",
+      hat: "M 23 19 C 22 13, 38 6, 50 5 C 70 8, 80 15, 77 19 L 92 45 Q 85 35, 75 42 L 50 35 L 25 42 Q 15 35, 8 45 Z",
+    },
+    back: {
+      noHat: "M 15 25 Q 5 50, 10 95 L 90 95 Q 95 50, 85 25 Z",
+      hat: "M 22 26 Q 5 50, 10 95 L 90 95 Q 95 50, 79 26 Z",
+    },
   },
   heartMiddlePart: {
     front: "M 12 25 C 20 10, 45 5, 52 15 C 65 5, 90 10, 88 25 L 92 45 Q 92 65, 85 95 L 70 95 Q 78 70, 75 45 L 70 35 L 50 38 L 30 35 L 25 45 Q 22 70, 15 95 L 8 95 Q 8 65, 12 45 Z",
@@ -165,7 +171,10 @@ export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId):
   if (!paths) return "";
 
   if (layer === "highlight") {
-    return paths.highlight ?? "";
+    const highlight = paths.highlight ?? "";
+    if (typeof highlight === "string") return highlight;
+    const hasPhysicalHat = hatId !== "none" && !SMALL_HATS.includes(hatId);
+    return hasPhysicalHat ? highlight.hat : highlight.noHat;
   }
 
   const variant: HairPathVariant = layer === "front" ? paths.front : paths.back;
