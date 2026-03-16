@@ -19,6 +19,7 @@ import { AvatarStateParams, avatarSearchParams } from "@/lib/avatar/config/param
 import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 import { exportToImage, exportToSVG } from "@/lib/utils/export";
 import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
+import { avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface AvatarEditorProps {
@@ -41,26 +42,10 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     return resolvedState;
   }, [params, initialState]);
 
-  const pathEditorUrl = useMemo(() => {
-    const searchParams = new URLSearchParams();
-    searchParams.set("hair", avatarState.hair);
-    searchParams.set("hat", avatarState.hat);
-    searchParams.set("head", avatarState.head);
-    searchParams.set("eyes", avatarState.eyes);
-    searchParams.set("eyebrows", avatarState.eyebrows);
-    searchParams.set("nose", avatarState.nose);
-    searchParams.set("mouth", avatarState.mouth);
-    searchParams.set("body", avatarState.body);
-    searchParams.set("extras", avatarState.extras);
-    searchParams.set("accessories", avatarState.accessories);
-    searchParams.set("texture", avatarState.texture);
-    searchParams.set("skin_tone", avatarState.skinTone);
-    searchParams.set("hair_color", avatarState.hairColor);
-    searchParams.set("hat_color", avatarState.hatColor);
-    searchParams.set("accessory_color", avatarState.accessoryColor);
-    searchParams.set("body_color", avatarState.bodyColor);
-    return `/path-editor?${searchParams.toString()}`;
-  }, [avatarState]);
+  const pathEditorUrl = useMemo(
+    () => `/path-editor?${avatarStateToSearchParams(avatarState).toString()}`,
+    [avatarState]
+  );
 
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
   const [deferredCategory, setDeferredCategory] = useState<AvatarCategory>("head");

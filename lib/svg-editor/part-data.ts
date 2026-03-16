@@ -63,6 +63,31 @@ export function parseAvatarStateFromParams(
 }
 
 /**
+ * Serializes AvatarState into URL search params (same shape the main editor expects).
+ */
+export function avatarStateToSearchParams(state: AvatarState): URLSearchParams {
+  const p = new URLSearchParams();
+  p.set("hair", state.hair);
+  p.set("hat", state.hat);
+  p.set("head", state.head);
+  p.set("eyes", state.eyes);
+  p.set("eyebrows", state.eyebrows);
+  p.set("nose", state.nose);
+  p.set("mouth", state.mouth);
+  p.set("body", state.body);
+  p.set("extras", state.extras);
+  p.set("accessories", state.accessories);
+  p.set("texture", state.texture);
+  p.set("skin_tone", state.skinTone);
+  p.set("hair_color", state.hairColor);
+  p.set("hat_color", state.hatColor);
+  p.set("accessory_color", state.accessoryColor);
+  p.set("body_color", state.bodyColor);
+  if (state.containHair) p.set("contain_hair", "true");
+  return p;
+}
+
+/**
  * Gets the clip path for a hat (used for hair clipping).
  */
 export function getHatClipPath(hatId: HatId): string | null {
