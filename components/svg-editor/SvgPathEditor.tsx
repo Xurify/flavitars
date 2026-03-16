@@ -24,7 +24,7 @@ import { ClickableAvatarPreview } from "./ClickableAvatarPreview";
 import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
-import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
+import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams, avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
 
 const MAX_HISTORY = 100;
 
@@ -297,6 +297,11 @@ export function SvgPathEditor() {
 
   const highlightPathString = useMemo(() => getHairHighlightPath(selectedHair), [selectedHair]);
 
+  const mainEditorUrl = useMemo(() => {
+    const query = avatarStateToSearchParams(avatarState).toString();
+    return query ? `/?${query}` : "/";
+  }, [avatarState]);
+
   const handleNodeDrag = useCallback((node: PathNode, newX: number, newY: number) => {
     const updated = updateNodePosition(commandsRef.current, node, Math.round(newX), Math.round(newY));
     setCommands(updated);
@@ -410,6 +415,16 @@ export function SvgPathEditor() {
               <Image src="/images/icons/drew.png" alt="Flavitar Logo" fill className="object-cover" />
             </div>
             <h1 className="text-lg font-semibold tracking-tight">SVG Path Editor</h1>
+          </Link>
+          <Link
+            href={mainEditorUrl}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 border border-zinc-700/50 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            Open in Editor
           </Link>
           {activeProject && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700/50 rounded-lg group">
