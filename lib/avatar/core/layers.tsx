@@ -14,17 +14,17 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
     resolveAvatarParts(state);
 
   const { isSkiMask } = resolveAvatarLogic(state);
-  
+
   // Get the hat's clip zone (new physics system)
   const clipZone = getHatClipZone(state.hat);
   const hasHat = state.hat && state.hat !== "none";
   const shouldClipHair = hasHat && clipZone.hidesHair;
-  
+
   // The mask ID for this hat's clip zone
   const hairClipMaskId = shouldClipHair ? `${filterId}-hair-clip-mask` : undefined;
 
   return (
-    <g filter={`url(#${filterId}-wobble)`}>
+    <g>
       {/* LAYER 1: Back Hair - flows behind head, clipped by hat zone */}
       <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined} className="hair-back-set">
         <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
