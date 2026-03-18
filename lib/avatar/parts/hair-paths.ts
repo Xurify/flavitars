@@ -43,10 +43,6 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     front: "M 12 15 Q 12 45, 18 80 L 25 35 Q 12 18, 12 15 Z M 88 15 Q 88 45, 82 80 L 75 35 Q 88 18, 88 15 Z M 12 15 Q 50 2, 88 15 L 75 35 L 68 22 L 50 35 L 32 22 L 25 35 Z",
     back: "M 15 20 L 5 45 Q 8 75, 12 95 L 88 95 Q 92 75, 95 45 L 85 20 Z",
   },
-  bobCutStraight: {
-    front: "M 15 15 C 8 35, 5 60, 12 85 L 25 35 Q 25 10, 15 15 Z M 85 15 C 92 35, 95 60, 88 85 L 75 35 Q 75 10, 85 15 Z M 12 15 Q 50 2, 88 15 L 82 35 Q 75 30, 68 38 L 50 32 L 32 38 Q 25 30, 18 35 Z",
-    back: "M 18 20 Q 5 45, 10 95 L 90 95 Q 95 45, 82 20 Z",
-  },
   jaggedFringeBob: {
     front: "M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z",
     back: "M 15 15 Q 5 45, 10 95 L 90 95 Q 95 45, 85 15 Z",

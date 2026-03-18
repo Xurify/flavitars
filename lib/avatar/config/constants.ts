@@ -1,7 +1,6 @@
 import { HairId } from "../parts/hair";
 
 export const FULL_COVERAGE_HAIR: HairId[] = [
-  "bobCutStraight",
   "sweptFringe",
   "jaggedFringeBob",
   "bowlCutRound",
@@ -15,7 +14,6 @@ export const FULL_COVERAGE_HAIR: HairId[] = [
 
 export const LONG_HAIR_STYLES: HairId[] = [
   "bobCutSharp",
-  "bobCutStraight",
   "shavedSidesLongBack",
   "jaggedFringeBob",
   "bowlCutRound",

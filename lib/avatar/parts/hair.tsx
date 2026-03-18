@@ -20,17 +20,6 @@ const bobCutSharpBack: PartComponent = ({ fill, hatId }) => {
   );
 };
 
-const bobCutStraightBack: PartComponent = ({ fill, hatId }) => {
-  const d = getHairPathData("bobCutStraight", "back", hatId ?? "none");
-  if (!d) return null;
-  return (
-    <g>
-      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-      <path d="M 50 30 V 90" fill="none" stroke="black" opacity="0.12" strokeWidth="4" strokeLinecap="round" />
-    </g>
-  );
-};
-
 const shavedSidesLongBackBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("shavedSidesLongBack", "back", hatId ?? "none");
   if (!d) return null;
@@ -234,13 +223,6 @@ const baldFront: PartComponent = () => null;
 
 const bobCutSharpFront: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("bobCutSharp", "front", hatId ?? "none");
-  if (!d) return null;
-  const hairColor = fill || "var(--avatar-hair, #000)";
-  return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
-};
-
-const bobCutStraightFront: PartComponent = ({ fill, hatId }) => {
-  const d = getHairPathData("bobCutStraight", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
@@ -505,7 +487,6 @@ export const HairItems: AvatarItem[] = [
   createAvatarItem({ id: "shortJaggedCrop", name: "Jagged Crop", svg: shortJaggedCropFront, backSvg: shortJaggedCropBack }),
   createAvatarItem({ id: "sidePartShort", name: "Side Part", svg: sidePartShortFront, backSvg: sidePartShortBack }),
   createAvatarItem({ id: "bobCutSharp", name: "Sharp Bob", svg: bobCutSharpFront, backSvg: bobCutSharpBack }),
-  createAvatarItem({ id: "bobCutStraight", name: "Straight Bob", svg: bobCutStraightFront, backSvg: bobCutStraightBack }),
   createAvatarItem({ id: "jaggedFringeBob", name: "Jagged Bob", svg: jaggedFringeBobFront, backSvg: jaggedFringeBobBack }),
   createAvatarItem({ id: "bowlCutRound", name: "Bowl Cut", svg: bowlCutRoundFront, backSvg: bowlCutRoundBack }),
   createAvatarItem({

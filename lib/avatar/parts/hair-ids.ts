@@ -5,7 +5,6 @@ export const HairIds = [
   "shortJaggedCrop",
   "sidePartShort",
   "bobCutSharp",
-  "bobCutStraight",
   "jaggedFringeBob",
   "bowlCutRound",
   "sharpBobYellowHighlight",
