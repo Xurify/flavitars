@@ -35,7 +35,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   sidePartShort: {
     front: {
       noHat: "M 14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
-      hat: "M 14 26 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
+      hat: "M 22 27 Q 30 2, 79 22 L 74 30 Q 40 18, 21 47 Z",
     },
     back: "",
   },
@@ -123,7 +123,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
-      hat: "M 12 26 Q 8 45, 5 70 Q 4 85, 10 100 L 90 100 Q 96 85, 95 70 Q 92 45, 88 26 Q 50 30, 12 26 Z",
+      hat:  "M 10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
     },
   },
   singleTopKnot: {
