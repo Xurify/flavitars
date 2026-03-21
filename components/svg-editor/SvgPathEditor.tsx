@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { HairIds, HairId } from "@/lib/avatar/parts/hair-ids";
 import { HatIds, HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
@@ -24,7 +25,7 @@ import { ClickableAvatarPreview } from "./ClickableAvatarPreview";
 import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
-import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams, avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
+import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
 
 const MAX_HISTORY = 100;
 
@@ -36,6 +37,9 @@ interface HistoryEntry {
 }
 
 export function SvgPathEditor() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [avatarState, setAvatarState] = useState<AvatarState>(() => {
     if (typeof window !== "undefined") {
       return parseAvatarStateFromParams(new URLSearchParams(window.location.search));
@@ -298,9 +302,10 @@ export function SvgPathEditor() {
   const highlightPathString = useMemo(() => getHairHighlightPath(selectedHair), [selectedHair]);
 
   const mainEditorUrl = useMemo(() => {
-    const query = avatarStateToSearchParams(avatarState).toString();
-    return query ? `/?${query}` : "/";
-  }, [avatarState]);
+    const withoutPathEditor = pathname.replace(/\/path-editor\/?$/, "") || "/";
+    const query = searchParams.toString();
+    return query ? `${withoutPathEditor}?${query}` : withoutPathEditor;
+  }, [pathname, searchParams]);
 
   const handleNodeDrag = useCallback((node: PathNode, newX: number, newY: number) => {
     const updated = updateNodePosition(commandsRef.current, node, Math.round(newX), Math.round(newY));
