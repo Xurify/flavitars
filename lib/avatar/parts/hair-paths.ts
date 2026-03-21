@@ -131,7 +131,10 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     back: "",
   },
   doubleSpaceBuns: {
-    front: "M 10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
+    front: {
+      noHat: "M 10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
+      hat: "",
+    },
     back: "",
   },
   lowPonytail: {

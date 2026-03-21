@@ -50,12 +50,17 @@ const sweptFringeBack: PartComponent = ({ fill, hatId }) => {
 
 const singleTopKnotBack: PartComponent = () => null;
 
-const doubleSpaceBunsBack: PartComponent = ({ fill }) => (
-  <g>
-    <circle cx="15" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-    <circle cx="85" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-  </g>
-);
+const doubleSpaceBunsBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("doubleSpaceBuns", "back", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <circle cx="15" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <circle cx="85" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+    </g>
+  );
+};
 
 const sidePartShortBack: PartComponent = () => null;
 
