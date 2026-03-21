@@ -425,17 +425,19 @@ export const Beret = createAvatarItem({
   id: "beret",
   name: "Beret",
   config: { clippingY: 25 },
-  svg: ({ fill, headId, hatId }) => (
-    <g transform={`${getHeadHatTransform(headId, hatId, 10, 1)} rotate(-10, 50, 15)`}>
-      <path
-        d="M15 15 Q 10 -5, 50 -15 Q 95 -10, 90 20 Q 50 15, 15 15 Z"
-        fill={fill || "#991B1B"}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect x="49" y="-20" width="2" height="6" fill="black" opacity="0.4" />
-    </g>
-  ),
+  svg: ({ fill, headId, hatId }) => {
+    return (
+      <g transform={`translate(-2, 0) ${getHeadHatTransform(headId, hatId, 10, 1)} rotate(-10, 50, 15)`}>
+        <path
+          d="M15 15 Q 10 -5, 50 -15 Q 95 -10, 90 20 Q 50 15, 15 15 Z"
+          fill={fill || "#991B1B"}
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <rect x="49" y="-20" width="2" height="6" fill="black" opacity="0.4" />
+      </g>
+    );
+  },
 });
 
 export const WizardHat = createAvatarItem({
