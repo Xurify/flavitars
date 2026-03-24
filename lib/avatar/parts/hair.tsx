@@ -20,12 +20,6 @@ const bobCutSharpBack: PartComponent = ({ fill, hatId }) => {
   );
 };
 
-const shavedSidesLongBackBack: PartComponent = ({ fill, hatId }) => {
-  const d = getHairPathData("shavedSidesLongBack", "back", hatId ?? "none");
-  if (!d) return null;
-  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
-};
-
 const spikyMohawkBack: PartComponent = () => null;
 
 const largeAfroBack: PartComponent = ({ fill, hatId }) => {
@@ -228,13 +222,6 @@ const baldFront: PartComponent = () => null;
 
 const bobCutSharpFront: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("bobCutSharp", "front", hatId ?? "none");
-  if (!d) return null;
-  const hairColor = fill || "var(--avatar-hair, #000)";
-  return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
-};
-
-const shavedSidesLongBackFront: PartComponent = ({ fill, hatId }) => {
-  const d = getHairPathData("shavedSidesLongBack", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
@@ -520,12 +507,6 @@ export const HairItems: AvatarItem[] = [
   createAvatarItem({ id: "lowPonytail", name: "Low Ponytail", svg: lowPonytailFront, backSvg: lowPonytailBack }),
   createAvatarItem({ id: "largeAfro", name: "Afro", svg: largeAfroFront, backSvg: largeAfroBack }),
   createAvatarItem({ id: "spikyMohawk", name: "Mohawk", svg: spikyMohawkFront, backSvg: spikyMohawkBack }),
-  createAvatarItem({
-    id: "shavedSidesLongBack",
-    name: "Shaved Sides",
-    svg: shavedSidesLongBackFront,
-    backSvg: shavedSidesLongBackBack,
-  }),
   createAvatarItem({ id: "aviatorFlaps", name: "Aviator Flaps", svg: aviatorFlapsFront, backSvg: aviatorFlapsBack }),
   createAvatarItem({ id: "texturedPompadour", name: "Pompadour", svg: texturedPompadourFront, backSvg: texturedPompadourBack }),
   createAvatarItem({ id: "largeHairBow", name: "Large Bow", svg: largeHairBowFront, backSvg: largeHairBowBack }),

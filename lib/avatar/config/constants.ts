@@ -14,7 +14,6 @@ export const FULL_COVERAGE_HAIR: HairId[] = [
 
 export const LONG_HAIR_STYLES: HairId[] = [
   "bobCutSharp",
-  "shavedSidesLongBack",
   "jaggedFringeBob",
   "bowlCutRound",
   "puffyMiddlePart",

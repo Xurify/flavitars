@@ -23,7 +23,6 @@ export const HairIds = [
   "lowPonytail",
   "largeAfro",
   "spikyMohawk",
-  "shavedSidesLongBack",
   "aviatorFlaps",
   "texturedPompadour",
   "largeHairBow",

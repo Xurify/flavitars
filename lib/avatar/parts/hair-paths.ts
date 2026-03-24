@@ -149,10 +149,6 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     front: "M 22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
     back: "",
   },
-  shavedSidesLongBack: {
-    front: "M 15 15 C 5 35, 5 95, 25 100 L 35 85 L 22 35 Q 22 10, 15 15 Z M 85 15 C 95 35, 95 95, 75 100 L 65 85 L 78 35 Q 78 10, 85 15 Z M 12 15 Q 50 5, 88 15 L 82 35 C 70 25, 30 25, 18 35 Z",
-    back: "M 20 25 C 5 45, 5 95, 20 95 L 35 90 L 50 95 L 65 90 L 80 95 C 95 95, 95 45, 80 25 Z",
-  },
   aviatorFlaps: {
     front: "M 15 15 Q 50 0, 85 15 L 85 35 Q 50 25, 15 35 Z",
     back: "M 15 25 Q 0 40, 5 75 Q 15 80, 20 70 L 25 35 Z M 85 25 Q 100 40, 95 75 Q 85 80, 80 70 L 75 35 Z",
