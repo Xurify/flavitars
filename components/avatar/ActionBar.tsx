@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Shuffle, RotateCcw, Download, Link2, LucideIcon, FileImage, FileCode } from "lucide-react";
+import { Shuffle, RotateCcw, Download, Link2, LucideIcon, FileImage, FileCode, ClipboardCopy } from "lucide-react";
 import { cn } from "@/lib/utils/strings";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -8,6 +8,7 @@ interface ActionBarProps {
   onReset: () => void;
   onCopyLink: () => void;
   onExport: (format: "png" | "svg") => void;
+  onCopySvgUrl: () => void;
 }
 
 interface ActionConfig {
@@ -16,7 +17,7 @@ interface ActionConfig {
   onClick: () => void;
 }
 
-export const ActionBar: React.FC<ActionBarProps> = ({ onRandomize, onReset, onCopyLink, onExport }) => {
+export const ActionBar: React.FC<ActionBarProps> = ({ onRandomize, onReset, onCopyLink, onExport, onCopySvgUrl }) => {
   const actions: ActionConfig[] = [
     { label: "Random", icon: Shuffle, onClick: onRandomize },
     { label: "Reset", icon: RotateCcw, onClick: onReset },
@@ -68,6 +69,13 @@ export const ActionBar: React.FC<ActionBarProps> = ({ onRandomize, onReset, onCo
           >
             <FileCode className="h-4 w-4" />
             <span>Export as SVG</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={onCopySvgUrl}
+            className="flex items-center gap-2 cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground px-4 py-3 font-bold uppercase text-[10px] tracking-wider transition-colors"
+          >
+            <ClipboardCopy className="h-4 w-4" />
+            <span>Copy SVG URL</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

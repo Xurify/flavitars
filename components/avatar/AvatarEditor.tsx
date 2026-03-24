@@ -4,7 +4,7 @@ import React, { useState, useMemo, useRef, useTransition } from "react";
 
 import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import Link from "next/link";
-import { generateShareableURL } from "@/lib/avatar/engine/url";
+import { buildAvatarSvgApiUrl, generateShareableURL } from "@/lib/avatar/engine/url";
 import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
 
@@ -21,6 +21,7 @@ import { exportToImage, exportToSVG } from "@/lib/utils/export";
 import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
 import { avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 interface AvatarEditorProps {
   initialState?: AvatarState;
@@ -148,6 +149,12 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(generateShareableURL(avatarState));
+  };
+
+  const handleCopySvgUrl = () => {
+    const url = buildAvatarSvgApiUrl(window.location.origin, avatarState, params);
+    navigator.clipboard.writeText(url);
+    toast.success("SVG URL copied");
   };
 
   const handleExport = async (format: "png" | "svg") => {
@@ -280,6 +287,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
                 onReset={handleReset}
                 onCopyLink={handleCopyLink}
                 onExport={handleExport}
+                onCopySvgUrl={handleCopySvgUrl}
               />
             </footer>
           </div>
