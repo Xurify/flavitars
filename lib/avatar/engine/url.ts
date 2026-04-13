@@ -7,7 +7,7 @@ const serialize = createSerializer(avatarSearchParams);
 
 /**
  * Absolute URL that returns this avatar as SVG. Uses the short form `/{id}.svg`, which `next.config.ts`
- * rewrites to `/api/avatar/:id`. Preset-only URLs still use `/api/avatar?preset=…` (no short alias).
+ * rewrites to `/api/avatar/:id`. Preset-only URLs still use `/api/avatar?preset=...` (no short alias).
  */
 export function buildAvatarSvgApiUrl(
   origin: string,
