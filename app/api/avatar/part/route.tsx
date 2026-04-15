@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { NextRequest, NextResponse } from "next/server";
 import {
   HairFront,
@@ -62,6 +63,11 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
   try {
     const { renderToStaticMarkup } = await import("react-dom/server");
 
+    const renderSvgChild = (node: ReactElement) => {
+      const wrapped = renderToStaticMarkup(<svg xmlns="http://www.w3.org/2000/svg">{node}</svg>);
+      return wrapped.replace(/^<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/u, "");
+    };
+
     const props: PartProps = {
       headId: "square",
       hatId: "none",
@@ -74,18 +80,18 @@ export async function renderPartSvg(category: PartCategory, style: string): Prom
       props.fill = "var(--avatar-skin, #fce0c0)";
     }
 
-    const partMarkup = renderToStaticMarkup(<PartComponent {...props} />);
+    const partMarkup = renderSvgChild(<PartComponent {...props} />);
 
     let backMarkup = "";
     if (config.backItems && config.backItems[style]) {
       const BackComponent = config.backItems[style].component;
-      backMarkup = renderToStaticMarkup(<BackComponent {...props} />);
+      backMarkup = renderSvgChild(<BackComponent {...props} />);
     }
 
     let mannequinMarkup = "";
     if (config.showMannequin) {
       const HeadShape = HeadShapes["square"].component;
-      mannequinMarkup = renderToStaticMarkup(
+      mannequinMarkup = renderSvgChild(
         <g opacity="0.15">
           <HeadShape fill="var(--avatar-skin, #fce0c0)" headId="square" />
         </g>
