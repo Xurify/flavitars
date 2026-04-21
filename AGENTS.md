@@ -14,6 +14,7 @@ alwaysApply: false
 Next.js 16 with React 19 and App Router. Standard structure: `app/` (routes), `components/` (UI), `hooks/`, `lib/` (utilities). Uses React Compiler (babel-plugin-react-compiler).
 
 ## Code Style
+- **Comments**: Do not add “helpful” comments on variables or obvious code — especially block comments above `let`/`const` that restate names. Prefer clear names. Comment only for non-obvious *why* (invariants, quirks, perf).
 - **Package manager**: Bun
 - **Types**: Strict TypeScript; prefix unused vars with `_`; `any` is a warning
 - **Components**: Radix UI primitives, shadcn/ui, CVA for variants, Tailwind CSS 4
