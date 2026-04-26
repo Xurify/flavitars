@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+Caveman **on by default** for this repo (user preference). Communication mode: caveman **full** unless user sets intensity with `/caveman lite|full|ultra`. Drop articles, fragments OK, short synonyms. No filler, no pleasantries, no hedging. **Opt-out only** when user says "stop caveman" or "normal mode" (or clearly asks for normal long-form only).
