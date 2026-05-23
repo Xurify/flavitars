@@ -44,7 +44,7 @@ export function PathBreakdown({
         <p className="text-xs text-zinc-500 mt-1">Click a command to select its nodes</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
         {commands.length === 0 ? (
           <div className="p-4 text-sm text-zinc-500 italic">No path data available</div>
         ) : (
@@ -194,26 +194,6 @@ export function PathBreakdown({
           </div>
         )}
       </div>
-
-      <style jsx global>{`
-        .overflow-y-auto {
-          scrollbar-width: thin;
-          scrollbar-color: #3f3f46 transparent;
-        }
-        .overflow-y-auto::-webkit-scrollbar {
-          width: 6px;
-        }
-        .overflow-y-auto::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-          background-color: #3f3f46;
-          border-radius: 20px;
-        }
-        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-          background-color: #52525b;
-        }
-      `}</style>
 
       <div className="p-4 border-t border-zinc-800 bg-amber-500/5 group">
         <div className="flex items-center gap-2 mb-2">

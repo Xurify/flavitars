@@ -32,7 +32,7 @@ export function HistoryPanel({ history, currentIndex, onRevert }: HistoryPanelPr
         <p className="text-xs text-zinc-500 mt-1">Jump to any previous state</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
         {history.length === 0 ? (
           <div className="p-8 text-center">
             <div className="w-12 h-12 bg-zinc-800/50 rounded-full flex items-center justify-center mx-auto mb-3">

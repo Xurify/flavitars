@@ -1,0 +1,11 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "java.import.enabled": false,
+  "java.autobuild.enabled": false,
+  "git.autorefresh": true,
+  "git.autoRepositoryDetection": true,
+  "git.untrackedChanges": "mixed"
+}
