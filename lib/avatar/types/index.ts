@@ -64,14 +64,32 @@ import {
   MarikaExtrasIds,
 } from "../config/presets/marika";
 
-export const AllHairFront = { ...HairFront, ...MarikaHairFront };
-export const AllHairBack = { ...HairBack, ...MarikaHairBack };
-export const AllEyes = { ...Eyes, ...MarikaEyes };
-export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows };
-export const AllMouths = { ...Mouths, ...MarikaMouths };
-export const AllBodies = { ...Bodies, ...MarikaBodies };
-export const AllAccessories = { ...Accessories, ...MarikaAccessories };
-export const AllExtras = { ...Extras, ...MarikaExtras };
+import {
+  UrsulaHairBack,
+  UrsulaHairFront,
+  UrsulaEyes,
+  UrsulaEyebrows,
+  UrsulaMouths,
+  UrsulaBodies,
+  UrsulaAccessories,
+  UrsulaExtras,
+  UrsulaHairIds,
+  UrsulaEyesIds,
+  UrsulaEyebrowsIds,
+  UrsulaMouthIds,
+  UrsulaBodyIds,
+  UrsulaAccessoryIds,
+  UrsulaExtrasIds,
+} from "../config/presets/ursula";
+
+export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront };
+export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack };
+export const AllEyes = { ...Eyes, ...MarikaEyes, ...UrsulaEyes };
+export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows };
+export const AllMouths = { ...Mouths, ...MarikaMouths, ...UrsulaMouths };
+export const AllBodies = { ...Bodies, ...MarikaBodies, ...UrsulaBodies };
+export const AllAccessories = { ...Accessories, ...MarikaAccessories, ...UrsulaAccessories };
+export const AllExtras = { ...Extras, ...MarikaExtras, ...UrsulaExtras };
 
 export interface AvatarState {
   head: HeadId;
@@ -93,13 +111,13 @@ export interface AvatarState {
   containHair: boolean;
 }
 
-export type AllHairId = HairId | (typeof MarikaHairIds)[number];
-export type AllEyesId = EyesId | (typeof MarikaEyesIds)[number];
-export type AllEyebrowsId = EyebrowsId | (typeof MarikaEyebrowsIds)[number];
-export type AllMouthId = MouthId | (typeof MarikaMouthIds)[number];
-export type AllBodyId = BodyId | (typeof MarikaBodyIds)[number];
-export type AllAccessoryId = AccessoryId | (typeof MarikaAccessoryIds)[number];
-export type AllExtrasId = ExtrasId | (typeof MarikaExtrasIds)[number];
+export type AllHairId = HairId | (typeof MarikaHairIds)[number] | (typeof UrsulaHairIds)[number];
+export type AllEyesId = EyesId | (typeof MarikaEyesIds)[number] | (typeof UrsulaEyesIds)[number];
+export type AllEyebrowsId = EyebrowsId | (typeof MarikaEyebrowsIds)[number] | (typeof UrsulaEyebrowsIds)[number];
+export type AllMouthId = MouthId | (typeof MarikaMouthIds)[number] | (typeof UrsulaMouthIds)[number];
+export type AllBodyId = BodyId | (typeof MarikaBodyIds)[number] | (typeof UrsulaBodyIds)[number];
+export type AllAccessoryId = AccessoryId | (typeof MarikaAccessoryIds)[number] | (typeof UrsulaAccessoryIds)[number];
+export type AllExtrasId = ExtrasId | (typeof MarikaExtrasIds)[number] | (typeof UrsulaExtrasIds)[number];
 
 export interface PresetAvatarState {
   head: HeadId;
