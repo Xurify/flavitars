@@ -100,6 +100,64 @@ const flatTopShortBack: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
+const crewCutBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("crewCut", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const caesarCropBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("caesarCrop", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const fadeCropBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("fadeCrop", "back", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <path d="M 23 44 Q 50 55, 77 44" fill="none" stroke="white" opacity="0.16" strokeWidth="3" strokeLinecap="round" />
+    </g>
+  );
+};
+
+const undercutBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("undercut", "back", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <path d="M 20 48 Q 50 60, 80 48" fill="none" stroke="white" opacity="0.12" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  );
+};
+
+const slickBackBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("slickBack", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const curtainsBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("curtains", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const shortWavesBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortWaves", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const messyShortBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("messyShort", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
 const buzzCutBack: PartComponent = () => null;
 
 const sharpBobYellowHighlightBack: PartComponent = ({ fill, hatId }) => {
@@ -177,11 +235,11 @@ const longStraightLayeredBack: PartComponent = ({ fill, hatId }) => {
     <g>
       <path d={d} fill={hairColor} stroke="black" strokeWidth="1.5" />
       <g stroke="black" opacity="0.08" strokeWidth="1.5" strokeLinecap="round" fill="none">
-        <path d="M 25 35 V 110" />
-        <path d="M 40 30 V 112" />
-        <path d="M 55 28 V 112" />
-        <path d="M 70 30 V 112" />
-        <path d="M 85 35 V 108" />
+        <path d="M 23 30 C 17 50, 17 76, 21 97" />
+        <path d="M 36 22 C 31 47, 32 74, 35 98" />
+        <path d="M 50 14 C 47 42, 48 73, 50 98" />
+        <path d="M 64 22 C 69 47, 68 74, 65 98" />
+        <path d="M 77 30 C 83 50, 83 76, 79 97" />
       </g>
     </g>
   );
@@ -211,7 +269,11 @@ const longStraightLayeredFront: PartComponent = ({ fill, hatId }) => {
   return (
     <g>
       <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M 50 12 V 28" fill="none" stroke="black" opacity="0.15" strokeWidth="1.5" strokeLinecap="round" />
+      <g fill="none" stroke="black" strokeLinecap="round">
+        <path d="M 50 10 C 47 17, 45 23, 44 29" opacity="0.22" strokeWidth="1.5" />
+        <path d="M 23 35 C 18 52, 18 72, 21 92" opacity="0.18" strokeWidth="1.4" />
+        <path d="M 77 35 C 82 52, 82 72, 79 92" opacity="0.18" strokeWidth="1.4" />
+      </g>
     </g>
   );
 };
@@ -331,6 +393,81 @@ const flatTopShortFront: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("flatTopShort", "front", hatId ?? "none");
   if (!d) return null;
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
+
+const crewCutFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("crewCut", "front", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+};
+
+const caesarCropFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("caesarCrop", "front", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+};
+
+const fadeCropFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("fadeCrop", "front", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <path d="M 21 31 Q 50 38, 79 31" fill="none" stroke="white" opacity="0.14" strokeWidth="2.5" strokeLinecap="round" />
+    </g>
+  );
+};
+
+const undercutFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("undercut", "front", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+};
+
+const slickBackFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("slickBack", "front", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <g stroke="black" opacity="0.14" strokeWidth="1.3" strokeLinecap="round" fill="none">
+        <path d="M 29 17 Q 40 20, 48 31" />
+        <path d="M 45 13 Q 54 20, 60 33" />
+        <path d="M 61 14 Q 70 21, 76 34" />
+      </g>
+    </g>
+  );
+};
+
+const curtainsFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("curtains", "front", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M 50 20 L 50 51" fill="none" stroke="black" opacity="0.18" strokeWidth="1.4" strokeLinecap="round" />
+    </g>
+  );
+};
+
+const shortWavesFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("shortWaves", "front", hatId ?? "none");
+  if (!d) return null;
+  return (
+    <g>
+      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <g stroke="black" opacity="0.18" strokeWidth="1.4" strokeLinecap="round" fill="none">
+        <path d="M 25 22 Q 32 17, 39 22 T 53 22 T 67 22 T 79 22" />
+        <path d="M 22 30 Q 30 26, 38 30 T 54 30 T 70 30" />
+      </g>
+    </g>
+  );
+};
+
+const messyShortFront: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("messyShort", "front", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
 const buzzCutFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
@@ -476,6 +613,14 @@ export const HairItems: AvatarItem[] = [
   createAvatarItem({ id: "bald", name: "Bald", svg: baldFront, backSvg: baldBack }),
   createAvatarItem({ id: "buzzCut", name: "Buzz Cut", svg: buzzCutFront, backSvg: buzzCutBack }),
   createAvatarItem({ id: "flatTopShort", name: "Flat Top", svg: flatTopShortFront, backSvg: flatTopShortBack }),
+  createAvatarItem({ id: "crewCut", name: "Crew Cut", svg: crewCutFront, backSvg: crewCutBack }),
+  createAvatarItem({ id: "caesarCrop", name: "Caesar Crop", svg: caesarCropFront, backSvg: caesarCropBack }),
+  createAvatarItem({ id: "fadeCrop", name: "Fade Crop", svg: fadeCropFront, backSvg: fadeCropBack }),
+  createAvatarItem({ id: "undercut", name: "Undercut", svg: undercutFront, backSvg: undercutBack }),
+  createAvatarItem({ id: "slickBack", name: "Slick Back", svg: slickBackFront, backSvg: slickBackBack }),
+  createAvatarItem({ id: "curtains", name: "Curtains", svg: curtainsFront, backSvg: curtainsBack }),
+  createAvatarItem({ id: "shortWaves", name: "Short Waves", svg: shortWavesFront, backSvg: shortWavesBack }),
+  createAvatarItem({ id: "messyShort", name: "Messy Short", svg: messyShortFront, backSvg: messyShortBack }),
   createAvatarItem({ id: "shortJaggedCrop", name: "Jagged Crop", svg: shortJaggedCropFront, backSvg: shortJaggedCropBack }),
   createAvatarItem({ id: "sidePartShort", name: "Side Part", svg: sidePartShortFront, backSvg: sidePartShortBack }),
   createAvatarItem({ id: "bobCutSharp", name: "Sharp Bob", svg: bobCutSharpFront, backSvg: bobCutSharpBack }),
