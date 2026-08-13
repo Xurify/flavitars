@@ -54,7 +54,8 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
     <div
       className={cn(
         "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
-        showBackground && "bg-zinc-900/50 border border-zinc-800 rounded-lg",
+        showBackground &&
+          "bg-white border border-zinc-200/80 shadow-md shadow-black/[0.05] ring-1 ring-black/[0.03] rounded-xl",
         sizeClasses[size],
         className
       )}

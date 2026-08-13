@@ -142,122 +142,149 @@ export interface PathNode {
   paramIndex: number;
   x: number;
   y: number;
-  type: 'endpoint' | 'control';
+  type: "endpoint" | "control";
   label: string;
+  commandType?: PathCommandType;
+  controlIndex?: number;
 }
 
 export function extractNodes(commands: PathCommand[]): PathNode[] {
   const nodes: PathNode[] = [];
   let nodeId = 0;
+  let currentPenX = 0;
+  let currentPenY = 0;
 
-  commands.forEach((cmd, cmdIndex) => {
-    const explanation = getCommandExplanation(cmd.type);
+  commands.forEach((command, commandIndex) => {
+    const explanation = getCommandExplanation(command.type);
     const labels = explanation.paramLabels;
+    const upperType = command.type.toUpperCase();
 
-    switch (cmd.type.toUpperCase()) {
-      case 'M':
-      case 'L':
-        if (cmd.params.length >= 2) {
+    switch (upperType) {
+      case "M":
+      case "L":
+        if (command.params.length >= 2) {
+          currentPenX = command.params[0];
+          currentPenY = command.params[1];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 0,
-            x: cmd.params[0],
-            y: cmd.params[1],
-            type: 'endpoint',
-            label: `${cmd.type}(${labels[0]}, ${labels[1]})`,
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
+            label: `${command.type}(${labels[0]}, ${labels[1]})`,
+            commandType: command.type,
           });
         }
         break;
-      case 'H':
-        if (cmd.params.length >= 1) {
+      case "H":
+        if (command.params.length >= 1) {
+          currentPenX = command.params[0];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 0,
-            x: cmd.params[0],
-            y: 0, // Will need current Y from context
-            type: 'endpoint',
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
             label: `H(${labels[0]})`,
+            commandType: command.type,
           });
         }
         break;
-      case 'V':
-        if (cmd.params.length >= 1) {
+      case "V":
+        if (command.params.length >= 1) {
+          currentPenY = command.params[0];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 0,
-            x: 0, // Will need current X from context
-            y: cmd.params[0],
-            type: 'endpoint',
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
             label: `V(${labels[0]})`,
+            commandType: command.type,
           });
         }
         break;
-      case 'Q':
-        if (cmd.params.length >= 4) {
+      case "Q":
+        if (command.params.length >= 4) {
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 0,
-            x: cmd.params[0],
-            y: cmd.params[1],
-            type: 'control',
+            x: command.params[0],
+            y: command.params[1],
+            type: "control",
             label: `Control (${labels[0]}, ${labels[1]})`,
+            commandType: command.type,
+            controlIndex: 1,
           });
+          currentPenX = command.params[2];
+          currentPenY = command.params[3];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 2,
-            x: cmd.params[2],
-            y: cmd.params[3],
-            type: 'endpoint',
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
             label: `End (${labels[2]}, ${labels[3]})`,
+            commandType: command.type,
           });
         }
         break;
-      case 'C':
-        if (cmd.params.length >= 6) {
+      case "C":
+        if (command.params.length >= 6) {
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 0,
-            x: cmd.params[0],
-            y: cmd.params[1],
-            type: 'control',
+            x: command.params[0],
+            y: command.params[1],
+            type: "control",
             label: `Control 1 (${labels[0]}, ${labels[1]})`,
+            commandType: command.type,
+            controlIndex: 1,
           });
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 2,
-            x: cmd.params[2],
-            y: cmd.params[3],
-            type: 'control',
+            x: command.params[2],
+            y: command.params[3],
+            type: "control",
             label: `Control 2 (${labels[2]}, ${labels[3]})`,
+            commandType: command.type,
+            controlIndex: 2,
           });
+          currentPenX = command.params[4];
+          currentPenY = command.params[5];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 4,
-            x: cmd.params[4],
-            y: cmd.params[5],
-            type: 'endpoint',
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
             label: `End (${labels[4]}, ${labels[5]})`,
+            commandType: command.type,
           });
         }
         break;
-      case 'A':
-        if (cmd.params.length >= 7) {
+      case "A":
+        if (command.params.length >= 7) {
+          currentPenX = command.params[5];
+          currentPenY = command.params[6];
           nodes.push({
             id: `node-${nodeId++}`,
-            commandIndex: cmdIndex,
+            commandIndex,
             paramIndex: 5,
-            x: cmd.params[5],
-            y: cmd.params[6],
-            type: 'endpoint',
+            x: currentPenX,
+            y: currentPenY,
+            type: "endpoint",
             label: `Arc End (${labels[5]}, ${labels[6]})`,
+            commandType: command.type,
           });
         }
         break;
@@ -271,25 +298,43 @@ export function updateNodePosition(
   commands: PathCommand[],
   node: PathNode,
   newX: number,
-  newY: number
+  newY: number,
+  moveConnectedHandles = true
 ): PathCommand[] {
-  const updated = commands.map((cmd, idx) => {
-    if (idx !== node.commandIndex) return cmd;
+  const deltaX = Math.round(newX - node.x);
+  const deltaY = Math.round(newY - node.y);
 
-    const newParams = [...cmd.params];
-    const cmdType = cmd.type.toUpperCase();
+  const updated = commands.map((command, index) => {
+    if (index !== node.commandIndex) return command;
 
-    if (cmdType === 'H') {
-      newParams[node.paramIndex] = newX;
-    } else if (cmdType === 'V') {
-      newParams[node.paramIndex] = newY;
+    const newParameters = [...command.params];
+    const commandType = command.type.toUpperCase();
+
+    if (commandType === "H") {
+      newParameters[node.paramIndex] = Math.round(newX);
+    } else if (commandType === "V") {
+      newParameters[node.paramIndex] = Math.round(newY);
     } else {
-      newParams[node.paramIndex] = newX;
-      newParams[node.paramIndex + 1] = newY;
+      newParameters[node.paramIndex] = Math.round(newX);
+      newParameters[node.paramIndex + 1] = Math.round(newY);
     }
 
-    return { ...cmd, params: newParams };
+    return { ...command, params: newParameters };
   });
+
+  if (moveConnectedHandles && node.type === "endpoint" && (deltaX !== 0 || deltaY !== 0)) {
+    const nextCommandIndex = node.commandIndex + 1;
+    if (nextCommandIndex < updated.length) {
+      const nextCommand = updated[nextCommandIndex];
+      const nextType = nextCommand.type.toUpperCase();
+      if (nextType === "Q" || nextType === "C") {
+        const nextParams = [...nextCommand.params];
+        nextParams[0] = Math.round(nextParams[0] + deltaX);
+        nextParams[1] = Math.round(nextParams[1] + deltaY);
+        updated[nextCommandIndex] = { ...nextCommand, params: nextParams };
+      }
+    }
+  }
 
   return updated;
 }
