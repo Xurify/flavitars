@@ -227,7 +227,7 @@ export const ItemGrid: React.FC<ItemGridProps> = ({
   headId,
   sortedKeys,
 }): React.JSX.Element => {
-  const showMannequin = ["hair", "eyes", "nose", "mouth", "brows", "extras", "hats"].includes(categoryId);
+  const showMannequin = ["hair", "eyes", "nose", "mouth", "eyebrows", "extras", "hats"].includes(categoryId);
   return (
     <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5 p-1">
       {categoryId === "texture" && (

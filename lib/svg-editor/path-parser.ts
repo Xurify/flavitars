@@ -153,18 +153,30 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
   let nodeId = 0;
   let currentPenX = 0;
   let currentPenY = 0;
+  let startPenX = 0;
+  let startPenY = 0;
 
   commands.forEach((command, commandIndex) => {
     const explanation = getCommandExplanation(command.type);
     const labels = explanation.paramLabels;
     const upperType = command.type.toUpperCase();
+    const isRelative = command.type !== command.type.toUpperCase();
 
     switch (upperType) {
       case "M":
       case "L":
         if (command.params.length >= 2) {
-          currentPenX = command.params[0];
-          currentPenY = command.params[1];
+          if (isRelative) {
+            currentPenX += command.params[0];
+            currentPenY += command.params[1];
+          } else {
+            currentPenX = command.params[0];
+            currentPenY = command.params[1];
+          }
+          if (upperType === "M") {
+            startPenX = currentPenX;
+            startPenY = currentPenY;
+          }
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -179,7 +191,11 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
         break;
       case "H":
         if (command.params.length >= 1) {
-          currentPenX = command.params[0];
+          if (isRelative) {
+            currentPenX += command.params[0];
+          } else {
+            currentPenX = command.params[0];
+          }
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -187,14 +203,18 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
             x: currentPenX,
             y: currentPenY,
             type: "endpoint",
-            label: `H(${labels[0]})`,
+            label: `${command.type}(${labels[0]})`,
             commandType: command.type,
           });
         }
         break;
       case "V":
         if (command.params.length >= 1) {
-          currentPenY = command.params[0];
+          if (isRelative) {
+            currentPenY += command.params[0];
+          } else {
+            currentPenY = command.params[0];
+          }
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -202,26 +222,30 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
             x: currentPenX,
             y: currentPenY,
             type: "endpoint",
-            label: `V(${labels[0]})`,
+            label: `${command.type}(${labels[0]})`,
             commandType: command.type,
           });
         }
         break;
       case "Q":
         if (command.params.length >= 4) {
+          const controlX = isRelative ? currentPenX + command.params[0] : command.params[0];
+          const controlY = isRelative ? currentPenY + command.params[1] : command.params[1];
+          const endX = isRelative ? currentPenX + command.params[2] : command.params[2];
+          const endY = isRelative ? currentPenY + command.params[3] : command.params[3];
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
             paramIndex: 0,
-            x: command.params[0],
-            y: command.params[1],
+            x: controlX,
+            y: controlY,
             type: "control",
             label: `Control (${labels[0]}, ${labels[1]})`,
             commandType: command.type,
             controlIndex: 1,
           });
-          currentPenX = command.params[2];
-          currentPenY = command.params[3];
+          currentPenX = endX;
+          currentPenY = endY;
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -236,12 +260,18 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
         break;
       case "C":
         if (command.params.length >= 6) {
+          const c1x = isRelative ? currentPenX + command.params[0] : command.params[0];
+          const c1y = isRelative ? currentPenY + command.params[1] : command.params[1];
+          const c2x = isRelative ? currentPenX + command.params[2] : command.params[2];
+          const c2y = isRelative ? currentPenY + command.params[3] : command.params[3];
+          const endX = isRelative ? currentPenX + command.params[4] : command.params[4];
+          const endY = isRelative ? currentPenY + command.params[5] : command.params[5];
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
             paramIndex: 0,
-            x: command.params[0],
-            y: command.params[1],
+            x: c1x,
+            y: c1y,
             type: "control",
             label: `Control 1 (${labels[0]}, ${labels[1]})`,
             commandType: command.type,
@@ -251,15 +281,15 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
             id: `node-${nodeId++}`,
             commandIndex,
             paramIndex: 2,
-            x: command.params[2],
-            y: command.params[3],
+            x: c2x,
+            y: c2y,
             type: "control",
             label: `Control 2 (${labels[2]}, ${labels[3]})`,
             commandType: command.type,
             controlIndex: 2,
           });
-          currentPenX = command.params[4];
-          currentPenY = command.params[5];
+          currentPenX = endX;
+          currentPenY = endY;
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -274,8 +304,13 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
         break;
       case "A":
         if (command.params.length >= 7) {
-          currentPenX = command.params[5];
-          currentPenY = command.params[6];
+          if (isRelative) {
+            currentPenX += command.params[5];
+            currentPenY += command.params[6];
+          } else {
+            currentPenX = command.params[5];
+            currentPenY = command.params[6];
+          }
           nodes.push({
             id: `node-${nodeId++}`,
             commandIndex,
@@ -287,6 +322,10 @@ export function extractNodes(commands: PathCommand[]): PathNode[] {
             commandType: command.type,
           });
         }
+        break;
+      case "Z":
+        currentPenX = startPenX;
+        currentPenY = startPenY;
         break;
     }
   });

@@ -475,15 +475,23 @@ export function convertSegmentType(
   if (!command) return commands;
 
   let currentPen: Point = { x: 0, y: 0 };
+  let startPen: Point = { x: 0, y: 0 };
   for (let index = 0; index < commandIndex; index++) {
     const cmd = commands[index];
     const type = cmd.type.toUpperCase();
     if (type === "M" || type === "L") {
       currentPen = { x: cmd.params[0], y: cmd.params[1] };
+      if (type === "M") startPen = { ...currentPen };
     } else if (type === "Q") {
       currentPen = { x: cmd.params[2], y: cmd.params[3] };
     } else if (type === "C") {
       currentPen = { x: cmd.params[4], y: cmd.params[5] };
+    } else if (type === "H") {
+      currentPen = { x: cmd.params[0], y: currentPen.y };
+    } else if (type === "V") {
+      currentPen = { x: currentPen.x, y: cmd.params[0] };
+    } else if (type === "Z") {
+      currentPen = { ...startPen };
     }
   }
 
@@ -552,19 +560,51 @@ export function mirrorPathSymmetric(
 ): PathCommand[] {
   return commands.map((command) => {
     const newParameters = [...command.params];
-    const type = command.type.toUpperCase();
+    const type = command.type;
+    const upperType = type.toUpperCase();
+    const isRelative = type === type.toLowerCase() && type !== type.toUpperCase();
 
-    if (type === "M" || type === "L") {
-      newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
-    } else if (type === "H") {
-      newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
-    } else if (type === "Q") {
-      newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
-      newParameters[2] = Math.round(2 * mirrorAxisX - newParameters[2]);
-    } else if (type === "C") {
-      newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
-      newParameters[2] = Math.round(2 * mirrorAxisX - newParameters[2]);
-      newParameters[4] = Math.round(2 * mirrorAxisX - newParameters[4]);
+    if (upperType === "M" || upperType === "L") {
+      if (isRelative) {
+        newParameters[0] = -newParameters[0];
+      } else {
+        newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
+      }
+    } else if (upperType === "H") {
+      if (isRelative) {
+        newParameters[0] = -newParameters[0];
+      } else {
+        newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
+      }
+    } else if (upperType === "V") {
+      // Y-only, no X mirroring needed for either relative or absolute
+    } else if (upperType === "Q") {
+      if (isRelative) {
+        newParameters[0] = -newParameters[0];
+        newParameters[2] = -newParameters[2];
+      } else {
+        newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
+        newParameters[2] = Math.round(2 * mirrorAxisX - newParameters[2]);
+      }
+    } else if (upperType === "C") {
+      if (isRelative) {
+        newParameters[0] = -newParameters[0];
+        newParameters[2] = -newParameters[2];
+        newParameters[4] = -newParameters[4];
+      } else {
+        newParameters[0] = Math.round(2 * mirrorAxisX - newParameters[0]);
+        newParameters[2] = Math.round(2 * mirrorAxisX - newParameters[2]);
+        newParameters[4] = Math.round(2 * mirrorAxisX - newParameters[4]);
+      }
+    } else if (upperType === "A") {
+      // A: rx ry x-rotation large-arc-flag sweep-flag x y
+      if (isRelative) {
+        newParameters[5] = -newParameters[5];
+      } else {
+        newParameters[5] = Math.round(2 * mirrorAxisX - newParameters[5]);
+      }
+      // Invert sweep flag to preserve arc direction after horizontal reflection
+      newParameters[4] = newParameters[4] === 1 ? 0 : 1;
     }
 
     return { ...command, params: newParameters };

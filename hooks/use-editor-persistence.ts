@@ -67,12 +67,19 @@ export function useProjectsPersistence() {
     }
   }, []);
 
+  const isInitialMountRef = useRef(true);
+
   useEffect(() => {
     if (!hasLoaded) return;
-    
+
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      return;
+    }
+
     setHasUnsavedChanges(true);
     setPendingSave(true);
-    
+
     const timeoutId = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
@@ -84,7 +91,7 @@ export function useProjectsPersistence() {
         console.error("Failed to save projects", error);
       }
     }, 500);
-    
+
     return () => clearTimeout(timeoutId);
   }, [store, hasLoaded]);
 
