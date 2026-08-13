@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 
-const description = "Our collection of legendary characters";
+const description = "Our collection of legendary character presets ready to customize";
 
 export const metadata: Metadata = {
-  title: "Hall of Fame | Flavitars",
+  title: "Hall of Fame",
   description,
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: {
     title: "Hall of Fame | Flavitars",
     description,
@@ -24,6 +28,7 @@ export default function HallOfFameLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
-  return children;
+}): React.JSX.Element {
+  return <>{children}</>;
 }
+

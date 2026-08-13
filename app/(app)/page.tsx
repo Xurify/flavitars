@@ -5,14 +5,14 @@ import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 import type { SearchParams } from "nuqs/server";
 
 export const metadata: Metadata = {
-  title: "Flavitars Editor",
+  title: "Avatar Studio",
 };
 
-type PageProps = {
+interface PageProperties {
   searchParams: Promise<SearchParams>;
-};
+}
 
-export default async function Home({ searchParams }: PageProps) {
+export default async function Home({ searchParams }: PageProperties): Promise<React.JSX.Element> {
   const params = await loadAvatarState(searchParams);
   const initialState = resolveAvatarStateFromParams(params);
 
@@ -22,3 +22,4 @@ export default async function Home({ searchParams }: PageProps) {
     </main>
   );
 }
+

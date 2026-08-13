@@ -1,7 +1,25 @@
+"use client";
+
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Shuffle, RotateCcw, Download, Link2, LucideIcon, FileImage, FileCode, ClipboardCopy } from "lucide-react";
-import { cn } from "@/lib/utils/strings";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  ShuffleIcon,
+  RotateCcwIcon,
+  DownloadIcon,
+  Share2Icon,
+  ImageIcon,
+  Code2Icon,
+  CopyIcon,
+  ChevronDownIcon,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 interface ActionBarProps {
   onRandomize: () => void;
@@ -11,74 +29,85 @@ interface ActionBarProps {
   onCopySvgUrl: () => void;
 }
 
-interface ActionConfig {
-  label: string;
-  icon: LucideIcon;
-  onClick: () => void;
-}
-
-export const ActionBar: React.FC<ActionBarProps> = ({ onRandomize, onReset, onCopyLink, onExport, onCopySvgUrl }) => {
-  const actions: ActionConfig[] = [
-    { label: "Random", icon: Shuffle, onClick: onRandomize },
-    { label: "Reset", icon: RotateCcw, onClick: onReset },
-    { label: "Share", icon: Link2, onClick: onCopyLink },
-  ];
-
+export const ActionBar: React.FC<ActionBarProps> = ({
+  onRandomize,
+  onReset,
+  onCopyLink,
+  onExport,
+  onCopySvgUrl,
+}): React.JSX.Element => {
   return (
-    <div className="grid grid-cols-4 items-stretch border-t-2 border-border overflow-hidden">
-      {actions.map((action) => (
+    <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-white/95 backdrop-blur-md border-t border-border/70">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <Button
-          key={action.label}
-          variant="default"
-          onClick={action.onClick}
-          className={cn(
-            "h-14 border-0",
-            "border-r-2",
-            "hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-          )}
+          variant="outline"
+          size="sm"
+          onClick={onRandomize}
+          className="gap-1.5 font-medium hover:border-primary/50 hover:text-primary active:scale-95"
         >
-          <action.icon className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-          <span className="inline-block">{action.label}</span>
+          <ShuffleIcon className="h-3.5 w-3.5 text-primary" />
+          <span>Randomize</span>
         </Button>
-      ))}
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="default"
-            className={cn("h-14 border-0", "hover:bg-primary hover:text-primary-foreground transition-all duration-200")}
-          >
-            <Download className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
-            <span className="font-black inline-block">Export</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-48 border-2 border-border rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          className="gap-1.5 font-medium text-muted-foreground hover:text-foreground"
         >
-          <DropdownMenuItem
-            onClick={() => onExport("png")}
-            className="flex items-center gap-2 cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground px-4 py-3 font-bold uppercase text-[10px] tracking-wider transition-colors"
-          >
-            <FileImage className="h-4 w-4" />
-            <span>Export as PNG</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onExport("svg")}
-            className="flex items-center gap-2 cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground px-4 py-3 font-bold uppercase text-[10px] tracking-wider transition-colors"
-          >
-            <FileCode className="h-4 w-4" />
-            <span>Export as SVG</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={onCopySvgUrl}
-            className="flex items-center gap-2 cursor-pointer hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground px-4 py-3 font-bold uppercase text-[10px] tracking-wider transition-colors"
-          >
-            <ClipboardCopy className="h-4 w-4" />
-            <span>Copy SVG URL</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <RotateCcwIcon className="h-3.5 w-3.5 opacity-70" />
+          <span className="hidden xs:inline">Reset</span>
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onCopyLink}
+          className="gap-1.5 font-medium"
+        >
+          <Share2Icon className="h-3.5 w-3.5 opacity-70" />
+          <span>Share</span>
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="primary"
+              size="sm"
+              className="gap-1.5 font-semibold"
+            >
+              <DownloadIcon className="h-3.5 w-3.5" />
+              <span>Export</span>
+              <ChevronDownIcon className="h-3 w-3 opacity-70" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>Download Artwork</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => onExport("png")}>
+              <ImageIcon className="h-4 w-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="font-semibold">PNG Image</span>
+                <span className="text-[10px] text-muted-foreground">High resolution bitmap</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("svg")}>
+              <Code2Icon className="h-4 w-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="font-semibold">Vector SVG</span>
+                <span className="text-[10px] text-muted-foreground">Scalable vector graphic</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onCopySvgUrl}>
+              <CopyIcon className="h-4 w-4 opacity-70" />
+              <span>Copy API URL</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 };
+

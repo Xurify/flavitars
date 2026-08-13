@@ -1,28 +1,37 @@
 import type { Metadata } from "next";
-import { Press_Start_2P, VT323 } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const pressStart2P = Press_Start_2P({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-pixel",
-});
-
-const vt323 = VT323({
-  weight: "400",
+const sansFont = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
 });
 
-const description = "Extremely modular avatars to use across my projects";
+const headingFont = Outfit({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const description = "Create modular, customizable SVG avatars for your apps, profiles, and design systems.";
 
 export const metadata: Metadata = {
-  title: "Flavitars",
+  title: {
+    default: "Flavitars — Modular Avatar Studio",
+    template: "%s | Flavitars",
+  },
   description,
   openGraph: {
-    title: "Flavitars",
+    title: "Flavitars — Modular Avatar Studio",
     description,
     url: "https://flavitars.com",
     siteName: "Flavitars",
@@ -33,20 +42,20 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 400,
         height: 400,
-        alt: "Flavitars",
+        alt: "Flavitars Modular Avatar Studio",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "Flavitars",
+    title: "Flavitars — Modular Avatar Studio",
     description,
     images: [
       {
         url: "/opengraph-image.png",
         width: 400,
         height: 400,
-        alt: "Flavitars",
+        alt: "Flavitars Modular Avatar Studio",
       },
     ],
   },
@@ -61,13 +70,17 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): React.JSX.Element {
   return (
-    <html lang="en" className={`${pressStart2P.variable} ${vt323.variable}`}>
-      <body className="antialiased selection:bg-orange-500 selection:text-white font-retro bg-[#F5F0E6] text-foreground h-dvh flex flex-col overflow-hidden relative">
+    <html
+      lang="en"
+      className={`${sansFont.variable} ${headingFont.variable} ${monoFont.variable}`}
+    >
+      <body className="antialiased selection:bg-primary selection:text-white font-sans bg-background text-foreground h-dvh flex flex-col overflow-hidden relative">
         <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="bottom-right" theme="light" richColors />
       </body>
     </html>
   );
 }
+

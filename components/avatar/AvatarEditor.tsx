@@ -1,12 +1,28 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useTransition } from "react";
-
-import { SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
+import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
+import { useQueryStates } from "nuqs";
+import { toast } from "sonner";
+import { PenToolIcon, SparklesIcon } from "lucide-react";
+
+import {
+  SKIN_TONES,
+  HAIR_COLORS,
+  ACCESSORY_ACCENT_COLORS,
+  CATEGORIES,
+  AvatarCategory,
+  AvatarState,
+} from "@/lib/avatar/types";
 import { buildAvatarSvgApiUrl, generateShareableURL } from "@/lib/avatar/engine/url";
 import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
+import { AvatarStateParams, avatarSearchParams } from "@/lib/avatar/config/params";
+import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
+import { exportToImage, exportToSVG } from "@/lib/utils/export";
+import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
+import { avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { AvatarPreview } from "./AvatarPreview";
 import { CategorySelector } from "./CategorySelector";
@@ -14,20 +30,11 @@ import { ItemGrid } from "./ItemGrid";
 import { ColorPicker } from "./ColorPicker";
 import { ActionBar } from "./ActionBar";
 
-import { useQueryStates } from "nuqs";
-import { AvatarStateParams, avatarSearchParams } from "@/lib/avatar/config/params";
-import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
-import { exportToImage, exportToSVG } from "@/lib/utils/export";
-import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
-import { avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { toast } from "sonner";
-
 interface AvatarEditorProps {
   initialState?: AvatarState;
 }
 
-const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
+const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.Element => {
   const [params, setParams] = useQueryStates(avatarSearchParams, {
     shallow: true,
     history: "push",
@@ -36,7 +43,9 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
 
   const avatarState: AvatarState = useMemo(() => {
     const resolvedState = resolveAvatarStateFromParams(params);
-    const hasUrlParams = Object.values(params).some((value) => value !== null && value !== undefined && value !== "");
+    const hasUrlParams = Object.values(params).some(
+      (value) => value !== null && value !== undefined && value !== ""
+    );
     if (!hasUrlParams && initialState) {
       return initialState;
     }
@@ -49,34 +58,29 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
   );
 
   const [activeCategory, setActiveCategory] = useState<AvatarCategory>("head");
-  const [deferredCategory, setDeferredCategory] = useState<AvatarCategory>("head");
-  const [isCategoryPending, startCategoryTransition] = useTransition();
-  const previewRef = useRef<HTMLDivElement>(null);
-  const controlsContainerRef = useRef<HTMLDivElement>(null);
+  const previewReference = useRef<HTMLDivElement>(null);
+  const controlsContainerReference = useRef<HTMLDivElement>(null);
 
-  const handleCategoryChange = (id: string) => {
-    setActiveCategory(id as AvatarCategory);
-    startCategoryTransition(() => {
-      setDeferredCategory(id as AvatarCategory);
-    });
-    if (controlsContainerRef.current) {
-      controlsContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  const handleCategoryChange = (categoryIdentifier: string): void => {
+    setActiveCategory(categoryIdentifier as AvatarCategory);
+    if (controlsContainerReference.current) {
+      controlsContainerReference.current.scrollTop = 0;
     }
   };
 
-  const handleParamsChange = (updates: Partial<AvatarStateParams>) => {
+  const handleParamsChange = (updates: Partial<AvatarStateParams>): void => {
     setParams(updates);
   };
 
-  const handleItemSelect = (id: string) => {
+  const handleItemSelect = (itemIdentifier: string): void => {
     const categoryConfig = CATEGORIES.find((category) => category.id === activeCategory);
     if (!categoryConfig) return;
     const stateKey = categoryConfig.stateKey;
-    const selectedItem = categoryConfig.items[id];
+    const selectedItem = categoryConfig.items[itemIdentifier];
     const allowedColors = selectedItem?.component?.colors;
 
     const updates: Partial<AvatarStateParams> = {
-      [categoryConfig.id === "hats" ? "hat" : (categoryConfig.stateKey as string)]: id,
+      [categoryConfig.id === "hats" ? "hat" : (categoryConfig.stateKey as string)]: itemIdentifier,
     };
 
     const colorKey = (
@@ -104,70 +108,78 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
     ) as keyof typeof avatarSearchParams;
 
     if (allowedColors && !allowedColors.includes(avatarState[colorKey] as string)) {
-      (updates as Record<keyof AvatarStateParams, AvatarStateParams[keyof AvatarStateParams]>)[paramColorKey] = allowedColors[0];
+      (updates as Record<keyof AvatarStateParams, AvatarStateParams[keyof AvatarStateParams]>)[
+        paramColorKey
+      ] = allowedColors[0];
     }
 
     handleParamsChange(updates);
   };
 
-  const handleSkinToneSelect = (id: string) => {
-    handleParamsChange({ skin_tone: id });
+  const handleSkinToneSelect = (skinToneIdentifier: string): void => {
+    handleParamsChange({ skin_tone: skinToneIdentifier });
   };
 
-  const handleHairColorSelect = (id: string) => {
-    handleParamsChange({ hair_color: id });
+  const handleHairColorSelect = (hairColorIdentifier: string): void => {
+    handleParamsChange({ hair_color: hairColorIdentifier });
   };
 
-  const handleBodyColorSelect = (id: string) => {
-    handleParamsChange({ body_color: id });
+  const handleBodyColorSelect = (bodyColorIdentifier: string): void => {
+    handleParamsChange({ body_color: bodyColorIdentifier });
   };
 
-  const handleRandomize = () => {
-    const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)];
+  const handleRandomize = (): void => {
+    const pickRandomItem = <T,>(list: readonly T[] | T[]): T =>
+      list[Math.floor(Math.random() * list.length)];
 
     const randomState: Partial<AvatarStateParams> = {
-      skin_tone: pick(SKIN_TONES).id,
-      hair_color: pick(HAIR_COLORS).id,
-      hat_color: pick(HAIR_COLORS).id,
-      accessory_color: pick(ACCESSORY_ACCENT_COLORS).id,
-      body_color: pick(HAIR_COLORS).id,
+      skin_tone: pickRandomItem(SKIN_TONES).id,
+      hair_color: pickRandomItem(HAIR_COLORS).id,
+      hat_color: pickRandomItem(HAIR_COLORS).id,
+      accessory_color: pickRandomItem(ACCESSORY_ACCENT_COLORS).id,
+      body_color: pickRandomItem(HAIR_COLORS).id,
     };
 
     CATEGORIES.forEach((category) => {
       const keys = category.sortedKeys;
-      const selection = pick(keys);
-      (randomState as Record<string, string | boolean | null>)[category.id === "hats" ? "hat" : (category.stateKey as string)] =
-        selection;
+      const selection = pickRandomItem(keys);
+      (randomState as Record<string, string | boolean | null>)[
+        category.id === "hats" ? "hat" : (category.stateKey as string)
+      ] = selection;
     });
 
     setParams(randomState);
+    toast.success("Generated random avatar");
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setParams(null);
+    toast.info("Reset to default avatar");
   };
 
-  const handleCopyLink = () => {
+  const handleCopyLink = (): void => {
     navigator.clipboard.writeText(generateShareableURL(avatarState));
+    toast.success("Share link copied to clipboard");
   };
 
-  const handleCopySvgUrl = () => {
+  const handleCopySvgUrl = (): void => {
     const url = buildAvatarSvgApiUrl(window.location.origin, avatarState, params);
     navigator.clipboard.writeText(url);
-    toast.success("SVG URL copied");
+    toast.success("SVG API URL copied to clipboard");
   };
 
-  const handleExport = async (format: "png" | "svg") => {
-    if (previewRef.current) {
-      const hasPreset = !!params.preset;
+  const handleExport = async (format: "png" | "svg"): Promise<void> => {
+    if (previewReference.current) {
+      const hasPreset = Boolean(params.preset);
       const hasId = params.id !== null && params.id !== undefined;
       const otherParamsCount = Object.entries(params).filter(
-        ([key, value]) => key !== "preset" && key !== "id" && value !== null && value !== undefined,
+        ([key, value]) =>
+          key !== "preset" && key !== "id" && value !== null && value !== undefined
       ).length;
 
       let avatarId: string | number;
       if (hasPreset && !hasId && otherParamsCount === 0) {
-        avatarId = params.preset;
+        avatarId = params.preset ?? "";
       } else if (hasId && !hasPreset && otherParamsCount === 0) {
         avatarId = params.id!;
       } else {
@@ -177,45 +189,63 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
       const fileName = `flavitar_${avatarId || "custom"}.${format}`;
 
       if (format === "png") {
-        await exportToImage(previewRef.current, fileName);
+        await exportToImage(previewReference.current, fileName);
+        toast.success("Exported PNG image");
       } else {
-        await exportToSVG(previewRef.current, fileName);
+        await exportToSVG(previewReference.current, fileName);
+        toast.success("Exported SVG vector");
       }
     }
   };
 
-  const currentCategory = CATEGORIES.find((category) => category.id === deferredCategory)!;
+  const currentCategory = CATEGORIES.find((category) => category.id === activeCategory)!;
   const currentId = avatarState[currentCategory.stateKey] as string;
-  const previewFill = HAIR_COLORS.find((accent) => accent.id === avatarState.hairColor)?.color || HAIR_COLORS[0].color;
+  const previewFill =
+    HAIR_COLORS.find((accent) => accent.id === avatarState.hairColor)?.color ||
+    HAIR_COLORS[0].color;
 
   const accessoryFill =
-    ACCESSORY_ACCENT_COLORS.find((accessory) => accessory.id === (avatarState.accessoryColor || "blue"))?.color ||
-    ACCESSORY_ACCENT_COLORS[0].color;
+    ACCESSORY_ACCENT_COLORS.find(
+      (accessory) => accessory.id === (avatarState.accessoryColor || "blue")
+    )?.color || ACCESSORY_ACCENT_COLORS[0].color;
 
   return (
-    <TooltipProvider delayDuration={1500}>
-      <div className="h-full flex flex-col bg-background selection:bg-primary selection:text-primary-foreground overflow-hidden font-sans">
-        <main className="flex-1 flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto items-stretch lg:border-x-2 lg:border-border bg-background relative z-10 overflow-hidden">
-          <div className="flex-[0.6] lg:flex-none lg:w-[350px] flex flex-col border-b-2 lg:border-b-0 lg:border-r-2 border-border bg-card/5 shrink-0 overflow-hidden">
-            <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-6 relative">
+    <TooltipProvider delayDuration={400}>
+      <div className="h-full flex flex-col bg-background selection:bg-primary selection:text-white overflow-hidden font-sans">
+        <main className="flex-1 flex flex-col lg:flex-row w-full max-w-[1500px] mx-auto items-stretch lg:border-x border-border/70 bg-background relative z-10 overflow-hidden">
+          {/* Left Canvas Stage & Color Studio */}
+          <div className="flex-[0.7] lg:flex-none lg:w-[380px] xl:w-[420px] flex flex-col border-b lg:border-b-0 lg:border-r border-border/70 bg-white/70 backdrop-blur-xs shrink-0 overflow-hidden">
+            <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 relative bg-radial from-white to-stone-50/50">
               <div
-                className="absolute inset-0 border border-border/5 pointer-events-none"
+                className="absolute inset-0 pointer-events-none opacity-40"
                 style={{
                   backgroundImage:
-                    "linear-gradient(#00000003 1px, transparent 1px), linear-gradient(90deg, #00000003 1px, transparent 1px)",
-                  backgroundSize: "16px 16px",
+                    "radial-gradient(circle at 1px 1px, rgba(30, 41, 59, 0.08) 1px, transparent 0)",
+                  backgroundSize: "20px 20px",
                 }}
               />
 
               <div
-                ref={previewRef}
-                className="relative z-10 scale-[0.85] sm:scale-[0.95] lg:scale-[1.1] transition-transform duration-300"
+                ref={previewReference}
+                className="relative z-10 scale-[0.9] sm:scale-100 lg:scale-105 transition-transform duration-300 drop-shadow-sm"
               >
-                <AvatarPreview state={avatarState} size="preview" showBackground={false} />
+                <AvatarPreview state={avatarState} size="preview" showBackground={true} />
               </div>
+
+              {params.preset && (
+                <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/80 text-foreground text-xs font-semibold">
+                  <SparklesIcon className="w-3 h-3 text-primary" />
+                  <span className="capitalize">{params.preset}</span>
+                </div>
+              )}
             </div>
 
-            <div className="hidden lg:flex flex-col overflow-y-auto border-t-2 border-border bg-white p-4 space-y-4 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+            <div className="hidden lg:flex flex-col max-h-[360px] overflow-y-auto border-t border-border/70 bg-white/95 p-5 space-y-4 scrollbar-refined">
+              <div className="flex items-center justify-between pb-1 border-b border-border/50">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Color Studio
+                </h3>
+              </div>
               <EditorColorPickers
                 avatarState={avatarState}
                 handleSkinToneSelect={handleSkinToneSelect}
@@ -226,28 +256,31 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
             </div>
           </div>
 
+          {/* Right Customization Deck */}
           <div className="flex-1 flex flex-col bg-background overflow-hidden relative">
-            <div className="sticky top-0 z-20 border-b-2 border-border p-3 bg-card shrink-0">
-              <CategorySelector categories={CATEGORIES} activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+            <div className="sticky top-0 z-20 border-b border-border/70 p-3 bg-white/90 backdrop-blur-md shrink-0">
+              <CategorySelector
+                categories={CATEGORIES}
+                activeCategory={activeCategory}
+                onCategoryChange={handleCategoryChange}
+              />
             </div>
 
-            <div ref={controlsContainerRef} className="flex-1 overflow-y-auto p-4 scrollbar-none pb-20 lg:pb-4">
+            <div
+              ref={controlsContainerReference}
+              className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-refined pb-24 lg:pb-6"
+            >
               <div className="flex items-center justify-between mb-4 px-1">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-border flex items-center justify-center font-mono text-[8px] font-black bg-primary text-white shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
-                    {currentCategory.id === "extras" ? "★" : ""}
-                  </div>
-                  <h2 className="text-base lg:text-lg font-black tracking-tight uppercase">Module: {currentCategory.label}</h2>
+                  <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+                    {currentCategory.label}
+                  </h2>
+                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                    {Object.keys(currentCategory.items).length} items
+                  </span>
                 </div>
-                <span className="text-[8px] font-mono font-bold text-muted-foreground/50 uppercase">
-                  INDEX: {Object.keys(currentCategory.items).indexOf(currentId) + 1} {Object.keys(currentCategory.items).length}
-                </span>
               </div>
 
-              <div
-                className="transition-opacity duration-150"
-                style={{ opacity: isCategoryPending ? 0.6 : 1 }}
-              >
               <ItemGrid
                 items={currentCategory.items}
                 backItems={currentCategory.backItems}
@@ -256,21 +289,32 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
                 onSelect={handleItemSelect}
                 allowNone={currentCategory.allowNone}
                 previewFill={previewFill}
-                hatFill={HAIR_COLORS.find((accent) => accent.id === avatarState.hatColor)?.color || HAIR_COLORS[0].color}
+                hatFill={
+                  HAIR_COLORS.find((accent) => accent.id === avatarState.hatColor)?.color ||
+                  HAIR_COLORS[0].color
+                }
                 hairFill={previewFill}
-                skinToneFill={SKIN_TONES.find((tone) => tone.id === avatarState.skinTone)?.color || SKIN_TONES[0].color}
+                skinToneFill={
+                  SKIN_TONES.find((tone) => tone.id === avatarState.skinTone)?.color ||
+                  SKIN_TONES[0].color
+                }
                 accessoryFill={accessoryFill}
-                bodyFill={HAIR_COLORS.find((accent) => accent.id === avatarState.bodyColor)?.color || HAIR_COLORS[0].color}
+                bodyFill={
+                  HAIR_COLORS.find((accent) => accent.id === avatarState.bodyColor)?.color ||
+                  HAIR_COLORS[0].color
+                }
                 accessoryColorId={avatarState.accessoryColor}
                 hatColorId={avatarState.hatColor}
                 bodyColorId={avatarState.bodyColor}
                 categoryId={currentCategory.id}
                 headId={avatarState.head}
               />
-              </div>
 
-              <div className="lg:hidden mt-8 space-y-6 bg-card/30 p-4 border-2 border-border/50 rounded-lg">
-                <h3 className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-2">Configure Colors</h3>
+
+              <div className="lg:hidden mt-8 space-y-4 bg-white/80 p-5 border border-border/70 rounded-2xl shadow-xs">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                  Color Studio
+                </h3>
                 <EditorColorPickers
                   avatarState={avatarState}
                   handleSkinToneSelect={handleSkinToneSelect}
@@ -281,7 +325,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
               </div>
             </div>
 
-            <footer className="shrink-0 bg-background border-t-2 border-border lg:border-t-0">
+            <footer className="shrink-0 bg-white border-t border-border/70">
               <ActionBar
                 onRandomize={handleRandomize}
                 onReset={handleReset}
@@ -293,25 +337,21 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }) => {
           </div>
         </main>
 
-        <footer className="border-t-2 border-border bg-card h-8 shrink-0 flex items-center justify-between px-4 text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.2em] overflow-hidden">
-          <Link href={pathEditorUrl} className="flex items-center gap-1.5 hover:text-primary transition-colors">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
-            Path Editor
+        <footer className="border-t border-border/70 bg-white/80 h-9 shrink-0 flex items-center justify-between px-4 sm:px-6 text-[11px] font-medium text-muted-foreground overflow-hidden">
+          <Link
+            href={pathEditorUrl}
+            className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+          >
+            <PenToolIcon className="w-3.5 h-3.5 text-primary" />
+            <span>Path Editor</span>
           </Link>
-          <span>© 2025 FLAVITARS • XURIFY</span>
+          <span>Flavitars Modular Avatar Engine</span>
         </footer>
       </div>
     </TooltipProvider>
   );
 };
 
-/* Extracted Color Picker Group for reuse */
 const EditorColorPickers = ({
   avatarState,
   handleSkinToneSelect,
@@ -320,14 +360,19 @@ const EditorColorPickers = ({
   handleBodyColorSelect,
 }: {
   avatarState: AvatarState;
-  handleSkinToneSelect: (id: string) => void;
-  handleHairColorSelect: (id: string) => void;
+  handleSkinToneSelect: (identifier: string) => void;
+  handleHairColorSelect: (identifier: string) => void;
   handleParamsChange: (updates: Partial<AvatarStateParams>) => void;
-  handleBodyColorSelect: (id: string) => void;
-}) => (
+  handleBodyColorSelect: (identifier: string) => void;
+}): React.JSX.Element => (
   <div className="space-y-4">
-    <ColorPicker label="Skin Tone" colors={SKIN_TONES} selectedIndex={avatarState.skinTone} onSelect={handleSkinToneSelect} />
-    <div className="border-t border-dashed border-border/20 pt-1" />
+    <ColorPicker
+      label="Skin Tone"
+      colors={SKIN_TONES}
+      selectedIndex={avatarState.skinTone}
+      onSelect={handleSkinToneSelect}
+    />
+    <div className="border-t border-border/40" />
     <ColorPicker
       label="Hair Color"
       colors={HAIR_COLORS}
@@ -335,7 +380,7 @@ const EditorColorPickers = ({
       onSelect={handleHairColorSelect}
       disabled={avatarState.hair === "bald"}
     />
-    <div className="border-t border-dashed border-border/20 pt-1" />
+    <div className="border-t border-border/40" />
     <ColorPicker
       label="Hat Color"
       colors={HAIR_COLORS}
@@ -344,13 +389,12 @@ const EditorColorPickers = ({
         return hatItem?.component?.colors;
       })()}
       selectedIndex={avatarState.hatColor}
-      onSelect={(id) => {
-        handleParamsChange({ hat_color: id });
+      onSelect={(identifier) => {
+        handleParamsChange({ hat_color: identifier });
       }}
       disabled={avatarState.hat === "none" || avatarState.hat === "chefHat"}
     />
-
-    <div className="border-t border-dashed border-border/20 pt-1" />
+    <div className="border-t border-border/40" />
     <ColorPicker
       label="Accessories Accent"
       colors={ACCESSORY_ACCENT_COLORS}
@@ -359,14 +403,20 @@ const EditorColorPickers = ({
         return item?.component?.colors;
       })()}
       selectedIndex={avatarState.accessoryColor}
-      onSelect={(id) => {
-        handleParamsChange({ accessory_color: id });
+      onSelect={(identifier) => {
+        handleParamsChange({ accessory_color: identifier });
       }}
       disabled={avatarState.accessories === "none"}
     />
-    <div className="border-t border-dashed border-border/20 pt-1" />
-    <ColorPicker label="Body Color" colors={HAIR_COLORS} selectedIndex={avatarState.bodyColor} onSelect={handleBodyColorSelect} />
+    <div className="border-t border-border/40" />
+    <ColorPicker
+      label="Body Color"
+      colors={HAIR_COLORS}
+      selectedIndex={avatarState.bodyColor}
+      onSelect={handleBodyColorSelect}
+    />
   </div>
 );
 
 export default AvatarEditor;
+

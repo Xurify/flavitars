@@ -3,11 +3,11 @@ import { Metadata } from "next";
 import { SvgPathEditor } from "@/components/svg-editor/SvgPathEditor";
 
 export const metadata: Metadata = {
-  title: "SVG Editor | Flavitars",
+  title: "Path Editor",
   description: "Edit avatar hairstyles and visualize hat interactions",
 };
 
-function EditorLoading() {
+function EditorLoading(): React.JSX.Element {
   return (
     <div className="h-screen w-full flex items-center justify-center bg-zinc-950">
       <div className="flex flex-col items-center gap-4">
@@ -18,7 +18,7 @@ function EditorLoading() {
   );
 }
 
-export default function EditsPage() {
+export default function EditsPage(): React.JSX.Element {
   return (
     <main className="h-screen bg-zinc-950 text-zinc-100 overflow-hidden">
       <Suspense fallback={<EditorLoading />}>
@@ -27,3 +27,4 @@ export default function EditsPage() {
     </main>
   );
 }
+

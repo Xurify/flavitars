@@ -167,7 +167,7 @@ export function SvgPathEditor() {
   const isDirty = useMemo(() => {
     if (!activeProject) return false;
     return JSON.stringify(commands) !== JSON.stringify(activeProject.commands);
-  }, [commands, activeProject?.commands, activeProject]);
+  }, [commands, activeProject]);
 
   const showDirty = hasLoaded && isDirty;
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { HairId } from "@/lib/avatar/parts/hair";
-import { HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
+import { HatId } from "@/lib/avatar/parts/hats";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CodeIcon, ClipboardIcon, CheckIcon } from "lucide-react";
 import { formatPathReadable, parsePath, serializePath } from "@/lib/svg-editor/path-parser";

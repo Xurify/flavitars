@@ -662,7 +662,7 @@ export const NurseCap = createAvatarItem({
 export const MilitaryHelmet = createAvatarItem({
   id: "militaryHelmet",
   name: "Military Helmet",
-  svg: ({ fill, headId, hatId }) => (
+  svg: ({ headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, -2, 1.1)}>
       <path d="M25 15 Q 50 -5, 75 15 L 80 30 H 20 Z" fill={"#52663bff"} stroke="currentColor" strokeWidth="2.5" />
       <path d="M25 18 H 75" stroke="#181a17ff" opacity="1" strokeWidth="1" strokeDasharray="3 3" />

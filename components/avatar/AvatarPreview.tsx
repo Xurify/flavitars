@@ -14,11 +14,11 @@ interface AvatarPreviewProps {
 }
 
 const sizeClasses = {
-  sm: "w-12 h-12",
-  md: "w-20 h-20",
-  lg: "w-32 h-32",
-  xl: "w-48 h-48",
-  preview: "w-64 h-64",
+  sm: "w-12 h-12 rounded-xl",
+  md: "w-20 h-20 rounded-xl",
+  lg: "w-32 h-32 rounded-2xl",
+  xl: "w-48 h-48 rounded-2xl",
+  preview: "w-64 h-64 sm:w-72 sm:h-72 rounded-2xl",
 };
 
 export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
@@ -27,7 +27,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   className,
   showBackground = true,
   centered = false,
-}) => {
+}): React.JSX.Element => {
   const { hairColor } = resolveAvatarColors(state);
 
   const baseId = useId();
@@ -37,7 +37,8 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
     <div
       className={cn(
         "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
-        showBackground && "bg-card border-2 border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+        showBackground &&
+          "bg-white border border-border/80 shadow-lg shadow-black/[0.04] ring-1 ring-black/[0.03]",
         sizeClasses[size],
         className
       )}
@@ -47,7 +48,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
         viewBox="0 0 100 100"
         className={cn(
           "w-full h-full text-foreground transform transition-transform duration-300",
-          !centered && "scale-[0.85] translate-y-[-5%]"
+          !centered && "scale-[0.88] translate-y-[-4%]"
         )}
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -56,8 +57,25 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
         <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
           {state.texture !== "none" && (
             <>
-              <rect x="0" y="0" width="100" height="100" fill="currentColor" opacity="0.06" className="text-foreground" />
-              <rect x="0" y="0" width="100" height="100" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.1" />
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                fill="currentColor"
+                opacity="0.05"
+                className="text-foreground"
+              />
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.5"
+                opacity="0.08"
+              />
             </>
           )}
 
@@ -69,3 +87,4 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
 };
 
 export default AvatarPreview;
+

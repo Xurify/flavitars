@@ -1,21 +1,15 @@
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { PaletteIcon } from "lucide-react";
 import { AvatarState } from "@/lib/avatar/types";
 import AvatarPreview from "@/components/avatar/AvatarPreview";
 import { Button } from "@/components/ui/button";
 import { AVATAR_PRESETS } from "@/lib/avatar/config/presets/presets";
 
-export default function NotFound() {
+export default function NotFound(): React.JSX.Element {
   return (
-    <div className="min-h-full bg-[#F5F0E6] flex items-center justify-center p-4 lg:p-8 font-retro text-foreground">
-      <div className="max-w-lg w-full text-center space-y-8">
-        <div className="relative">
-          <h1 className="text-[8rem] sm:text-[12rem] font-pixel leading-none select-none [text-shadow:4px_4px_0px_#d64a2f,8px_8px_0px_#2C2420]">
-            404
-          </h1>
-        </div>
-
-        <div className="mx-auto w-40 h-40 bg-white border-4 border-foreground shadow-[6px_6px_0px_0px_#2C2420] overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-8 text-foreground">
+      <div className="max-w-md w-full text-center space-y-6 bg-white border border-border/80 rounded-3xl p-8 sm:p-10 shadow-lg shadow-black/5">
+        <div className="mx-auto w-36 h-36 rounded-2xl bg-stone-50 border border-border/70 overflow-hidden flex items-center justify-center p-3 shadow-xs">
           <AvatarPreview
             state={AVATAR_PRESETS.prvy as AvatarState}
             size="preview"
@@ -25,28 +19,28 @@ export default function NotFound() {
           />
         </div>
 
-        <div className="space-y-3">
-          <h2 className="text-2xl sm:text-3xl font-pixel uppercase">Page Not Found</h2>
-          <p className="text-lg opacity-80 max-w-md mx-auto">
-            Looks like this avatar wandered off! The page you&apos;re looking for doesn&apos;t exist or has been moved.
+        <div className="space-y-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-primary">
+            404 Error
+          </span>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Avatar Not Found
+          </h1>
+          <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+            Looks like this avatar wandered off! The page you&apos;re looking for doesn&apos;t exist or has moved.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="pt-2 flex justify-center">
           <Link href="/">
-            <Button className="w-full sm:w-auto text-lg px-6 py-3 h-auto">
-              <Home className="w-5 h-5 mr-2" />
-              Back to Editor
+            <Button variant="primary" size="default" className="gap-2">
+              <PaletteIcon className="w-4 h-4" />
+              <span>Back to Studio</span>
             </Button>
           </Link>
-        </div>
-
-        <div className="pt-8">
-          <div className="h-2 bg-foreground w-full max-w-xs mx-auto" />
-          <div className="h-2 bg-primary w-full max-w-[200px] mx-auto mt-1" />
-          <div className="h-2 bg-foreground w-full max-w-[120px] mx-auto mt-1" />
         </div>
       </div>
     </div>
   );
 }
+
