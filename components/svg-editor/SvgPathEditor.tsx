@@ -1,11 +1,24 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import {
+  GridIcon,
+  HistoryIcon,
+  FolderIcon,
+  SaveIcon,
+  RotateCcwIcon,
+  CopyIcon,
+  CheckIcon,
+  ExternalLinkIcon,
+  MousePointerIcon,
+  MoveIcon,
+  ScissorsIcon,
+} from "lucide-react";
 import { HairIds, HairId } from "@/lib/avatar/parts/hair-ids";
-import { HatIds, HatId, SMALL_HATS } from "@/lib/avatar/parts/hats";
+import { HatIds, HatId } from "@/lib/avatar/parts/hats";
 import {
   parsePath,
   serializePath,
@@ -15,7 +28,12 @@ import {
   PathCommand,
   PathNode,
 } from "@/lib/svg-editor/path-parser";
-import { getHairPathData, hasHairVariants, hasHairHighlight, getHairHighlightPath } from "@/lib/avatar/parts/hair-paths";
+import {
+  getHairPathData,
+  hasHairVariants,
+  hasHairHighlight,
+  getHairHighlightPath,
+} from "@/lib/avatar/parts/hair-paths";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
@@ -25,7 +43,12 @@ import { ClickableAvatarPreview } from "./ClickableAvatarPreview";
 import { useProjectsPersistence } from "@/hooks/use-editor-persistence";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
-import { SelectedPart, CATEGORY_DISPLAY_NAMES, parseAvatarStateFromParams } from "@/lib/svg-editor/part-data";
+import {
+  SelectedPart,
+  CATEGORY_DISPLAY_NAMES,
+  parseAvatarStateFromParams,
+} from "@/lib/svg-editor/part-data";
+import { cn } from "@/lib/utils/strings";
 
 const MAX_HISTORY = 100;
 
@@ -36,8 +59,7 @@ interface HistoryEntry {
   label: string;
 }
 
-export function SvgPathEditor() {
-  const pathname = usePathname();
+export function SvgPathEditor(): React.JSX.Element {
   const searchParams = useSearchParams();
 
   const [avatarState, setAvatarState] = useState<AvatarState>(() => {
@@ -62,14 +84,15 @@ export function SvgPathEditor() {
   const [copiedPath, setCopiedPath] = useState(false);
   const [editMode, setEditMode] = useState<"node" | "drag" | "split">("node");
   const [showHistory, setShowHistory] = useState(true);
-  const [breakdownWidth, setBreakdownWidth] = useState(384);
-  const [historyWidth, setHistoryWidth] = useState(240);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [breakdownWidth, setBreakdownWidth] = useState(380);
+  const [historyWidth, setHistoryWidth] = useState(250);
+  const containerReference = useRef<HTMLDivElement>(null);
   const [isResizingBreakdown, setIsResizingBreakdown] = useState(false);
   const [isResizingHistory, setIsResizingHistory] = useState(false);
   const [showProjectsPanel, setShowProjectsPanel] = useState(false);
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const [minLoadingFinished, setMinLoadingFinished] = useState(false);
+  const [layerCommands, setLayerCommands] = useState<Record<string, PathCommand[]>>({});
 
   const {
     projects,
@@ -87,25 +110,21 @@ export function SvgPathEditor() {
     closeProject,
   } = useProjectsPersistence();
 
-  const formatLabel = useCallback((id: string): string => {
-    const spaced = id.replace(/([A-Z])/g, " $1").trim();
+  const formatLabel = useCallback((identifier: string): string => {
+    const spaced = identifier.replace(/([A-Z])/g, " $1").trim();
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
   }, []);
 
   useEffect(() => {
-    setAvatarState((prev) => ({
-      ...prev,
+    setAvatarState((previousState) => ({
+      ...previousState,
       hair: selectedHair,
       hat: selectedHat,
     }));
   }, [selectedHair, selectedHat]);
 
   useEffect(() => {
-    layerCommandsRef.current = {};
-  }, [selectedHair, selectedHat]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMinLoadingFinished(true), 1500);
+    const timer = setTimeout(() => setMinLoadingFinished(true), 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -119,50 +138,120 @@ export function SvgPathEditor() {
 
   const hasVariants = useMemo(() => hasHairVariants(selectedHair, layer), [selectedHair, layer]);
   const hasHighlight = useMemo(() => hasHairHighlight(selectedHair), [selectedHair]);
-
-  const effectiveUseHatVariant = useMemo(() => {
-    if (layer === "highlight") return false;
-    if (useHatVariant !== null) return useHatVariant;
-    return selectedHat !== "none" && !SMALL_HATS.includes(selectedHat);
-  }, [useHatVariant, selectedHat, layer]);
+  const effectiveUseHatVariant = useHatVariant ?? (selectedHat !== "none" && hasVariants);
 
   const rawPathData = useMemo(() => {
-    // Pass a known "physical" hat ID if we want the hat variant
-    const hatIdForData = effectiveUseHatVariant ? "topHat" : "none";
-    return getHairPathData(selectedHair, layer, hatIdForData as HatId);
+    if (layer === "highlight") {
+      return getHairHighlightPath(selectedHair);
+    }
+    return getHairPathData(selectedHair, layer, effectiveUseHatVariant ? "topHat" : "none");
   }, [selectedHair, layer, effectiveUseHatVariant]);
 
-  const [commands, setCommands] = useState<PathCommand[]>(() => parsePath(rawPathData).commands);
-  const commandsRef = useRef<PathCommand[]>(commands);
-  const layerCommandsRef = useRef<Partial<Record<"front" | "back" | "highlight", PathCommand[]>>>({});
+  const highlightPathString = useMemo(() => {
+    if (!hasHighlight) return undefined;
+    return getHairHighlightPath(selectedHair);
+  }, [selectedHair, hasHighlight]);
+
+  const [commands, setCommands] = useState<PathCommand[]>([]);
+  const initialCommandsLoadedRef = useRef(false);
+
+  const [{ history, index: historyIndex }, setHistoryState] = useState<{
+    history: HistoryEntry[];
+    index: number;
+  }>({
+    history: [],
+    index: 0,
+  });
+
+  const historyRef = useRef(history);
+  const historyIndexRef = useRef(historyIndex);
+  const commandsRef = useRef(commands);
 
   useEffect(() => {
     commandsRef.current = commands;
   }, [commands]);
 
-  const hasCreatedInitialProject = useRef(false);
-  useEffect(() => {
-    if (hasLoaded && projects.length === 0 && !hasCreatedInitialProject.current) {
-      hasCreatedInitialProject.current = true;
-      const defaultName = `(Draft) ${formatLabel(selectedHair)} - ${new Date().toLocaleDateString()}`;
-      createProject(defaultName, selectedHair, selectedHat, layer, parsePath(rawPathData).commands);
+  const pushToHistory = useCallback((newCommands: PathCommand[], label: string): void => {
+    const currentCommands = commandsRef.current;
+    if (commandsEqual(newCommands, currentCommands) && historyRef.current.length > 0) {
+      return;
     }
-  }, [hasLoaded, projects.length, selectedHair, selectedHat, layer, rawPathData, createProject, formatLabel]);
 
-  const [historyState, setHistoryState] = useState<{ history: HistoryEntry[]; index: number }>({
-    history: [],
-    index: -1,
-  });
-  const historyRef = useRef<HistoryEntry[]>([]);
-  const historyIndexRef = useRef(-1);
+    setCommands(newCommands);
 
-  const history = historyState.history;
-  const historyIndex = historyState.index;
+    const newEntry: HistoryEntry = {
+      id: Math.random().toString(36).substring(2, 11),
+      timestamp: Date.now(),
+      commands: newCommands,
+      label,
+    };
+
+    const currentHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+    const updatedHistory = [...currentHistory, newEntry].slice(-MAX_HISTORY);
+
+    const newIndex = updatedHistory.length - 1;
+    historyRef.current = updatedHistory;
+    historyIndexRef.current = newIndex;
+
+    setHistoryState({
+      history: updatedHistory,
+      index: newIndex,
+    });
+  }, []);
+
+  const previousContextKey = useRef("");
 
   useEffect(() => {
-    historyRef.current = history;
-    historyIndexRef.current = historyIndex;
-  }, [history, historyIndex]);
+    const currentContextKey = `${selectedHair}-${selectedHat}-${layer}-${effectiveUseHatVariant}`;
+
+    if (activeProject && !initialCommandsLoadedRef.current) {
+      initialCommandsLoadedRef.current = true;
+      previousContextKey.current = currentContextKey;
+      setCommands(activeProject.commands);
+
+      const initialEntry: HistoryEntry = {
+        id: Math.random().toString(36).substring(2, 11),
+        timestamp: Date.now(),
+        commands: activeProject.commands,
+        label: `Loaded: ${activeProject.name}`,
+      };
+      setHistoryState({ history: [initialEntry], index: 0 });
+      return;
+    }
+
+    if (previousContextKey.current === currentContextKey && initialCommandsLoadedRef.current) {
+      return;
+    }
+
+    previousContextKey.current = currentContextKey;
+
+    if (layerCommands[layer]) {
+      const savedCommands = layerCommands[layer];
+      setCommands(savedCommands);
+      const initialEntry: HistoryEntry = {
+        id: Math.random().toString(36).substring(2, 11),
+        timestamp: Date.now(),
+        commands: savedCommands,
+        label: `Switched to ${layer}`,
+      };
+      setHistoryState({ history: [initialEntry], index: 0 });
+      return;
+    }
+
+    const parsed = parsePath(rawPathData);
+    setCommands(parsed.commands);
+
+    const initialEntry: HistoryEntry = {
+      id: Math.random().toString(36).substring(2, 11),
+      timestamp: Date.now(),
+      commands: parsed.commands,
+      label: `Initial ${selectedHair} (${layer})`,
+    };
+    setHistoryState({ history: [initialEntry], index: 0 });
+  }, [selectedHair, selectedHat, layer, rawPathData, effectiveUseHatVariant, activeProject, layerCommands]);
+
+  const nodes = useMemo(() => extractNodes(commands), [commands]);
+  const pathString = useMemo(() => serializePath(commands), [commands]);
 
   const isDirty = useMemo(() => {
     if (!activeProject) return false;
@@ -172,211 +261,104 @@ export function SvgPathEditor() {
   const showDirty = hasLoaded && isDirty;
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
         updateActiveProject(selectedHair, selectedHat, layer, commands);
         saveNow();
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [saveNow, updateActiveProject, selectedHair, selectedHat, layer, commands]);
-
-  useEffect(() => {
-    if (activeProject && hasLoaded) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const hasUrlHair = urlParams.has("hair");
-
-      if (!hasUrlHair) {
-        setSelectedHair(activeProject.selectedHair);
-        setSelectedHat(activeProject.selectedHat);
-        setLayer(activeProject.layer);
-        setCommands(activeProject.commands);
-        layerCommandsRef.current[activeProject.layer] = activeProject.commands;
-      } else {
-        const hairFromUrl = urlParams.get("hair") as HairId;
-        const hatFromUrl = (urlParams.get("hat") as HatId) || "none";
-        setSelectedHair(hairFromUrl);
-        setSelectedHat(hatFromUrl);
-        setLayer("front");
-
-        const pathData = getHairPathData(hairFromUrl, "front", hatFromUrl);
-        const initialCommands = parsePath(pathData).commands;
-        setCommands(initialCommands);
-      }
-
-      const initialEntry: HistoryEntry = {
-        id: Math.random().toString(36).substr(2, 9),
-        timestamp: Date.now(),
-        commands: hasUrlHair
-          ? parsePath(getHairPathData(urlParams.get("hair") as HairId, "front", (urlParams.get("hat") as HatId) || "none"))
-              .commands
-          : activeProject.commands,
-        label: hasUrlHair ? `Initial ${urlParams.get("hair")} (front)` : `Loaded ${activeProject.name}`,
-      };
-      setHistoryState({ history: [initialEntry], index: 0 });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProject?.id, hasLoaded]);
-
-  useEffect(() => {
-    const hatIdForData = effectiveUseHatVariant ? "topHat" : "none";
-    const pathDataForLayer = getHairPathData(selectedHair, layer, hatIdForData as HatId);
-    const canonicalCommands = parsePath(pathDataForLayer).commands;
-    const savedForLayer = layerCommandsRef.current[layer];
-    const initialCommands = savedForLayer ?? canonicalCommands;
-    setCommands(initialCommands);
-    const initialEntry: HistoryEntry = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: Date.now(),
-      commands: initialCommands,
-      label: `Initial ${selectedHair} (${layer})`,
-    };
-    setHistoryState({ history: [initialEntry], index: 0 });
-    setSelectedNodeId(null);
-  }, [selectedHair, layer, effectiveUseHatVariant]);
-
-  const pushToHistory = useCallback((newCommands: PathCommand[], label: string) => {
-    const currentHistory = historyRef.current;
-    const currentIndex = historyIndexRef.current;
-    const headCommands = currentHistory[currentIndex]?.commands;
-    if (headCommands && commandsEqual(newCommands, headCommands)) return;
-    const newEntry: HistoryEntry = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: Date.now(),
-      commands: newCommands,
-      label,
-    };
-    const redoBranchDiscarded = currentHistory.slice(0, currentIndex + 1);
-    const newHistory = [...redoBranchDiscarded, newEntry];
-    if (newHistory.length > MAX_HISTORY) newHistory.shift();
-    const nextIndex = newHistory.length - 1;
-    historyRef.current = newHistory;
-    historyIndexRef.current = nextIndex;
-    setHistoryState({ history: newHistory, index: nextIndex });
-    setCommands(newCommands);
-  }, []);
-
-  const undo = useCallback(() => {
-    const currentHistory = historyRef.current;
-    const currentIndex = historyIndexRef.current;
-    if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
-      historyIndexRef.current = prevIndex;
-      setHistoryState((prev) => ({ ...prev, index: prevIndex }));
-      setCommands(currentHistory[prevIndex].commands);
-    }
-  }, []);
-
-  const redo = useCallback(() => {
-    const currentHistory = historyRef.current;
-    const currentIndex = historyIndexRef.current;
-    if (currentIndex < currentHistory.length - 1) {
-      const nextIndex = currentIndex + 1;
-      historyIndexRef.current = nextIndex;
-      setHistoryState((prev) => ({ ...prev, index: nextIndex }));
-      setCommands(currentHistory[nextIndex].commands);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+      if ((event.ctrlKey || event.metaKey) && event.key === "z" && !event.shiftKey) {
         event.preventDefault();
-        undo();
-      } else if ((event.ctrlKey || event.metaKey) && (event.key === "y" || (event.shiftKey && event.key === "Z"))) {
-        event.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [undo, redo]);
-
-  const nodes = useMemo(() => extractNodes(commands), [commands]);
-
-  const pathString = useMemo(() => serializePath(commands), [commands]);
-
-  const highlightPathString = useMemo(() => getHairHighlightPath(selectedHair), [selectedHair]);
-
-  const mainEditorUrl = useMemo(() => {
-    const withoutPathEditor = pathname.replace(/\/path-editor\/?$/, "") || "/";
-    const query = searchParams.toString();
-    return query ? `${withoutPathEditor}?${query}` : withoutPathEditor;
-  }, [pathname, searchParams]);
-
-  const handleNodeDrag = useCallback((node: PathNode, newX: number, newY: number) => {
-    const updated = updateNodePosition(commandsRef.current, node, Math.round(newX), Math.round(newY));
-    setCommands(updated);
-  }, []);
-
-  const handlePathDrag = useCallback((deltaX: number, deltaY: number) => {
-    const updated = commandsRef.current.map((cmd) => {
-      const type = cmd.type;
-      const upperType = type.toUpperCase();
-      const isRelative = type === type.toLowerCase() && type !== "Z" && type !== "z";
-
-      // Re-map params based on coordinate type
-      const newParams = [...cmd.params];
-
-      if (!isRelative) {
-        if (upperType === "M" || upperType === "L" || upperType === "T") {
-          newParams[0] += deltaX;
-          newParams[1] += deltaY;
-        } else if (upperType === "H") {
-          newParams[0] += deltaX;
-        } else if (upperType === "V") {
-          newParams[0] += deltaY;
-        } else if (upperType === "S" || upperType === "Q") {
-          newParams[0] += deltaX;
-          newParams[1] += deltaY;
-          newParams[2] += deltaX;
-          newParams[3] += deltaY;
-        } else if (upperType === "C") {
-          newParams[0] += deltaX;
-          newParams[1] += deltaY;
-          newParams[2] += deltaX;
-          newParams[3] += deltaY;
-          newParams[4] += deltaX;
-          newParams[5] += deltaY;
-        } else if (upperType === "A") {
-          newParams[5] += deltaX;
-          newParams[6] += deltaY;
+        if (historyIndexRef.current > 0) {
+          const newIndex = historyIndexRef.current - 1;
+          historyIndexRef.current = newIndex;
+          setHistoryState((previous) => ({ ...previous, index: newIndex }));
+          setCommands(historyRef.current[newIndex].commands);
         }
       }
+      if (
+        ((event.ctrlKey || event.metaKey) && event.key === "y") ||
+        ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "z")
+      ) {
+        event.preventDefault();
+        if (historyIndexRef.current < historyRef.current.length - 1) {
+          const newIndex = historyIndexRef.current + 1;
+          historyIndexRef.current = newIndex;
+          setHistoryState((previous) => ({ ...previous, index: newIndex }));
+          setCommands(historyRef.current[newIndex].commands);
+        }
+      }
+    };
 
-      return { ...cmd, params: newParams };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [commands, layer, saveNow, selectedHair, selectedHat, updateActiveProject]);
+
+  const mainEditorUrl = useMemo(() => {
+    const parameters = new URLSearchParams(searchParams?.toString() ?? "");
+    parameters.set("hair", selectedHair);
+    parameters.set("hat", selectedHat);
+    return `/?${parameters.toString()}`;
+  }, [searchParams, selectedHair, selectedHat]);
+
+  const handleNodeDrag = useCallback(
+    (node: PathNode, newX: number, newY: number): void => {
+      const currentCommands = commandsRef.current;
+      const updated = updateNodePosition(currentCommands, node, newX, newY);
+      setCommands(updated);
+    },
+    []
+  );
+
+  const handlePathDrag = useCallback((deltaX: number, deltaY: number): void => {
+    const currentCommands = commandsRef.current;
+    const roundedDeltaX = Math.round(deltaX);
+    const roundedDeltaY = Math.round(deltaY);
+
+    if (roundedDeltaX === 0 && roundedDeltaY === 0) return;
+
+    const updated = currentCommands.map((command) => {
+      const newParameters = [...command.params];
+      for (let index = 0; index < newParameters.length; index += 2) {
+        if (index + 1 < newParameters.length) {
+          newParameters[index] = Math.round(newParameters[index] + roundedDeltaX);
+          newParameters[index + 1] = Math.round(newParameters[index + 1] + roundedDeltaY);
+        }
+      }
+      return { ...command, params: newParameters };
     });
     setCommands(updated);
   }, []);
 
-  const handleDragEnd = useCallback(() => {
+  const handleDragEnd = useCallback((): void => {
     const label = editMode === "drag" ? "Re-position Path" : "Drag Node";
     pushToHistory(commandsRef.current, label);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editMode]);
+  }, [editMode, pushToHistory]);
 
-  const handleCommandUpdate = (index: number, params: number[]) => {
+  const handleCommandUpdate = (index: number, parameters: number[]): void => {
     const updated = [...commands];
-    updated[index] = { ...updated[index], params };
-    pushToHistory(updated, `Update Command ${commands[index].type}`);
+    updated[index] = { ...updated[index], params: parameters };
+    pushToHistory(updated, `Update ${commands[index].type}`);
   };
 
-  const handleDeleteCommand = (index: number) => {
+  const handleDeleteCommand = (index: number): void => {
     if (commands.length <= 1) return;
     const deletedType = commands[index].type;
-    const updated = commands.filter((_, idx) => idx !== index);
-    pushToHistory(updated, `Delete ${deletedType} Segment`);
+    const updated = commands.filter((_, itemIndex) => itemIndex !== index);
+    pushToHistory(updated, `Delete ${deletedType}`);
   };
 
-  const handlePathSplit = (newCommands: PathCommand[]) => {
+  const handlePathSplit = (newCommands: PathCommand[]): void => {
     pushToHistory(newCommands, "Split Path");
   };
 
+  const handleLayerSwitch = (newLayer: "front" | "back" | "highlight"): void => {
+    setLayerCommands((previous) => ({ ...previous, [layer]: commands }));
+    setLayer(newLayer);
+  };
+
   useEffect(() => {
-    const handleWindowMouseMove = (event: MouseEvent) => {
+    const handleWindowMouseMove = (event: MouseEvent): void => {
       if (isResizingBreakdown) {
         const newWidth = window.innerWidth - event.clientX - (showHistory ? historyWidth : 0);
         if (newWidth >= 280 && newWidth <= 800) {
@@ -390,7 +372,7 @@ export function SvgPathEditor() {
       }
     };
 
-    const handleWindowMouseUp = () => {
+    const handleWindowMouseUp = (): void => {
       setIsResizingBreakdown(false);
       setIsResizingHistory(false);
     };
@@ -408,126 +390,128 @@ export function SvgPathEditor() {
 
   return (
     <div
-      ref={containerRef}
-      className={`h-full flex flex-col bg-zinc-950 text-zinc-300 ${
-        isResizingBreakdown || isResizingHistory ? "cursor-col-resize select-none" : ""
-      }`}
+      ref={containerReference}
+      className={cn(
+        "h-full flex flex-col bg-zinc-950 text-zinc-300 overflow-hidden font-sans select-none",
+        (isResizingBreakdown || isResizingHistory) && "cursor-col-resize select-none"
+      )}
     >
-      <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] overflow-hidden relative">
-              <Image src="/images/icons/drew.png" alt="Flavitar Logo" fill className="object-cover" />
+      {/* Top Header Bar */}
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-800/80 bg-zinc-900/80 backdrop-blur-md shrink-0 z-30">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-full overflow-hidden relative ring-1 ring-zinc-700 group-hover:ring-primary transition-all shrink-0">
+              <Image src="/images/icons/drew.png" alt="Flavitars" fill className="object-cover" priority />
             </div>
-            <h1 className="text-lg font-semibold tracking-tight">SVG Path Editor</h1>
+            <span className="text-sm font-bold tracking-tight text-zinc-100 font-heading">
+              Flavitars
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+              Editor
+            </span>
           </Link>
-          <Link
-            href={mainEditorUrl}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 border border-zinc-700/50 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Open in Editor
-          </Link>
-          {activeProject && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 border border-zinc-700/50 rounded-lg group">
-              <div
-                className={`w-2 h-2 rounded-full transition-all ${isDirty ? "bg-amber-500 animate-pulse scale-110 shadow-[0_0_8px_rgba(245,158,11,0.5)]" : "bg-zinc-600"}`}
-              />
-              <span className={`text-xs font-medium transition-colors ${isDirty ? "text-zinc-100" : "text-zinc-400"}`}>
-                {activeProject.name}
-                {isDirty ? "*" : ""}
+
+          <div className="hidden md:flex items-center gap-2 pl-3 border-l border-zinc-800">
+            <Link
+              href={mainEditorUrl}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 border border-zinc-700/60 transition-colors"
+            >
+              <ExternalLinkIcon className="w-3.5 h-3.5 text-primary" />
+              <span>Open in Studio</span>
+            </Link>
+
+            {activeProject && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/70 border border-zinc-700/60 rounded-xl">
+                <span
+                  className={cn(
+                    "w-2 h-2 rounded-full",
+                    isDirty ? "bg-primary animate-pulse" : "bg-emerald-500"
+                  )}
+                />
+                <span className="text-xs font-medium text-zinc-200">
+                  {activeProject.name}
+                  {isDirty ? " *" : ""}
+                </span>
+              </div>
+            )}
+
+            {showSavedMessage && lastSavedAt && (
+              <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                <CheckIcon className="w-3.5 h-3.5" />
+                Saved
               </span>
-            </div>
-          )}
-          {showSavedMessage && lastSavedAt && <span className="text-xs text-emerald-500 animate-in fade-in">Saved</span>}
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1 h-9 bg-zinc-950/50 p-1.5 rounded-xl border border-zinc-800 shadow-inner">
+        {/* Header Right Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Quick View Toggle Pills */}
+          <div className="hidden lg:flex items-center gap-1 bg-zinc-950/80 p-1 rounded-xl border border-zinc-800 shadow-inner">
             <button
+              type="button"
               onClick={() => setShowGrid(!showGrid)}
-              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showGrid ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
-              title="Toggle Show Grid"
+              className={cn(
+                "p-1.5 rounded-lg text-xs font-medium transition-colors",
+                showGrid ? "bg-primary/20 text-primary" : "text-zinc-400 hover:text-zinc-200"
+              )}
+              title="Toggle Grid"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path opacity="0.4" d="M3 3h18v18H3z" />
-                <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
-              </svg>
+              <GridIcon className="w-3.5 h-3.5" />
             </button>
             <button
+              type="button"
               onClick={() => setShowNodes(!showNodes)}
-              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showNodes ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
-              title="Toggle Show Nodes"
+              className={cn(
+                "p-1.5 rounded-lg text-xs font-medium transition-colors",
+                showNodes ? "bg-primary/20 text-primary" : "text-zinc-400 hover:text-zinc-200"
+              )}
+              title="Toggle Nodes"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M12 2v2m0 16v2M2 12h2m16 0h2" />
-              </svg>
+              <MousePointerIcon className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => setShowHat(!showHat)}
-              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showHat ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
-              title="Toggle Hat Visibility"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c-4 0-7.5 3-8 7.5V15h16v-4.5c-.5-4.5-4-7.5-8-7.5z" />
-                <rect x="4" y="15" width="16" height="5" rx="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1" opacity="0.5" />
-              </svg>
-            </button>
-            <div className="w-px h-4 bg-zinc-800 mx-1" />
-            <button
+              type="button"
               onClick={() => setShowHistory(!showHistory)}
-              className={`flex items-center justify-center p-1 rounded-lg transition-all ${showHistory ? "bg-amber-500/10 text-amber-500" : "text-zinc-500 hover:text-zinc-300"}`}
-              title="Toggle History Panel"
+              className={cn(
+                "p-1.5 rounded-lg text-xs font-medium transition-colors",
+                showHistory ? "bg-primary/20 text-primary" : "text-zinc-400 hover:text-zinc-200"
+              )}
+              title="Toggle History Timeline"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <HistoryIcon className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <button
+            type="button"
             onClick={() => setShowProjectsPanel(true)}
-            className="flex items-center h-9 shrink-0 gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+            className="flex items-center h-8 sm:h-9 shrink-0 gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl text-xs sm:text-sm font-medium transition-colors border border-zinc-700"
             title="Manage Projects"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-              />
-            </svg>
-            Projects
+            <FolderIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Projects</span>
           </button>
 
           <button
+            type="button"
             onClick={() => {
               updateActiveProject(selectedHair, selectedHat, layer, commands);
               saveNow();
             }}
-            className={`flex items-center justify-center h-9 shrink-0 gap-1.5 min-w-[95px] px-4 py-2 rounded-lg text-sm font-bold transition-all border ${
+            className={cn(
+              "flex items-center justify-center h-8 sm:h-9 shrink-0 gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all border",
               showDirty
-                ? "bg-amber-500 hover:bg-amber-400 text-zinc-900 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
-                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700 grayscale-[0.5]"
-            }`}
+                ? "bg-primary hover:bg-primary/90 text-white border-primary/40 shadow-xs"
+                : "bg-zinc-800 hover:bg-zinc-700 text-zinc-400 border-zinc-700"
+            )}
             title={showDirty ? "Save Unsaved Changes (Ctrl+S)" : "All Changes Saved"}
           >
-            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-              />
-            </svg>
+            <SaveIcon className="w-3.5 h-3.5" />
             <span>{showDirty ? "Save" : "Saved"}</span>
           </button>
 
-          <div className="flex items-center gap-3 border-l border-zinc-800 pl-6">
+          <div className="flex items-center gap-1.5 border-l border-zinc-800 pl-2 sm:pl-3">
             <CodeExport
               pathString={pathString}
               originalPathString={rawPathData}
@@ -535,201 +519,206 @@ export function SvgPathEditor() {
               layer={layer}
               hatId={effectiveUseHatVariant ? "topHat" : "none"}
             />
+
             <button
+              type="button"
               onClick={() => {
                 navigator.clipboard.writeText(pathString);
                 setCopiedPath(true);
                 setTimeout(() => setCopiedPath(false), 2000);
               }}
-              className={`flex items-center h-9 shrink-0 gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+              className={cn(
+                "hidden sm:flex items-center justify-center h-8 sm:h-9 shrink-0 gap-1.5 w-24 rounded-xl text-xs sm:text-sm font-medium transition-all border",
                 copiedPath
-                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/50"
+                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
                   : "bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border-zinc-700"
-              }`}
+              )}
             >
               {copiedPath ? (
                 <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Copied!
+                  <CheckIcon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Copied!</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Copy Path
+                  <CopyIcon className="w-3.5 h-3.5 shrink-0" />
+                  <span>Copy</span>
                 </>
               )}
             </button>
+
             <button
+              type="button"
               onClick={() => {
                 const resetCommands = parsePath(rawPathData).commands;
                 pushToHistory(resetCommands, "Reset Path");
               }}
-              className="flex items-center h-9 shrink-0 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-700"
+              className="flex items-center h-8 sm:h-9 shrink-0 p-2 sm:px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs sm:text-sm font-medium transition-colors border border-zinc-700"
+              title="Reset Path to Default"
             >
-              Reset Path
+              <RotateCcwIcon className="w-3.5 h-3.5" />
+              <span className="hidden lg:inline ml-1">Reset</span>
             </button>
           </div>
         </div>
       </header>
 
+      {/* Main Studio Body */}
       {!hasLoaded || !minLoadingFinished ? (
-        <div className="flex-1 flex flex-col items-center justify-center bg-zinc-950 backdrop-blur-sm animate-in fade-in duration-700">
+        <div className="flex-1 flex flex-col items-center justify-center bg-zinc-950 animate-in fade-in duration-500">
           <div className="flex flex-col items-center">
-            <div className="relative mb-8">
-              <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center p-3 shadow-2xl border border-zinc-800 relative z-10">
-                <Image src="/images/icons/drew.png" alt="Loading" width={40} height={40} className="rounded-lg opacity-80" />
+            <div className="relative mb-6">
+              <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center p-3 shadow-2xl border border-zinc-800 relative z-10">
+                <Image
+                  src="/images/icons/drew.png"
+                  alt="Loading"
+                  width={36}
+                  height={36}
+                  className="rounded-lg opacity-80"
+                />
               </div>
-
-              <div className="absolute -inset-4 bg-amber-500/5 rounded-full blur-2xl animate-pulse" />
+              <div className="absolute -inset-3 bg-primary/10 rounded-full blur-xl animate-pulse" />
             </div>
 
-            <div className="text-center space-y-1">
-              <h2 className="text-zinc-300 font-semibold text-base tracking-wide animate-pulse">Initializing Workspace</h2>
-              <div className="flex gap-1 justify-center mt-4">
-                <div className="w-1 h-1 rounded-full bg-amber-500/30 animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-1 h-1 rounded-full bg-amber-500/40 animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-1 h-1 rounded-full bg-amber-500/50 animate-bounce" />
-              </div>
-            </div>
+            <h2 className="text-zinc-200 font-semibold text-sm tracking-wide">
+              Loading Vector Workspace
+            </h2>
           </div>
         </div>
       ) : (
         <div className="flex-1 flex overflow-hidden">
-          <aside className="w-72 border-r border-zinc-800 bg-zinc-900/40 flex flex-col min-h-0 overflow-hidden">
-            <div className="p-3 border-b border-zinc-800 shrink-0">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-2">Edit Mode</label>
-              <div className="flex bg-zinc-950 p-1.5 rounded-xl border border-zinc-800">
+          {/* Left Controls & Properties Deck */}
+          <aside className="w-64 sm:w-72 border-r border-zinc-800/80 bg-zinc-900/40 backdrop-blur-xs flex flex-col min-h-0 overflow-y-auto scrollbar-refined shrink-0">
+            {/* Mode Switcher */}
+            <div className="p-3.5 border-b border-zinc-800/80 shrink-0">
+              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                Edit Mode
+              </label>
+              <div className="flex bg-zinc-950/80 p-1 rounded-xl border border-zinc-800">
                 <button
+                  type="button"
                   onClick={() => setEditMode("node")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all",
                     editMode === "node"
-                      ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
-                      : "text-zinc-500 hover:text-zinc-300"
-                  }`}
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  )}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-                    />
-                  </svg>
-                  Node
+                  <MousePointerIcon className="w-3.5 h-3.5" />
+                  <span>Node</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setEditMode("drag")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all",
                     editMode === "drag"
-                      ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
-                      : "text-zinc-500 hover:text-zinc-300"
-                  }`}
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  )}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7 11l5 5m0 0l5-5m-5 5v12"
-                      transform="rotate(180 12 12)"
-                    />
-                  </svg>
-                  Drag
+                  <MoveIcon className="w-3.5 h-3.5" />
+                  <span>Drag</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setEditMode("split")}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-all",
                     editMode === "split"
-                      ? "bg-amber-500 text-zinc-900 shadow-lg shadow-amber-500/20"
-                      : "text-zinc-500 hover:text-zinc-300"
-                  }`}
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  )}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" transform="rotate(45 12 12)" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Split
+                  <ScissorsIcon className="w-3.5 h-3.5" />
+                  <span>Split</span>
                 </button>
               </div>
             </div>
 
-            <div className="p-4 border-b border-zinc-800 space-y-3">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Part</label>
+            {/* Part & Layer Selection */}
+            <div className="p-3.5 border-b border-zinc-800/80 space-y-3">
+              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                Part & Layers
+              </label>
+
               <div>
-                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Hair Style</label>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">
+                  Hair Style
+                </label>
                 <select
                   value={selectedHair}
                   onChange={(event) => setSelectedHair(event.target.value as HairId)}
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 bg-zinc-800/90 border border-zinc-700/80 rounded-xl text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
-                  {HairIds.map((id) => (
-                    <option key={id} value={id}>
-                      {formatLabel(id)}
+                  {HairIds.map((identifier) => (
+                    <option key={identifier} value={identifier}>
+                      {formatLabel(identifier)}
                     </option>
                   ))}
                 </select>
               </div>
+
               <div>
-                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Hat Overlay</label>
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">
+                  Hat Overlay
+                </label>
                 <select
                   value={selectedHat}
                   onChange={(event) => {
                     setSelectedHat(event.target.value as HatId);
                     setUseHatVariant(null);
                   }}
-                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 bg-zinc-800/90 border border-zinc-700/80 rounded-xl text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 >
-                  {HatIds.map((id) => (
-                    <option key={id} value={id}>
-                      {id === "none" ? "No Hat" : formatLabel(id)}
+                  {HatIds.map((identifier) => (
+                    <option key={identifier} value={identifier}>
+                      {identifier === "none" ? "No Hat" : formatLabel(identifier)}
                     </option>
                   ))}
                 </select>
               </div>
+
               <div>
-                <label className="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Layer</label>
-                <div className="flex gap-2 flex-wrap">
+                <label className="block text-[11px] font-medium text-zinc-400 uppercase tracking-wider mb-1">
+                  Active Layer
+                </label>
+                <div className="flex gap-1.5 flex-wrap">
                   <button
-                    onClick={() => {
-                      layerCommandsRef.current[layer] = [...commands];
-                      setLayer("front");
-                    }}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      layer === "front" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                    }`}
+                    type="button"
+                    onClick={() => handleLayerSwitch("front")}
+                    className={cn(
+                      "flex-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors",
+                      layer === "front"
+                        ? "bg-primary text-white shadow-xs"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    )}
                   >
                     Front
                   </button>
                   <button
-                    onClick={() => {
-                      layerCommandsRef.current[layer] = [...commands];
-                      setLayer("back");
-                    }}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      layer === "back" ? "bg-amber-500 text-zinc-900" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                    }`}
+                    type="button"
+                    onClick={() => handleLayerSwitch("back")}
+                    className={cn(
+                      "flex-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors",
+                      layer === "back"
+                        ? "bg-primary text-white shadow-xs"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    )}
                   >
                     Back
                   </button>
                   {hasHighlight && (
                     <button
-                      onClick={() => {
-                        layerCommandsRef.current[layer] = [...commands];
-                        setLayer("highlight");
-                      }}
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      type="button"
+                      onClick={() => handleLayerSwitch("highlight")}
+                      className={cn(
+                        "flex-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors",
                         layer === "highlight"
-                          ? "bg-yellow-400 text-zinc-900"
+                          ? "bg-amber-400 text-zinc-950 shadow-xs"
                           : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                      }`}
-                      title="Edit the highlight accent path"
+                      )}
                     >
                       Highlight
                     </button>
@@ -738,130 +727,143 @@ export function SvgPathEditor() {
               </div>
             </div>
 
-            <div className="p-4 border-b border-zinc-800">
-              <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">View Options</label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-3 cursor-pointer">
+            {/* View Toggles */}
+            <div className="p-3.5 border-b border-zinc-800/80 space-y-2">
+              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                View Options
+              </label>
+
+              <label className="flex items-center gap-2.5 cursor-pointer text-xs text-zinc-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={showGrid}
+                  onChange={(event) => setShowGrid(event.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary/50"
+                />
+                <span>Show Grid</span>
+              </label>
+
+              <label className="flex items-center gap-2.5 cursor-pointer text-xs text-zinc-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={showNodes}
+                  onChange={(event) => setShowNodes(event.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary/50"
+                />
+                <span>Show Anchor Nodes</span>
+              </label>
+
+              <label className="flex items-center gap-2.5 cursor-pointer text-xs text-zinc-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={showHat}
+                  onChange={(event) => setShowHat(event.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary/50"
+                />
+                <span>Show Hat Overlay</span>
+              </label>
+
+              {hasVariants && (
+                <label className="flex items-center gap-2.5 cursor-pointer text-xs text-zinc-300 hover:text-white">
                   <input
                     type="checkbox"
-                    checked={showGrid}
-                    onChange={(event) => setShowGrid(event.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
+                    checked={effectiveUseHatVariant}
+                    onChange={(event) => setUseHatVariant(event.target.checked)}
+                    className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary/50"
                   />
-                  <span className="text-sm">Show Grid</span>
+                  <span>Tucked Hair Variant</span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={showNodes}
-                    onChange={(event) => setShowNodes(event.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
-                  />
-                  <span className="text-sm">Show Nodes</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={showHat}
-                    onChange={(event) => setShowHat(event.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
-                  />
-                  <span className="text-sm">Show Hat</span>
-                </label>
-                {hasVariants && (
-                  <label className="flex items-center gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={effectiveUseHatVariant}
-                      onChange={(event) => setUseHatVariant(event.target.checked)}
-                      className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-sm group-hover:text-zinc-100 transition-colors">Tucked Hair</span>
-                    </div>
-                  </label>
-                )}
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={showPreview}
-                    onChange={(event) => setShowPreview(event.target.checked)}
-                    className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-amber-500 focus:ring-amber-500/50"
-                  />
-                  <span className="text-sm group-hover:text-zinc-100 transition-colors">Show Mini Preview</span>
-                </label>
-              </div>
+              )}
+
+              <label className="flex items-center gap-2.5 cursor-pointer text-xs text-zinc-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={showPreview}
+                  onChange={(event) => setShowPreview(event.target.checked)}
+                  className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-primary focus:ring-primary/50"
+                />
+                <span>Show Mini Preview</span>
+              </label>
             </div>
 
+            {/* Mini Avatar Live Preview */}
             {showPreview && (
-              <div className="mt-auto p-4 border-t border-zinc-800 bg-zinc-900/50 flex flex-col gap-3">
+              <div className="mt-auto p-3.5 border-t border-zinc-800/80 bg-zinc-950/40 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-medium text-zinc-400 uppercase tracking-wider">Preview</label>
-                  <div className="flex bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
+                  <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                    Avatar Preview
+                  </span>
+                  <div className="flex bg-zinc-900 p-0.5 rounded-lg border border-zinc-800">
                     <button
+                      type="button"
                       onClick={() => setPreviewMode("full")}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                        previewMode === "full" ? "bg-amber-500 text-zinc-900" : "text-zinc-500 hover:text-zinc-300"
-                      }`}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-semibold transition-colors",
+                        previewMode === "full"
+                          ? "bg-primary text-white"
+                          : "text-zinc-400 hover:text-zinc-200"
+                      )}
                     >
                       Full
                     </button>
                     <button
+                      type="button"
                       onClick={() => setPreviewMode("head-only")}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                        previewMode === "head-only" ? "bg-amber-500 text-zinc-900" : "text-zinc-500 hover:text-zinc-300"
-                      }`}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-semibold transition-colors",
+                        previewMode === "head-only"
+                          ? "bg-primary text-white"
+                          : "text-zinc-400 hover:text-zinc-200"
+                      )}
                     >
                       Head
                     </button>
                   </div>
                 </div>
 
-                <ClickableAvatarPreview
-                  state={avatarState}
-                  selectedPart={selectedPart}
-                  onPartSelect={(part) => {
-                    setSelectedPart(part);
-                    if (part.category === "hair") {
-                      setSelectedHair(avatarState.hair);
-                      layerCommandsRef.current[layer] = [...commands];
-                      setLayer(part.layer || "front");
-                    }
-                  }}
-                  size="preview"
-                  previewMode={previewMode}
-                  showBackground={true}
-                  showHoverEffects={true}
-                  pathOverride={{
-                    path: pathString,
-                    layer: layer,
-                  }}
-                />
+                <div className="rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-2 flex items-center justify-center">
+                  <ClickableAvatarPreview
+                    state={avatarState}
+                    selectedPart={selectedPart}
+                    onPartSelect={(part) => {
+                      setSelectedPart(part);
+                      if (part.category === "hair") {
+                        setSelectedHair(avatarState.hair);
+                        handleLayerSwitch(part.layer || "front");
+                      }
+                    }}
+                    size="preview"
+                    previewMode={previewMode}
+                    showBackground={true}
+                    showHoverEffects={true}
+                    pathOverride={{
+                      path: pathString,
+                      layer: layer,
+                    }}
+                  />
+                </div>
 
                 {selectedPart && (
-                  <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-amber-400">
-                        {CATEGORY_DISPLAY_NAMES[selectedPart.category]}
-                        {selectedPart.layer && ` (${selectedPart.layer})`}
-                      </span>
-                      <button
-                        onClick={() => setSelectedPart(null)}
-                        className="text-zinc-500 hover:text-zinc-300 transition-colors"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <span className="text-xs text-zinc-500 font-mono">{selectedPart.id}</span>
+                  <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-between text-xs">
+                    <span className="text-primary font-medium">
+                      {CATEGORY_DISPLAY_NAMES[selectedPart.category]}
+                      {selectedPart.layer && ` (${selectedPart.layer})`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPart(null)}
+                      className="text-zinc-400 hover:text-zinc-200"
+                    >
+                      ×
+                    </button>
                   </div>
                 )}
               </div>
             )}
           </aside>
 
-          <div className="flex-1 flex flex-col min-w-0">
+          {/* Central Vector Canvas */}
+          <div className="flex-1 flex flex-col min-w-0 bg-zinc-950">
             <AvatarCanvas
               pathString={pathString}
               nodes={nodes}
@@ -885,16 +887,19 @@ export function SvgPathEditor() {
             />
           </div>
 
+          {/* Right Resizable Panels: Path Breakdown & History Timeline */}
           <aside
-            className="relative flex h-full transition-all duration-300 border-l border-zinc-800 bg-zinc-900/40"
+            className="relative flex h-full transition-all duration-150 border-l border-zinc-800/80 bg-zinc-900/40 shrink-0"
             style={{ width: `${breakdownWidth + (showHistory ? historyWidth : 0)}px` }}
           >
+            {/* Drag Resize Handle for Breakdown */}
             <div
-              className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-amber-500 active:bg-amber-600 transition-all z-20"
+              className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-primary active:bg-primary transition-all z-20"
               onMouseDown={() => setIsResizingBreakdown(true)}
             />
 
-            <div className="flex-1 flex flex-col min-w-0 border-r border-zinc-800/50">
+            {/* Path Breakdown Deck */}
+            <div className="flex-1 flex flex-col min-w-0 border-r border-zinc-800/60">
               <PathBreakdown
                 commands={commands}
                 selectedNodeId={selectedNodeId}
@@ -905,13 +910,15 @@ export function SvgPathEditor() {
               />
             </div>
 
+            {/* History Timeline Panel */}
             {showHistory && (
               <div
-                className="relative flex flex-col shrink-0 overflow-hidden animate-in slide-in-from-right duration-300"
+                className="relative flex flex-col shrink-0 overflow-hidden animate-in slide-in-from-right duration-200"
                 style={{ width: `${historyWidth}px` }}
               >
+                {/* Drag Resize Handle for History */}
                 <div
-                  className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-amber-500 active:bg-amber-600 transition-all z-20"
+                  className="absolute left-0 top-0 w-1.5 h-full cursor-col-resize hover:bg-primary active:bg-primary transition-all z-20"
                   onMouseDown={() => setIsResizingHistory(true)}
                 />
 
@@ -920,7 +927,7 @@ export function SvgPathEditor() {
                   currentIndex={historyIndex}
                   onRevert={(index) => {
                     historyIndexRef.current = index;
-                    setHistoryState((prev) => ({ ...prev, index }));
+                    setHistoryState((previous) => ({ ...previous, index }));
                     setCommands(history[index].commands);
                   }}
                 />
@@ -930,6 +937,7 @@ export function SvgPathEditor() {
         </div>
       )}
 
+      {/* Projects Modal */}
       {showProjectsPanel && (
         <ProjectsPanel
           projects={projects}
@@ -943,7 +951,7 @@ export function SvgPathEditor() {
             if (isDirty && !window.confirm("You have unsaved changes that will be lost. Continue?")) {
               return;
             }
-            const project = projects.find((project) => project.id === projectId);
+            const project = projects.find((item) => item.id === projectId);
             if (project) {
               setSelectedHair(project.selectedHair);
               setSelectedHat(project.selectedHat);
@@ -961,13 +969,13 @@ export function SvgPathEditor() {
               return;
             }
             closeProject();
-            layerCommandsRef.current = {};
+            setLayerCommands({});
             const pathData = getHairPathData(selectedHair, layer, "none");
             const initialCommands = parsePath(pathData).commands;
             setCommands(initialCommands);
 
             const initialEntry: HistoryEntry = {
-              id: Math.random().toString(36).substr(2, 9),
+              id: Math.random().toString(36).substring(2, 11),
               timestamp: Date.now(),
               commands: initialCommands,
               label: `New Draft: ${selectedHair} (${layer})`,

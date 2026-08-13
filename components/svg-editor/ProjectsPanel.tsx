@@ -1,9 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import {
+  FolderIcon,
+  XIcon,
+  PencilIcon,
+  CopyIcon,
+  Trash2Icon,
+  UploadIcon,
+  SparklesIcon,
+} from "lucide-react";
 import { Project } from "@/hooks/use-editor-persistence";
+import { cn } from "@/lib/utils/strings";
 
-interface ProjectsPanelProps {
+interface ProjectsPanelProperties {
   projects: Project[];
   activeProject: Project | null;
   defaultName?: string;
@@ -27,37 +37,37 @@ export function ProjectsPanel({
   onDuplicateProject,
   onCloseProject,
   onClose,
-}: ProjectsPanelProps) {
+}: ProjectsPanelProperties): React.JSX.Element {
   const [newProjectName, setNewProjectName] = useState(defaultName);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingIdentifier, setEditingIdentifier] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
 
-  const handleCreate = () => {
+  const handleCreate = (): void => {
     if (newProjectName.trim()) {
       onCreateProject(newProjectName.trim());
       setNewProjectName("");
     }
   };
 
-  const handleNewDraft = () => {
+  const handleNewDraft = (): void => {
     onCloseProject();
     onClose();
   };
 
-  const handleStartRename = (project: Project) => {
-    setEditingId(project.id);
+  const handleStartRename = (project: Project): void => {
+    setEditingIdentifier(project.id);
     setEditingName(project.name);
   };
 
-  const handleConfirmRename = () => {
-    if (editingId && editingName.trim()) {
-      onRenameProject(editingId, editingName.trim());
+  const handleConfirmRename = (): void => {
+    if (editingIdentifier && editingName.trim()) {
+      onRenameProject(editingIdentifier, editingName.trim());
     }
-    setEditingId(null);
+    setEditingIdentifier(null);
     setEditingName("");
   };
 
-  const formatDate = (timestamp: number) => {
+  const formatDate = (timestamp: number): string => {
     return new Date(timestamp).toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -67,32 +77,39 @@ export function ProjectsPanel({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/80">
-          <h2 className="text-lg font-semibold text-zinc-100">Projects</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/90 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <FolderIcon className="w-5 h-5 text-primary" />
+            <h2 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">
+              Projects Manager
+            </h2>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <XIcon className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-6 border-b border-zinc-800 bg-zinc-950/50">
+        {/* Create / Active Project Section */}
+        <div className="p-5 border-b border-zinc-800 bg-zinc-950/60 shrink-0">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Active Session</span>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                Create or Save Session
+              </span>
               <button
+                type="button"
                 onClick={handleNewDraft}
-                className="text-xs font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1.5 transition-colors uppercase tracking-widest"
+                className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
               >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                New Draft
+                <SparklesIcon className="w-3 h-3" />
+                <span>New Blank Draft</span>
               </button>
             </div>
             <div className="flex gap-2">
@@ -101,57 +118,58 @@ export function ProjectsPanel({
                 value={newProjectName}
                 onChange={(event) => setNewProjectName(event.target.value)}
                 onKeyDown={(event) => event.key === "Enter" && handleCreate()}
-                placeholder="Name your session..."
-                className="flex-1 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50"
+                placeholder="Project title..."
+                className="flex-1 px-3.5 py-2 bg-zinc-800/90 border border-zinc-700 rounded-xl text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
               />
               <button
+                type="button"
                 onClick={handleCreate}
                 disabled={!newProjectName.trim()}
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-zinc-900 font-bold rounded-lg text-sm transition-colors whitespace-nowrap"
+                className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-semibold rounded-xl text-sm transition-colors whitespace-nowrap shadow-xs"
               >
                 {activeProject ? "Save Copy" : "Save Project"}
               </button>
             </div>
             {activeProject && (
-              <p className="text-xs text-zinc-500">
-                Currently attached to: <span className="text-amber-500/80 font-medium">{activeProject.name}</span>
+              <p className="text-xs text-zinc-400">
+                Active project: <span className="text-primary font-medium">{activeProject.name}</span>
               </p>
             )}
           </div>
         </div>
 
-        <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+        {/* Projects List */}
+        <div className="flex-1 overflow-y-auto scrollbar-refined">
           {projects.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-zinc-800 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                  />
-                </svg>
+            <div className="p-12 text-center flex flex-col items-center justify-center">
+              <div className="w-12 h-12 bg-zinc-800/80 rounded-2xl flex items-center justify-center mb-3 border border-zinc-700/60">
+                <FolderIcon className="w-6 h-6 text-zinc-500" />
               </div>
-              <p className="text-zinc-500 text-sm">No projects yet</p>
-              <p className="text-zinc-600 text-xs mt-1">Create your first project above</p>
+              <p className="text-zinc-400 text-sm font-medium">No saved projects yet</p>
+              <p className="text-zinc-500 text-xs mt-0.5">Name and save your first project above</p>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800/50">
+            <div className="divide-y divide-zinc-800/60">
               {projects
-                .sort((a, b) => b.updatedAt - a.updatedAt)
+                .sort((first, second) => second.updatedAt - first.updatedAt)
                 .map((project) => {
                   const isActive = activeProject?.id === project.id;
-                  const isEditing = editingId === project.id;
+                  const isEditing = editingIdentifier === project.id;
 
                   return (
                     <div
                       key={project.id}
-                      className={`group flex items-center gap-4 px-6 py-4 transition-colors ${
-                        isActive ? "bg-amber-500/10" : "hover:bg-zinc-800/50"
-                      }`}
+                      className={cn(
+                        "group flex items-center gap-3.5 px-5 py-3.5 transition-colors",
+                        isActive ? "bg-primary/10" : "hover:bg-zinc-800/50"
+                      )}
                     >
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${isActive ? "bg-amber-500" : "bg-zinc-600"}`} />
+                      <div
+                        className={cn(
+                          "w-2.5 h-2.5 rounded-full shrink-0",
+                          isActive ? "bg-primary" : "bg-zinc-600"
+                        )}
+                      />
 
                       <div className="flex-1 min-w-0">
                         {isEditing ? (
@@ -162,72 +180,57 @@ export function ProjectsPanel({
                             onBlur={handleConfirmRename}
                             onKeyDown={(event) => event.key === "Enter" && handleConfirmRename()}
                             autoFocus
-                            className="w-full px-2 py-1 bg-zinc-800 border border-amber-500/50 rounded text-sm text-zinc-100 focus:outline-none"
+                            className="w-full px-2 py-1 bg-zinc-800 border border-primary/50 rounded-lg text-sm text-zinc-100 focus:outline-none"
                           />
                         ) : (
-                          <p className={`text-sm font-medium truncate ${isActive ? "text-amber-400" : "text-zinc-200"}`}>
+                          <p
+                            className={cn(
+                              "text-sm font-medium truncate",
+                              isActive ? "text-primary font-semibold" : "text-zinc-200"
+                            )}
+                          >
                             {project.name}
                           </p>
                         )}
-                        <p className="text-xs text-zinc-500 mt-1">
-                          {project.selectedHair} • {project.layer} • Updated {formatDate(project.updatedAt)}
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          {project.selectedHair} • {project.layer} • {formatDate(project.updatedAt)}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         {!isActive && (
                           <button
+                            type="button"
                             onClick={() => onLoadProject(project.id)}
                             className="p-1.5 text-zinc-400 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-lg transition-colors"
                             title="Load Project"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                              />
-                            </svg>
+                            <UploadIcon className="w-4 h-4" />
                           </button>
                         )}
                         <button
+                          type="button"
                           onClick={() => handleStartRename(project)}
-                          className="p-1.5 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors"
+                          className="p-1.5 text-zinc-400 hover:text-sky-400 hover:bg-sky-400/10 rounded-lg transition-colors"
                           title="Rename"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
+                          <PencilIcon className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => onDuplicateProject(project.id)}
                           className="p-1.5 text-zinc-400 hover:text-purple-400 hover:bg-purple-400/10 rounded-lg transition-colors"
                           title="Duplicate"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                            />
-                          </svg>
+                          <CopyIcon className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => onDeleteProject(project.id)}
                           className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
                           title="Delete"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
+                          <Trash2Icon className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -237,9 +240,10 @@ export function ProjectsPanel({
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-zinc-800 bg-zinc-900/50">
-          <p className="text-xs text-zinc-500 text-center uppercase tracking-widest font-medium">
-            {projects.length} project{projects.length !== 1 ? "s" : ""} saved locally
+        {/* Footer */}
+        <div className="px-6 py-3 border-t border-zinc-800 bg-zinc-900/60 shrink-0 text-center">
+          <p className="text-[11px] text-zinc-400 font-mono">
+            {projects.length} project{projects.length !== 1 ? "s" : ""} saved in local storage
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useQueryStates } from "nuqs";
 import { toast } from "sonner";
@@ -128,7 +128,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
     handleParamsChange({ body_color: bodyColorIdentifier });
   };
 
-  const handleRandomize = (): void => {
+  const handleRandomize = useCallback((): void => {
     const pickRandomItem = <T,>(list: readonly T[] | T[]): T =>
       list[Math.floor(Math.random() * list.length)];
 
@@ -150,12 +150,12 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
 
     setParams(randomState);
     toast.success("Generated random avatar");
-  };
+  }, [setParams]);
 
-  const handleReset = (): void => {
+  const handleReset = useCallback((): void => {
     setParams(null);
     toast.info("Reset to default avatar");
-  };
+  }, [setParams]);
 
   const handleCopyLink = (): void => {
     navigator.clipboard.writeText(generateShareableURL(avatarState));
@@ -200,6 +200,38 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
 
   const currentCategory = CATEGORIES.find((category) => category.id === activeCategory)!;
   const currentId = avatarState[currentCategory.stateKey] as string;
+  const activeItemLabel = currentCategory.items[currentId]?.label ?? "None";
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      const activeTag = document.activeElement?.tagName.toLowerCase();
+      if (activeTag === "input" || activeTag === "textarea" || activeTag === "select") {
+        return;
+      }
+
+      if (event.key === "r" || event.key === "R") {
+        event.preventDefault();
+        handleRandomize();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        handleReset();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        const currentIndex = CATEGORIES.findIndex((category) => category.id === activeCategory);
+        const nextIndex = (currentIndex + 1) % CATEGORIES.length;
+        handleCategoryChange(CATEGORIES[nextIndex].id);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        const currentIndex = CATEGORIES.findIndex((category) => category.id === activeCategory);
+        const previousIndex = (currentIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
+        handleCategoryChange(CATEGORIES[previousIndex].id);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeCategory, handleRandomize, handleReset]);
+
   const previewFill =
     HAIR_COLORS.find((accent) => accent.id === avatarState.hairColor)?.color ||
     HAIR_COLORS[0].color;
@@ -272,13 +304,16 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
             >
               <div className="flex items-center justify-between mb-4 px-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+                  <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground font-heading">
                     {currentCategory.label}
                   </h2>
-                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                    {Object.keys(currentCategory.items).length} items
+                  <span className="inline-flex items-center rounded-lg bg-secondary/90 border border-border/60 px-2 py-0.5 text-[11px] font-semibold text-foreground">
+                    {activeItemLabel}
                   </span>
                 </div>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {Object.keys(currentCategory.items).length} options
+                </span>
               </div>
 
               <ItemGrid
