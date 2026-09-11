@@ -149,7 +149,6 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
     });
 
     setParams(randomState);
-    toast.success("Generated random avatar");
   }, [setParams]);
 
   const handleReset = useCallback((): void => {
