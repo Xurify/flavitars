@@ -1,5 +1,5 @@
 import React from "react";
-import { PartRegistry, PartComponent, createAvatarItem } from "./common";
+import { PartRegistry, PartComponent, createAvatarItem, getHeadFacialTransform } from "./common";
 import { HEAD_PATHS } from "./head";
 
 export const HatIds = [
@@ -301,80 +301,100 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
   },
 };
 
-// Get clip zone for a hat
 export const getHatClipZone = (hatId: HatId | undefined): HatClipZone => {
   if (!hatId) return HAT_CLIP_ZONES.none;
   return HAT_CLIP_ZONES[hatId] || HAT_CLIP_ZONES.none;
 };
 
+export interface HatLayout {
+  baseTranslateY: number;
+  squareStretch: number;
+  uniformScale: boolean;
+}
+
+export const HAT_LAYOUT: Record<HatId, HatLayout> = {
+  none: { baseTranslateY: 0, squareStretch: 1, uniformScale: false },
+  beanie: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+  baseballCap: { baseTranslateY: -10, squareStretch: 1.1, uniformScale: false },
+  bucketHat: { baseTranslateY: 0, squareStretch: 1.15, uniformScale: false },
+  flagsCap: { baseTranslateY: -12, squareStretch: 1.12, uniformScale: false },
+  patternedHeadband: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+  cowboyHat: { baseTranslateY: -8, squareStretch: 1.1, uniformScale: false },
+  detectiveHat: { baseTranslateY: -2, squareStretch: 1.1, uniformScale: false },
+  nurseCap: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+  chefHat: { baseTranslateY: -11, squareStretch: 1.15, uniformScale: false },
+  astronautHelmet: { baseTranslateY: 35, squareStretch: 1, uniformScale: false },
+  militaryHelmet: { baseTranslateY: -2, squareStretch: 1.1, uniformScale: false },
+  topHat: { baseTranslateY: 4, squareStretch: 1.1, uniformScale: false },
+  pirateHat: { baseTranslateY: 8, squareStretch: 1.15, uniformScale: false },
+  vikingHelmet: { baseTranslateY: 0, squareStretch: 1.25, uniformScale: false },
+  samuraiHelmet: { baseTranslateY: -1, squareStretch: 1.25, uniformScale: false },
+  wizardHat: { baseTranslateY: 2, squareStretch: 1.1, uniformScale: false },
+  propellerHat: { baseTranslateY: 2, squareStretch: 1.15, uniformScale: false },
+  beret: { baseTranslateY: 10, squareStretch: 1, uniformScale: false },
+  strawHat: { baseTranslateY: -9, squareStretch: 1.15, uniformScale: false },
+  ushanka: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+  skiMask: { baseTranslateY: 0, squareStretch: 1, uniformScale: false },
+  crown: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+  halo: { baseTranslateY: 0, squareStretch: 1.1, uniformScale: false },
+};
+
+export const getHatLayout = (hatId: string | undefined): HatLayout => {
+  if (!hatId) {
+    return HAT_LAYOUT.none;
+  }
+  return HAT_LAYOUT[hatId as HatId] ?? HAT_LAYOUT.none;
+};
+
 /**
- * Calculates dynamic hat positioning based on the head shape.
- * Uses HAT_PHYSICS for precise Y-axis positioning if available.
- * @param headId - The current head shape ID
- * @param hatId - The current hat shape ID
- * @param baseTranslateY - Fallback vertical offset if physics config is missing
- * @param squareStretch - How much to stretch the hat for square heads
- * @param uniformScale - Whether to apply uniform scaling to the hat
+ * Positions a hat (or matching hair clip) for the current head shape.
+ * Call-site numbers override HAT_LAYOUT so existing art stays put.
  */
 export const getHeadHatTransform = (
   headId: string,
   hatId: string | undefined,
-  baseTranslateY: number = 0,
-  squareStretch: number = 1.15,
-  uniformScale: boolean = false,
+  baseTranslateY?: number,
+  squareStretch?: number,
+  uniformScale?: boolean,
 ) => {
-  const yOffsets: Record<string, number> = {
-    square: 0,
-    rounded: 0,
-    oval: 0,
-    angular: 0,
-  };
+  const layout = getHatLayout(hatId);
+  const definedOffset = baseTranslateY ?? layout.baseTranslateY;
+  const stretch = squareStretch ?? layout.squareStretch;
+  const uniform = uniformScale ?? layout.uniformScale;
 
-  if (["square", "angular"].includes(headId)) {
-    yOffsets[headId] = 0;
-  }
-
-  const isFloating = hatId && (FLOATING_HATS as readonly string[]).includes(hatId);
-  const headOffset = isFloating ? 0 : yOffsets[headId] || 0;
-
-  // Use physics-based offset if available, otherwise fallback to provided baseTranslateY
-  // New system uses HAT_CLIP_ZONES which doesn't have yOffset, so we use baseTranslateY
-  const definedOffset = baseTranslateY;
-
-  const isSquare = ["square", "angular"].includes(headId);
-  const scale = isSquare ? squareStretch : 1;
+  const isSquare = headId === "square" || headId === "angular";
+  const scale = isSquare ? stretch : 1;
   const translateX = isSquare ? 50 * (1 - scale) : 0;
+  const scaleY = uniform ? scale : 1;
 
-  const scaleY = uniformScale ? scale : 1;
-  const translateY = definedOffset + headOffset;
+  return `translate(${translateX}, ${definedOffset}) scale(${scale}, ${scaleY})`;
+};
 
-  return `translate(${translateX}, ${translateY}) scale(${scale}, ${scaleY})`;
+export const getHairClipTransform = (headId: string, hatId: string | undefined): string => {
+  return getHeadHatTransform(headId, hatId);
 };
 
 /**
- * Adjusts the hair position based on the character's head shape.
- * @param headId - The ID of the current head shape (e.g., 'rounded', 'square')
- * @param hairId - The ID of the hair style (useful for style-specific tweaks)
- * @param offset - An additional vertical nudge (usually -1 to -5)
+ * Matches hair to the same square/angular stretch the worn hat uses.
  */
-export const getHeadHairTransform = (headId: string, hairId: string | undefined, offset: number = 0): string => {
-  const adjustments: Record<string, { x: number; y: number; scaleX: number }> = {
-    rounded: { x: 0, y: 0, scaleX: 1.0 },
-    oval: { x: 0, y: 0, scaleX: 1.0 },
-    square: { x: 0, y: 0, scaleX: 1.0 },
-    angular: { x: 0, y: 0, scaleX: 1.0 },
-  };
+export const getHeadHairTransform = (
+  headId: string,
+  hairId: string | undefined,
+  offset: number = 0,
+  hatId?: string,
+): string => {
+  const styleY = hairId === "doubleSpaceBuns" && headId === "square" ? -2 : 0;
+  const finalY = styleY + offset;
 
-  const adj = adjustments[headId] || adjustments.rounded;
-
-  let styleY = 0;
-  if (hairId === "doubleSpaceBuns" && headId === "square") {
-    styleY = -2;
+  const wornHat = hatId && hatId !== "none" && !(SMALL_HATS as readonly string[]).includes(hatId);
+  const isSquare = headId === "square" || headId === "angular";
+  if (wornHat && isSquare) {
+    const stretch = getHatLayout(hatId).squareStretch;
+    const translateX = 50 * (1 - stretch);
+    return `translate(${translateX}, ${finalY}) scale(${stretch}, 1)`;
   }
 
-  const finalY = adj.y + styleY + offset;
-
-  return `translate(${adj.x}, ${finalY}) scale(${adj.scaleX}, 1)`;
+  return `translate(0, ${finalY}) scale(1, 1)`;
 };
 
 const noneHat: PartComponent = () => null;
@@ -707,9 +727,11 @@ export const SkiMask = createAvatarItem({
     return (
       <g transform="translate(50, 50) scale(1.02) translate(-50, -50)">
         <path d={HEAD_PATHS[headId || "angular"]} fill={fill || "#1e293b"} stroke="currentColor" strokeWidth="2.5" />
-        <circle cx="35" cy="45" r="5" fill={holeFill} />
-        <circle cx="65" cy="45" r="5" fill={holeFill} />
-        <rect x="42" y="65" width="16" height="7" rx="3.5" fill={holeFill} />
+        <g transform={getHeadFacialTransform(headId || "angular")}>
+          <circle cx="35" cy="45" r="5" fill={holeFill} />
+          <circle cx="65" cy="45" r="5" fill={holeFill} />
+          <rect x="42" y="65" width="16" height="7" rx="3.5" fill={holeFill} />
+        </g>
       </g>
     );
   },

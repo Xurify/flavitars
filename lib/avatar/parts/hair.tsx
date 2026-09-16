@@ -295,7 +295,7 @@ const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const d = getHairPathData("spikyMohawk", "front", hatId ?? "none");
   if (!d) return null;
   return (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
     </g>
   );
@@ -319,7 +319,7 @@ const singleTopKnotFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const d = getHairPathData("singleTopKnot", "front", hatId ?? "none");
   if (!d) return null;
   return (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
       <circle cx="50" cy="5" r="14" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
     </g>
@@ -332,7 +332,7 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
   const d = getHairPathData("doubleSpaceBuns", "front", hatId ?? "none");
   if (!d) return null;
   return (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
       <circle cx="15" cy="12" r="11" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
       <circle cx="85" cy="12" r="11" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
@@ -474,7 +474,7 @@ const buzzCutFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const d = getHairPathData("buzzCut", "front", hatId ?? "none");
   if (!d) return null;
   return (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
     </g>
   );
@@ -585,7 +585,7 @@ const lowPonytailFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const d = getHairPathData("lowPonytail", "front", hatId ?? "none");
   if (!d) return null;
   return (
-    <g transform={getHeadHairTransform(headId, hairId, -1)}>
+    <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
     </g>
   );

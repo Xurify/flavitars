@@ -62,22 +62,22 @@ const monocle: PartComponent = () => (
 );
 
 const headphones: PartComponent = ({ headId }) => {
-  const leftX = getHeadSideOffset(headId, true);
-  const rightX = getHeadSideOffset(headId, false);
+  const leftShift = getHeadSideOffset(headId, true);
+  const rightShift = getHeadSideOffset(headId, false);
+  const leftCupX = 5 + leftShift;
+  const rightCupX = 83 + rightShift;
+  const bandLeft = leftCupX + 5;
+  const bandRight = rightCupX + 7;
   return (
     <g>
       <path
-        d={`M${10 + leftX} 45 Q ${10 + leftX} 5, 50 5 Q ${90 + rightX} 5, ${90 + rightX} 45`}
+        d={`M${bandLeft} 45 Q ${bandLeft} 5, 50 5 Q ${bandRight} 5, ${bandRight} 45`}
         fill="none"
         stroke="currentColor"
         strokeWidth="4"
       />
-      <g transform={`translate(${leftX}, 0)`}>
-        <rect x="5" y="40" width="12" height="20" rx="4" fill="currentColor" />
-      </g>
-      <g transform={`translate(${rightX}, 0)`}>
-        <rect x="83" y="40" width="12" height="20" rx="4" fill="currentColor" />
-      </g>
+      <rect x={leftCupX} y="40" width="12" height="20" rx="4" fill="currentColor" />
+      <rect x={rightCupX} y="40" width="12" height="20" rx="4" fill="currentColor" />
     </g>
   );
 };

@@ -5,8 +5,8 @@ export const getHeadFacialTransform = (headId: string) => {
     square: 1.5,
     rounded: 3,
     oval: 3,
+    slender: 3,
     angular: 0,
-    heart: 2.5,
   };
   const offsetY = offsets[headId] ?? 0;
   return `translate(0, ${offsetY})`;
@@ -20,8 +20,9 @@ export const getHeadSideOffset = (headId: string, isLeft: boolean): number => {
   const offsets: Record<string, number> = {
     square: isLeft ? 4.5 : -4.5,
     rounded: isLeft ? 3.5 : -3.5,
-    angular: isLeft ? 7 : -7,
+    angular: isLeft ? 5 : -5,
     oval: isLeft ? 3.5 : -3.5,
+    slender: isLeft ? 2.5 : -2.5,
   };
   return offsets[headId] ?? 0;
 };
