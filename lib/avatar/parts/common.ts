@@ -12,17 +12,6 @@ export const getHeadFacialTransform = (headId: string) => {
   return `translate(0, ${offsetY})`;
 };
 
-export const getHeadForeheadMaxY = (headId: string): number => {
-  const maxY: Record<string, number> = {
-    square: 36,
-    angular: 34,
-    rounded: 38,
-    oval: 40,
-    slender: 38,
-  };
-  return maxY[headId] ?? 38;
-};
-
 /**
  * Utility for accessories that sit on the sides (headphones, earrings)
  * Shifts components laterally based on head width

@@ -68,24 +68,24 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
     scale: 1,
   },
 
-  // BEANIE: Covers crown + forehead so bangs cannot paint a V over the face
+  // BEANIE: Covers top of head, hair escapes at temples and below
   beanie: {
-    clipPath: "M15 44 Q 15 0, 50 -4 Q 85 0, 85 44 L 85 44 H 15 Z",
-    escapeY: 44,
+    clipPath: "M17 35 Q 17 0, 50 0 Q 83 0, 83 35 L 83 35 H 17 Z",
+    escapeY: 35,
     sideEscapeX: [10, 90],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.12,
+    scale: 1.1,
   },
 
   // BASEBALL CAP: Front bill extends right, back opening allows ponytail
   baseballCap: {
-    clipPath: "M16 40 Q 16 4, 50 2 Q 84 4, 84 40 L 96 34 L 96 40 H 16 Z",
-    escapeY: 40,
+    clipPath: "M17 28 Q 17 5, 50 5 Q 83 5, 83 28 L 94 30 L 94 35 H 17 Z",
+    escapeY: 28,
     sideEscapeX: [12, 88],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.12,
+    scale: 1.1,
   },
 
   // BUCKET HAT: Wide brim, covers more of the sides
@@ -100,12 +100,12 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
 
   // FLAGS CAP: Similar to baseball cap
   flagsCap: {
-    clipPath: "M14 40 Q 14 0, 50 -2 Q 86 0, 86 40 L 96 36 L 96 42 H 14 Z",
-    escapeY: 40,
+    clipPath: "M15 30 Q 15 0, 50 0 Q 85 0, 85 30 L 95 32 L 95 38 H 15 Z",
+    escapeY: 30,
     sideEscapeX: [10, 90],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.14,
+    scale: 1.12,
   },
 
   // HEADBAND: Does NOT hide hair, just a decorative strip
@@ -240,12 +240,12 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
 
   // BERET: Soft cap tilted to one side
   beret: {
-    clipPath: "M18 40 Q 8 4, 50 2 Q 92 -2, 86 40 Q 50 38, 18 40 Z",
-    escapeY: 40,
+    clipPath: "M20 32 Q 10 5, 50 5 Q 90 0, 85 32 Q 50 30, 20 32 Z",
+    escapeY: 32,
     sideEscapeX: [18, 88],
     allowsBackHair: true,
     hidesHair: true,
-    scale: 1.08,
+    scale: 1,
   },
 
   // STRAW HAT: Wide brim
@@ -301,9 +301,9 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
   },
 };
 
-export const getHatClipZone = (hatId: HatId | undefined): HatClipZone => {
+export const getHatClipZone = (hatId: string | undefined): HatClipZone => {
   if (!hatId) return HAT_CLIP_ZONES.none;
-  return HAT_CLIP_ZONES[hatId] || HAT_CLIP_ZONES.none;
+  return HAT_CLIP_ZONES[hatId as HatId] || HAT_CLIP_ZONES.none;
 };
 
 export interface HatLayout {
@@ -371,12 +371,7 @@ export const getHeadHatTransform = (
 };
 
 export const getHairClipTransform = (headId: string, hatId: string | undefined): string => {
-  const layout = getHeadHatTransform(headId, hatId);
-  const clipScale = getHatClipZone(hatId as HatId | undefined).scale;
-  if (!clipScale || clipScale === 1) {
-    return layout;
-  }
-  return `${layout} translate(50, 20) scale(${clipScale}) translate(-50, -20)`;
+  return getHeadHatTransform(headId, hatId);
 };
 
 /**

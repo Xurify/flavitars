@@ -1,5 +1,5 @@
 import React from "react";
-import { getHairClipTransform, getHatClipZone, getHeadForeheadMaxY, getHeadHatTransform } from "../parts";
+import { getHairClipTransform, getHatClipZone, getHeadHatTransform } from "../parts";
 import { HeadId, HEAD_PATHS } from "../parts/head";
 import { HatId } from "../parts/hats";
 
@@ -23,8 +23,6 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({
   includeWobble = true,
 }) => {
   const clipZone = getHatClipZone(hatId);
-  const headPath = HEAD_PATHS[headId] || HEAD_PATHS.angular;
-  const foreheadMaxY = getHeadForeheadMaxY(headId);
   const hatHidesHair = clipZone.hidesHair && Boolean(clipZone.clipPath);
 
   return (
@@ -102,12 +100,12 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({
         <circle cx="50" cy="15" r="41" fill="white" transform={getHeadHatTransform(headId, hatId, 35, 1)} />
       </mask>
 
-      <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse">
-        <rect x="-40" y="-60" width="180" height="220" fill="white" />
-        <path d={headPath} fill="black" />
-        {!hatHidesHair && <rect x="-40" y="-60" width="180" height={60 + foreheadMaxY} fill="white" />}
-        {hatHidesHair ? <path d={clipZone.clipPath} fill="black" transform={getHairClipTransform(headId, hatId)} /> : null}
-      </mask>
+      {hatHidesHair && (
+        <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse">
+          <rect x="-40" y="-60" width="180" height="220" fill="white" />
+          <path d={clipZone.clipPath} fill="black" transform={getHairClipTransform(headId, hatId)} />
+        </mask>
+      )}
     </defs>
   );
 };
