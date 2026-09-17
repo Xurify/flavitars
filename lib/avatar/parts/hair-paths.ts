@@ -261,7 +261,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   doubleSpaceBuns: {
     front: {
       noHat: "M 10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
-      hat: "M 20 28 Q 50 22, 80 28 L 76 36 Q 50 30, 24 36 Z",
+      hat: "M 20 28 Q 50 22, 80 28 L 76 36 Q 50 30, 24 36 Z M 4 38 L 16 36 L 14 50 L 4 52 Z M 96 38 L 84 36 L 86 50 L 96 52 Z",
     },
     back: "",
   },
@@ -282,11 +282,11 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   spikyMohawk: {
     front: {
       noHat: "M 22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
-      hat: "M 22 30 Q 50 24, 78 30 L 76 38 Q 50 34, 24 38 Z",
+      hat: "M 20 28 Q 50 24, 78 30 L 76 38 Q 50 34, 24 38 Z",
     },
     back: {
       noHat: "",
-      hat: "M 14 36 C 10 54, 12 78, 20 96 L 34 90 C 26 74, 24 52, 28 40 C 40 34, 60 34, 72 40 C 76 52, 74 74, 66 90 L 80 96 C 88 78, 90 54, 86 36 C 70 26, 30 26, 14 36 Z",
+      hat: "M 18 36 Q 12 50, 16 62 L 28 58 Q 22 50, 28 42 Q 50 38, 72 42 Q 78 50, 72 58 L 84 62 Q 88 50, 82 36 Q 50 32, 18 36 Z",
     },
   },
   aviatorFlaps: {

@@ -103,17 +103,21 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({
       {hatHidesHair && (
         <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse">
           <rect
-            x="-40"
-            y="-60"
-            width="180"
-            height="220"
+            x="-50"
+            y="-80"
+            width="200"
+            height="280"
             fill={clipZone.hairClipMode === "intersect" ? "black" : "white"}
           />
-          <path
-            d={clipZone.clipPath}
-            fill={clipZone.hairClipMode === "intersect" ? "white" : "black"}
-            transform={getHairClipTransform(headId, hatId)}
-          />
+          {clipZone.hideAllHair ? (
+            <rect x="-50" y="-80" width="200" height="280" fill="black" />
+          ) : (
+            <path
+              d={clipZone.clipPath}
+              fill={clipZone.hairClipMode === "intersect" ? "white" : "black"}
+              transform={getHairClipTransform(headId, hatId)}
+            />
+          )}
         </mask>
       )}
     </defs>

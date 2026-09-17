@@ -219,12 +219,15 @@ const heartMiddlePartBack: PartComponent = ({ fill, hatId }) => {
 const longLocsBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("longLocs", "back", hatId ?? "none");
   if (!d) return null;
+  const hasPhysicalHat = isPhysicalHat(hatId);
   return (
     <g>
       <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="black" strokeWidth="1" />
-      <g stroke="black" opacity="0.15" strokeWidth="4" strokeLinecap="round" fill="none">
-        <path d="M 22 30 V 100 M 50 25 V 100 M 78 30 V 100" />
-      </g>
+      {!hasPhysicalHat && (
+        <g stroke="black" opacity="0.15" strokeWidth="4" strokeLinecap="round" fill="none">
+          <path d="M 22 30 V 100 M 50 25 V 100 M 78 30 V 100" />
+        </g>
+      )}
     </g>
   );
 };
@@ -333,8 +336,8 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
   const hasPhysicalHat = isPhysicalHat(hatId);
   const hideBuns = isFullCoverageHat(hatId);
   const d = getHairPathData("doubleSpaceBuns", "front", hatId ?? "none");
-  const bunX = hasPhysicalHat ? 8 : 15;
-  const bunY = hasPhysicalHat ? 52 : 12;
+  const bunX = hasPhysicalHat ? 9 : 15;
+  const bunY = hasPhysicalHat ? 46 : 12;
   const bunR = hasPhysicalHat ? 8 : 11;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
@@ -552,9 +555,12 @@ const longLocsFront: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("longLocs", "front", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
+  const hasPhysicalHat = isPhysicalHat(hatId);
   return (
     <g>
       <path d={d} fill={hairColor} stroke="black" strokeWidth="1" />
+      {!hasPhysicalHat && (
+        <>
       <path d="M 25 15 Q 50 8, 75 15" fill="none" stroke="black" opacity="0.1" strokeWidth="2" strokeLinecap="round" />
       <g stroke="rgba(0,0,0,0.3)" strokeWidth="6.5" strokeLinecap="round" fill="none">
         <path d="M 12 30 Q 8 55, 10 95" />
@@ -572,25 +578,8 @@ const longLocsFront: PartComponent = ({ fill, hatId }) => {
         <path d="M 82 28 Q 86 55, 84 95" />
         <path d="M 76 26 Q 80 55, 78 90" />
       </g>
-      <g stroke="black" opacity="0.2" strokeWidth="1.2" strokeLinecap="round" fill="none">
-        <path d="M 10 45 L 14 47 M 10 60 L 14 62 M 10 75 L 14 77" />
-        <path d="M 16 50 L 20 52 M 16 70 L 20 72" />
-        <path d="M 86 45 L 90 47 M 86 60 L 90 62 M 86 75 L 90 77" />
-        <path d="M 80 50 L 84 52 M 80 70 L 84 72" />
-      </g>
-      <g stroke="#E5E7EB" strokeWidth="2" strokeLinecap="butt" fill="none">
-        <path d="M 11.2 55 L 12.8 55.2" />
-        <path d="M 10.2 78 L 11.8 78.2" />
-        <path d="M 23.5 45 L 24.5 45.1" />
-        <path d="M 87.2 50 L 88.8 50.2" />
-        <path d="M 88.5 72 L 90.1 72.2" />
-        <path d="M 77.2 62 L 78.8 62.1" />
-      </g>
-      <g stroke="white" opacity="0.5" strokeWidth="0.8" strokeLinecap="round" fill="none">
-        <path d="M 11.5 54.8 L 12.5 55" />
-        <path d="M 87.5 49.8 L 88.5 50" />
-        <path d="M 77.5 61.8 L 78.5 62" />
-      </g>
+        </>
+      )}
     </g>
   );
 };

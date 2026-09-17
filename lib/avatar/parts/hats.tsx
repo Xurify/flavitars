@@ -56,6 +56,9 @@ export interface HatClipZone {
 
   // subtract: hide hair under the hat. intersect: keep hair only inside (glass helmet).
   hairClipMode?: "subtract" | "intersect";
+
+  // Hide every hair pixel (opaque full-head covers). Uses a rect so SVG masks cannot leak.
+  hideAllHair?: boolean;
 }
 
 export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap", "chefHat", "patternedHeadband"];
@@ -287,12 +290,13 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
 
   // SKI MASK: Opaque full-head cover. Hide every hair pixel, including side puffs.
   skiMask: {
-    clipPath: "M-24 -48 H 124 V 118 H -24 Z",
+    clipPath: "M-24 -48 L 124 -48 L 124 118 L -24 118 Z",
     escapeY: 100,
     sideEscapeX: [50, 50],
     allowsBackHair: false,
     hidesHair: true,
     scale: 1,
+    hideAllHair: true,
   },
 
   // CROWN: Decorative, doesn't hide hair
