@@ -58,12 +58,15 @@ export interface HatClipZone {
   hairClipMode?: "subtract" | "intersect";
 }
 
-export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap", "chefHat"];
+export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap", "chefHat", "patternedHeadband"];
 export const FLOATING_HATS: HatId[] = ["halo"];
 export const FULL_COVERAGE_HATS: HatId[] = ["astronautHelmet", "skiMask", "samuraiHelmet"];
 
 export function isPhysicalHat(hatId: string | undefined): boolean {
-  return Boolean(hatId && hatId !== "none" && !(SMALL_HATS as readonly string[]).includes(hatId));
+  if (!hatId || hatId === "none") {
+    return false;
+  }
+  return getHatClipZone(hatId).hidesHair;
 }
 
 export function isFullCoverageHat(hatId: string | undefined): boolean {
