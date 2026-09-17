@@ -1,5 +1,5 @@
 import React from "react";
-import { getHairClipTransform, getHatClipZone, getHeadHatTransform } from "../parts";
+import { getHairClipTransform, getHatClipZone, getHeadForeheadMaxY, getHeadHatTransform } from "../parts";
 import { HeadId, HEAD_PATHS } from "../parts/head";
 import { HatId } from "../parts/hats";
 
@@ -10,15 +10,27 @@ interface AvatarFiltersProps {
   clippingY?: number;
   headId: HeadId;
   hatId: HatId;
+  includeStyleFilters?: boolean;
+  includeWobble?: boolean;
 }
 
-export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId, hatId }) => {
+export const AvatarFilters: React.FC<AvatarFiltersProps> = ({
+  filterId,
+  clippingY = 0,
+  headId,
+  hatId,
+  includeStyleFilters = true,
+  includeWobble = true,
+}) => {
   const clipZone = getHatClipZone(hatId);
-  const shouldClipHair = clipZone.hidesHair && Boolean(clipZone.clipPath);
+  const headPath = HEAD_PATHS[headId] || HEAD_PATHS.angular;
+  const foreheadMaxY = getHeadForeheadMaxY(headId);
+  const hatHidesHair = clipZone.hidesHair && Boolean(clipZone.clipPath);
 
   return (
     <defs>
-      {/* STYLE 1: CRUNCHY NOISE */}
+      {includeStyleFilters && (
+        <>
       <filter id={`${filterId}-noise`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
         <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="4" stitchTiles="stitch" result="noise" />
         <feColorMatrix
@@ -67,11 +79,15 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
         <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 10 -5" result="glitchMask" />
         <feComposite in="rgbSplit" in2="glitchMask" operator="arithmetic" k2="1" k3="0.2" />
       </filter>
+        </>
+      )}
 
+      {includeWobble && (
       <filter id={`${filterId}-wobble`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
         <feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="3" result="edgeTurbulence" />
         <feDisplacementMap in2="edgeTurbulence" in="SourceGraphic" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
       </filter>
+      )}
 
       <clipPath id={`${filterId}-head-clip`}>
         <rect x="0" y={clippingY} width="100" height={100 - clippingY} />
@@ -86,12 +102,12 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
         <circle cx="50" cy="15" r="41" fill="white" transform={getHeadHatTransform(headId, hatId, 35, 1)} />
       </mask>
 
-      {shouldClipHair && (
-        <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse">
-          <rect x="-40" y="-60" width="180" height="220" fill="white" />
-          <path d={clipZone.clipPath} fill="black" transform={getHairClipTransform(headId, hatId)} />
-        </mask>
-      )}
+      <mask id={`${filterId}-hair-clip-mask`} maskUnits="userSpaceOnUse">
+        <rect x="-40" y="-60" width="180" height="220" fill="white" />
+        <path d={headPath} fill="black" />
+        {!hatHidesHair && <rect x="-40" y="-60" width="180" height={60 + foreheadMaxY} fill="white" />}
+        {hatHidesHair ? <path d={clipZone.clipPath} fill="black" transform={getHairClipTransform(headId, hatId)} /> : null}
+      </mask>
     </defs>
   );
 };
