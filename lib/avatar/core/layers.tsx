@@ -15,15 +15,18 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
 
   const { isSkiMask } = resolveAvatarLogic(state);
   const hatClip = getHatClipZone(state.hat);
+  const hideAllHair = Boolean(hatClip.hideAllHair);
   const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
-  const hairMask = hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
+  const hairMask = !hideAllHair && hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   return (
     <g>
       {/* LAYER 1: Back hair is the volume around the hat. Clip the hat footprint so hair cannot sit in hollows. */}
+      {!hideAllHair && (
       <g mask={hairMask} className="hair-back-set">
         <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
+      )}
 
       {/* LAYER 2: Body/Neck */}
       <g className="body-set" style={{ color: bodyColor }}>
@@ -49,9 +52,11 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
       </g>
 
       {/* LAYER 4: Front hair tucked under the hat crown */}
+      {!hideAllHair && (
       <g mask={hairMask} className="hair-front-set">
         <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
+      )}
 
       {/* LAYER 5: Accessories (glasses, earrings, etc.) */}
       {(!isSkiMask || state.accessories === "headphones") && (

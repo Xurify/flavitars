@@ -95,8 +95,9 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
 
   const { isSkiMask } = resolveAvatarLogic(state);
   const hatClip = getHatClipZone(state.hat);
+  const hideAllHair = Boolean(hatClip.hideAllHair);
   const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
-  const hairMask = hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
+  const hairMask = !hideAllHair && hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   const isPartSelected = (category: PartCategory, layer?: PartLayer) => {
     if (!selectedPart) return false;
@@ -117,7 +118,8 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         className="hair-back-set"
       >
         <g mask={hairMask}>
-          {pathOverride && pathOverride.layer === "back" ? (
+          {!hideAllHair &&
+            (pathOverride && pathOverride.layer === "back" ? (
             <path
               d={pathOverride.path}
               fill={hairColor}
@@ -127,7 +129,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
             />
           ) : (
             <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
-          )}
+          ))}
         </g>
       </ClickableLayer>
 
@@ -221,7 +223,8 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         className="hair-front-set"
       >
         <g mask={hairMask}>
-          {pathOverride && pathOverride.layer === "front" ? (
+          {!hideAllHair &&
+            (pathOverride && pathOverride.layer === "front" ? (
             <path
               d={pathOverride.path}
               fill={hairColor}
@@ -231,7 +234,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
             />
           ) : (
             <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
-          )}
+          ))}
         </g>
       </ClickableLayer>
 
