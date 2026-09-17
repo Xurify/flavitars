@@ -15,13 +15,14 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
 
   const { isSkiMask } = resolveAvatarLogic(state);
   const hatClip = getHatClipZone(state.hat);
-  const hairClipMask =
-    hatClip.hidesHair && hatClip.clipPath ? `url(#${filterId}-hair-clip-mask)` : undefined;
+  const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
+  const frontHairMask = hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
+  const backHairMask = hatHidesHair && !hatClip.allowsBackHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   return (
     <g>
-      {/* LAYER 1: Back Hair - flows behind head, clipped by hat zone */}
-      <g mask={hairClipMask} className="hair-back-set">
+      {/* LAYER 1: Back hair sits behind the hat. Only full-coverage hats clip it. */}
+      <g mask={backHairMask} className="hair-back-set">
         <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
 
@@ -48,8 +49,8 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
         </g>
       </g>
 
-      {/* LAYER 4: Front Hair - clipped by hat zone to prevent overflow */}
-      <g mask={hairClipMask} className="hair-front-set">
+      {/* LAYER 4: Front hair tucked under the hat crown */}
+      <g mask={frontHairMask} className="hair-front-set">
         <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
 

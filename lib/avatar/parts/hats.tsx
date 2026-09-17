@@ -406,6 +406,8 @@ export const Beanie = createAvatarItem({
   svg: ({ fill, headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
       <path d="M20 15 Q 50 -10, 80 15 L 80 30 Q 50 35, 20 30 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2" />
+      <path d="M24 16 Q 50 -6, 76 16" fill="none" stroke="#ffffff" opacity="0.4" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 28 Q 50 32, 76 28" fill="none" stroke="#ffffff" opacity="0.18" strokeWidth="1.5" strokeLinecap="round" />
       <path d="M30 5 V 25 M 40 0 V 23 M 50 -2 V 22 M 60 0 V 23 M 70 5 V 25" stroke="black" opacity="0.15" strokeWidth="1" />
     </g>
   ),
@@ -418,6 +420,7 @@ export const BaseballCap = createAvatarItem({
   svg: ({ fill, headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, -10, 1.1)}>
       <path d="M20 25 Q 47.5 -5, 75 25 L 75 35 H 20 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2.5" />
+      <path d="M26 24 Q 48 8, 70 24" fill="none" stroke="#ffffff" opacity="0.32" strokeWidth="2" strokeLinecap="round" />
       <path
         d="M74.1 25.9 H 90 Q 95 38, 50 35"
         fill={fill || "#334155"}
@@ -437,6 +440,7 @@ export const BucketHat = createAvatarItem({
     <g transform={getHeadHatTransform(headId, hatId, 0)}>
       <path d="M30 20 L 35 0 Q 50 -5, 65 0 L 70 20 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2.5" />
       <path d="M15 35 Q 50 25, 85 35 L 80 20 Q 50 15, 20 20 Z" fill={fill || "#334155"} stroke="currentColor" strokeWidth="2.5" />
+      <path d="M22 22 Q 50 16, 78 22" fill="none" stroke="#ffffff" opacity="0.32" strokeWidth="2" strokeLinecap="round" />
     </g>
   ),
 });
@@ -721,16 +725,17 @@ export const SkiMask = createAvatarItem({
   id: "skiMask",
   name: "Ski Mask",
   svg: ({ fill, headId }) => {
-    const isDarkMask = fill === "#1a1a1a";
-    const holeFill = isDarkMask ? "#434244ff" : "black";
+    const maskFill = (fill || "#1e293b").toLowerCase();
+    const isDarkMask = maskFill === "#1a1a1a" || maskFill === "#000" || maskFill === "#000000" || maskFill === "#111111" || maskFill === "#171717" || maskFill === "#1e293b" || maskFill === "black";
+    const holeFill = isDarkMask ? "#5b5b63" : "#111111";
 
     return (
       <g transform="translate(50, 50) scale(1.02) translate(-50, -50)">
         <path d={HEAD_PATHS[headId || "angular"]} fill={fill || "#1e293b"} stroke="currentColor" strokeWidth="2.5" />
         <g transform={getHeadFacialTransform(headId || "angular")}>
-          <circle cx="35" cy="45" r="5" fill={holeFill} />
-          <circle cx="65" cy="45" r="5" fill={holeFill} />
-          <rect x="42" y="65" width="16" height="7" rx="3.5" fill={holeFill} />
+          <circle cx="35" cy="45" r="5" fill={holeFill} stroke="#000000" strokeWidth="0.6" opacity="0.95" />
+          <circle cx="65" cy="45" r="5" fill={holeFill} stroke="#000000" strokeWidth="0.6" opacity="0.95" />
+          <rect x="42" y="65" width="16" height="7" rx="3.5" fill={holeFill} stroke="#000000" strokeWidth="0.6" />
         </g>
       </g>
     );
@@ -777,6 +782,7 @@ export const FlagsCap = createAvatarItem({
     <g transform={getHeadHatTransform(headId, hatId, -12, 1.12)}>
       {/* Cap Body - worn straight and low */}
       <path d="M18 30 Q 50 -5, 82 30 L 82 38 H 18 Z" fill="#111111" stroke="currentColor" strokeWidth="2" />
+      <path d="M26 28 Q 50 8, 74 28" fill="none" stroke="#ffffff" opacity="0.28" strokeWidth="2" strokeLinecap="round" />
       {/* flags.games Logo */}
       <g transform="translate(50, 24) scale(0.012)">
         <g transform="translate(-500, -500)">
@@ -834,7 +840,7 @@ export const Halo = createAvatarItem({
   name: "Halo",
   svg: ({ headId, hatId }) => (
     <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
-      <ellipse cx="50" cy="0" rx="30" ry="8" fill="none" stroke="#FDE047" strokeWidth="3" opacity="0.8" />
+      <ellipse cx="50" cy="0" rx="30" ry="8" fill="none" stroke="#FDE047" strokeWidth="4" opacity="0.92" />
     </g>
   ),
 });
