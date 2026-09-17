@@ -1,17 +1,20 @@
 import type { AvatarState } from "../types";
 
-const EXTRA_TALL_HATS = new Set<AvatarState["hat"]>(["wizardHat"]);
+const EXTRA_TALL_HATS = new Set<AvatarState["hat"]>(["wizardHat", "vikingHelmet", "chefHat"]);
 
 const TALL_HATS = new Set<AvatarState["hat"]>([
   "topHat",
-  "chefHat",
   "propellerHat",
-  "vikingHelmet",
   "halo",
   "astronautHelmet",
   "crown",
   "pirateHat",
   "samuraiHelmet",
+  "cowboyHat",
+  "strawHat",
+  "militaryHelmet",
+  "detectiveHat",
+  "ushanka",
 ]);
 
 const TALL_HAIR = new Set<AvatarState["hair"]>([
@@ -26,10 +29,10 @@ const TALL_HAIR = new Set<AvatarState["hair"]>([
 
 export function getAvatarViewBox(state: Pick<AvatarState, "hat" | "hair">): string {
   if (EXTRA_TALL_HATS.has(state.hat)) {
-    return "0 -48 100 154";
+    return "0 -52 100 160";
   }
   if (TALL_HATS.has(state.hat) || TALL_HAIR.has(state.hair)) {
-    return "0 -16 100 122";
+    return "0 -24 100 132";
   }
   return "0 0 100 100";
 }

@@ -96,8 +96,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
   const { isSkiMask } = resolveAvatarLogic(state);
   const hatClip = getHatClipZone(state.hat);
   const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
-  const frontHairMask = hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
-  const backHairMask = hatHidesHair && !hatClip.allowsBackHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
+  const hairMask = hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   const isPartSelected = (category: PartCategory, layer?: PartLayer) => {
     if (!selectedPart) return false;
@@ -117,7 +116,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         showHoverEffects={showHoverEffects}
         className="hair-back-set"
       >
-        <g mask={backHairMask}>
+        <g mask={hairMask}>
           {pathOverride && pathOverride.layer === "back" ? (
             <path
               d={pathOverride.path}
@@ -221,7 +220,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         showHoverEffects={showHoverEffects}
         className="hair-front-set"
       >
-        <g mask={frontHairMask}>
+        <g mask={hairMask}>
           {pathOverride && pathOverride.layer === "front" ? (
             <path
               d={pathOverride.path}
