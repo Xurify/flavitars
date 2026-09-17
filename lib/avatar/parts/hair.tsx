@@ -341,7 +341,7 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
   const bunR = hasPhysicalHat ? 8 : 11;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
-      {d ? <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" /> : null}
+      {d && !hideBuns ? <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" /> : null}
       {!hideBuns && (
         <>
           <circle cx={bunX} cy={bunY} r={bunR} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
