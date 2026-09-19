@@ -1,3 +1,4 @@
+import type { ReactElement, ReactNode } from "react";
 import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
 import { getHeadHairTransform, isClosedKnitHat, isFullCoverageHat, isOpenBrimHat, isPhysicalHat } from "./hats";
 import { getHairPathData, getHairHighlightPath } from "./hair-paths";
@@ -9,7 +10,7 @@ function bunKnotPair(
   rightX: number,
   centerY: number,
   radius: number,
-): JSX.Element {
+): ReactElement {
   return (
     <>
       <circle cx={leftX} cy={centerY} r={radius} fill={hairColor} stroke="currentColor" strokeWidth="2" />
@@ -34,7 +35,7 @@ function bunKnotPair(
   );
 }
 
-function tuckedBowKnot(hairColor: string): JSX.Element {
+function tuckedBowKnot(hairColor: string): ReactElement {
   return (
     <g>
       <path
@@ -797,7 +798,7 @@ export function HairOnHatOverlay({
   hairId?: string;
   hatId?: string;
   fill?: string;
-}): JSX.Element | null {
+}): ReactNode {
   if (!isPhysicalHat(hatId) || isFullCoverageHat(hatId) || !hairId) {
     return null;
   }
