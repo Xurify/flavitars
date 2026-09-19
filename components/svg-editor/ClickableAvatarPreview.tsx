@@ -4,6 +4,7 @@ import React, { useId } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
+import { getAvatarViewBox } from "@/lib/avatar/core/view-box";
 import { ClickableAvatarLayers } from "./ClickableAvatarLayers";
 import { SelectedPart } from "@/lib/svg-editor/part-data";
 import { cn } from "@/lib/utils/strings";
@@ -48,7 +49,7 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
   const baseId = useId();
   const filterId = `filter-${baseId.replace(/[^a-zA-Z0-9]/g, "")}`;
 
-  const viewBox = previewMode === "head-only" ? "0 -10 100 85" : "0 0 100 100";
+  const viewBox = previewMode === "head-only" ? "0 -10 100 85" : getAvatarViewBox(state);
 
   return (
     <div
@@ -65,7 +66,7 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
         viewBox={viewBox}
         className={cn(
           "w-full h-full text-foreground transform transition-transform duration-300",
-          previewMode === "full" && "scale-[0.85] translate-y-[-5%]"
+          previewMode === "full" && "scale-[0.96] translate-y-[-1%]"
         )}
         xmlns="http://www.w3.org/2000/svg"
       >

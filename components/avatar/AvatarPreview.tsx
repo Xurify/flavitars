@@ -3,6 +3,7 @@ import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
 import { AvatarLayers } from "@/lib/avatar/core/layers";
+import { getAvatarViewBox } from "@/lib/avatar/core/view-box";
 import { cn } from "@/lib/utils/strings";
 
 interface AvatarPreviewProps {
@@ -45,10 +46,10 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
       style={{ "--avatar-hair": hairColor } as React.CSSProperties}
     >
       <svg
-        viewBox="0 0 100 100"
+        viewBox={getAvatarViewBox(state)}
         className={cn(
           "w-full h-full text-foreground transform transition-transform duration-300",
-          !centered && "scale-[0.88] translate-y-[-4%]"
+          !centered && "scale-[0.96] translate-y-[-1%]"
         )}
         xmlns="http://www.w3.org/2000/svg"
       >

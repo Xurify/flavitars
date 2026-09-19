@@ -78,7 +78,7 @@ export const CLOSED_KNIT_HATS: HatId[] = [
 export const OPEN_BRIM_HATS: HatId[] = ["bucketHat", "cowboyHat", "strawHat", "flagsCap", "baseballCap"];
 
 const DECORATIVE_HAIR_PERCH: Record<string, number> = {
-  largeAfro: -64,
+  largeAfro: -22,
   spikyMohawk: -26,
   doubleSpaceBuns: -16,
   singleTopKnot: -14,

@@ -19,7 +19,7 @@ export const TUCKED_BUZZ_NAPE =
 export const TUCKED_CREW_NAPE =
   "M 2 34 L 0 50 L 4 68 L 18 64 L 16 42 Q 50 36, 84 42 L 82 64 L 96 68 L 100 50 L 98 34 Q 50 28, 2 34 Z";
 export const TUCKED_FADE_NAPE =
-  "M 4 34 Q 0 46, 8 56 L 20 52 Q 8 46, 16 40 Q 50 34, 84 40 Q 92 46, 80 52 L 92 56 Q 100 46, 96 34 Q 50 28, 4 34 Z";
+  "M 8 22 Q 50 6, 92 22 L 96 60 Q 50 72, 4 60 Z";
 export const TUCKED_CAESAR_NAPE =
   "M 2 34 Q 0 48, 4 60 L 10 56 L 16 68 L 24 56 L 16 40 Q 50 34, 84 40 L 76 56 L 84 68 L 90 56 L 96 60 Q 100 48, 98 34 Q 50 28, 2 34 Z";
 export const TUCKED_UNDERCUT_NAPE =
@@ -33,13 +33,13 @@ export const TUCKED_MESSY_NAPE =
 /** Short band that joins two bun knots. No hanging pigtails. */
 export const TUCKED_BUN_BAND =
   "M 10 36 Q 4 48, 12 54 L 26 48 Q 16 42, 22 38 Q 50 34, 78 38 Q 84 42, 74 48 L 88 54 Q 96 48, 90 36 Q 50 32, 10 36 Z";
-/** Compressed afro hugs the crown and stacks above the hat, not at the ears. */
+/** Compressed afro hugs the crown inside the card. */
 export const TUCKED_AFRO_HOOD =
-  "M 12 18 C 6 -6, 24 -22, 50 -26 C 76 -22, 94 -6, 88 18 C 92 40, 76 48, 62 42 Q 50 50, 38 42 C 24 48, 8 40, 12 18 Z";
+  "M 14 20 C 10 2, 28 -6, 50 -8 C 72 -6, 90 2, 86 20 C 90 40, 74 48, 62 42 Q 50 50, 38 42 C 26 48, 10 40, 14 20 Z";
 /** Solid visor hood-cap — same outer bowl as other helmet hair, no face-ring disk. */
 export const ASTRONAUT_AFRO_FILL = "M 16 56 Q 12 24, 50 16 Q 88 24, 84 56 Q 50 58, 16 56 Z";
-/** Full afro is a ball on the skull, not a circle around the face. */
-export const FULL_AFRO = "M 2 -22 A 48 50 0 1 1 98 -22 A 48 50 0 1 1 2 -22";
+/** Afro sits on the skull, still inside a modest viewBox. */
+export const FULL_AFRO = "M 6 12 A 44 38 0 1 1 94 12 A 44 38 0 1 1 6 12";
 /** High short ridge under a brim — shaved sides, not a bob. */
 export const TUCKED_MOHAWK_CREST =
   "M 14 32 Q 6 44, 12 58 Q 50 64, 88 58 Q 94 44, 86 32 Q 50 28, 14 32 Z";
