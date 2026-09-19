@@ -16,6 +16,7 @@ const TALL_HATS = new Set<AvatarState["hat"]>([
   "militaryHelmet",
   "detectiveHat",
   "ushanka",
+  "beret",
 ]);
 
 const TALL_HAIR = new Set<AvatarState["hair"]>([

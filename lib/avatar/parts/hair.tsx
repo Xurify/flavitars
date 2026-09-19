@@ -101,20 +101,11 @@ const largeAfroBack: PartComponent = ({ fill, hatId }) => {
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
   const hasPhysicalHat = isPhysicalHat(hatId);
-  const hideAfroPuffs = isFullCoverageHat(hatId);
   return (
     <g>
       <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />
-      {hasPhysicalHat && !hideAfroPuffs && (
-        <g>
-          <ellipse cx="14" cy="50" rx="16" ry="20" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-          <ellipse cx="86" cy="50" rx="16" ry="20" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-          <path d="M 6 42 Q 12 36, 22 38" fill="none" stroke="white" opacity="0.22" strokeWidth="3" strokeLinecap="round" />
-          <path d="M 78 38 Q 88 36, 94 42" fill="none" stroke="white" opacity="0.22" strokeWidth="3" strokeLinecap="round" />
-        </g>
-      )}
       {!hasPhysicalHat && (
-        <path d="M25 0 Q 50 -10, 75 0" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
+        <path d="M 22 -2 Q 50 -14, 78 -2" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
       )}
     </g>
   );
@@ -803,6 +794,23 @@ export function HairOnHatOverlay({
     return null;
   }
   const hairColor = fill || "var(--avatar-hair, #000)";
+  if (hairId === "largeAfro") {
+    return (
+      <g className="hair-on-hat">
+        <ellipse cx="34" cy="14" rx="12" ry="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        <ellipse cx="50" cy="10" rx="14" ry="10" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        <ellipse cx="66" cy="14" rx="12" ry="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        <path
+          d="M 40 6 Q 50 2, 60 6"
+          fill="none"
+          stroke="white"
+          opacity="0.22"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  }
   if (hairId === "singleTopKnot") {
     return (
       <g className="hair-on-hat">

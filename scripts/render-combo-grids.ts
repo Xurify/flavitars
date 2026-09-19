@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderAvatarSvg } from "../lib/avatar/core/renderer";
 import { DEFAULT_AVATAR_STATE } from "../lib/avatar/types";
@@ -7,10 +7,6 @@ import { HatIds } from "../lib/avatar/parts/hats";
 import { HeadIds } from "../lib/avatar/parts/head";
 
 const OUT_DIR = process.env.GRID_OUT ?? "/cursor/stores/bc-d800e0b6-1a23-4378-b19a-cff9fa32e686/media";
-
-function cell(overrides: Partial<typeof DEFAULT_AVATAR_STATE>, label: string) {
-  return { overrides, label };
-}
 
 async function svgFor(overrides: Partial<typeof DEFAULT_AVATAR_STATE>) {
   return renderAvatarSvg({
@@ -47,13 +43,9 @@ async function shot(name: string, html: string, width: number, height: number) {
   const out = join(OUT_DIR, `${name}.png`);
   const chrome =
     process.env.CHROME_PATH ??
-    ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find((path) => {
-      try {
-        return require("node:fs").existsSync(path);
-      } catch {
-        return false;
-      }
-    }) ??
+    ["/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"].find((path) =>
+      existsSync(path),
+    ) ??
     "google-chrome";
   const { spawnSync } = await import("node:child_process");
   const userData = `/tmp/chrome-grid-${name}`;

@@ -33,9 +33,14 @@ export const TUCKED_MESSY_NAPE =
 /** Short band that joins two bun knots. No hanging pigtails. */
 export const TUCKED_BUN_BAND =
   "M 10 36 Q 4 48, 12 54 L 26 48 Q 16 42, 22 38 Q 50 34, 78 38 Q 84 42, 74 48 L 88 54 Q 96 48, 90 36 Q 50 32, 10 36 Z";
-/** Compressed afro: short connecting hood. Side puffs are drawn as ellipses. */
+/** Compressed afro: one connected crown cloud. Hat clip punches the knit hole. */
 export const TUCKED_AFRO_HOOD =
-  "M 8 34 C 4 46, 8 58, 20 62 L 30 52 Q 20 42, 24 36 Q 50 24, 76 36 Q 80 42, 70 52 L 80 62 C 92 58, 96 46, 92 34 Q 50 18, 8 34 Z";
+  "M 1 40 C 0 18, 18 4, 50 2 C 82 4, 100 18, 99 40 C 100 66, 84 78, 70 68 Q 50 80, 30 68 C 16 78, 0 66, 1 40 Z";
+/** Solid visor puff — not the hollow hood-cap ring used for other styles. */
+export const ASTRONAUT_AFRO_FILL = "M 20 60 Q 16 22, 50 18 Q 84 22, 80 60 Q 50 70, 20 60 Z";
+/** Full afro sits high on the skull so decorative hats perch on the apex. */
+export const FULL_AFRO =
+  "M 4 36 A 46 50 0 1 1 96 36 A 46 50 0 1 1 4 36";
 /** High short ridge under a brim — shaved sides, not a bob. */
 export const TUCKED_MOHAWK_CREST =
   "M 14 32 Q 6 44, 12 58 Q 50 64, 88 58 Q 94 44, 86 32 Q 50 28, 14 32 Z";
@@ -353,7 +358,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   largeAfro: {
     front: "",
     back: {
-      noHat: "M 5 50 A 45 45 0 1 1 95 50 A 45 45 0 1 1 5 50",
+      noHat: FULL_AFRO,
       hat: TUCKED_AFRO_HOOD,
     },
   },
@@ -414,6 +419,9 @@ export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId):
   if (!paths) return "";
 
   if (hatId === "astronautHelmet" && hairId !== "bald") {
+    if (hairId === "largeAfro") {
+      return layer === "back" ? ASTRONAUT_AFRO_FILL : "";
+    }
     if (layer === "front") return ASTRONAUT_HOOD_FRONT;
     if (layer === "back") return ASTRONAUT_HOOD_BACK;
     return "";
