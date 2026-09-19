@@ -2,6 +2,7 @@ import React from "react";
 import { AvatarState } from "../types";
 import { resolveAvatarColors, resolveAvatarParts, resolveAvatarLogic } from "../../utils/avatar-resolver";
 import { getHatClipZone, getHeadFacialTransform } from "../parts";
+import { HairOnHatOverlay } from "../parts/hair";
 
 interface AvatarLayersProps {
   state: AvatarState;
@@ -73,6 +74,7 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
 
       {/* LAYER 6: Hat on top of everything */}
       <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
+      {!hideAllHair && <HairOnHatOverlay hairId={state.hair} hatId={state.hat} fill={hairColor} />}
     </g>
   );
 };

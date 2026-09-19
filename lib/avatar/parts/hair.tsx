@@ -3,6 +3,74 @@ import { getHeadHairTransform, isClosedKnitHat, isFullCoverageHat, isOpenBrimHat
 import { getHairPathData, getHairHighlightPath } from "./hair-paths";
 import { HairIds, type HairId } from "./hair-ids";
 
+function bunKnotPair(
+  hairColor: string,
+  leftX: number,
+  rightX: number,
+  centerY: number,
+  radius: number,
+): JSX.Element {
+  return (
+    <>
+      <circle cx={leftX} cy={centerY} r={radius} fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      <circle cx={rightX} cy={centerY} r={radius} fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      <path
+        d={`M ${leftX - 4} ${centerY - 3} A 4 3 0 0 1 ${leftX + 2} ${centerY - 5}`}
+        fill="none"
+        stroke="white"
+        opacity="0.28"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d={`M ${rightX - 4} ${centerY - 3} A 4 3 0 0 1 ${rightX + 2} ${centerY - 5}`}
+        fill="none"
+        stroke="white"
+        opacity="0.28"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </>
+  );
+}
+
+function tuckedBowKnot(hairColor: string): JSX.Element {
+  return (
+    <g>
+      <path
+        d="M 4 40 Q -2 32, 8 28 Q 18 36, 16 46 Q 8 50, 4 40 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 20 42 Q 12 34, 22 30 Q 30 38, 26 48 Q 20 50, 20 42 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <circle cx="14" cy="40" r="4" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M 96 40 Q 102 32, 92 28 Q 82 36, 84 46 Q 92 50, 96 40 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 80 42 Q 88 34, 78 30 Q 70 38, 74 48 Q 80 50, 80 42 Z"
+        fill={hairColor}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <circle cx="86" cy="40" r="4" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+    </g>
+  );
+}
+
 export { HairIds, type HairId };
 
 // --- BACK COMPONENTS ---
@@ -23,16 +91,27 @@ const bobCutSharpBack: PartComponent = ({ fill, hatId }) => {
 const spikyMohawkBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("spikyMohawk", "back", hatId ?? "none");
   if (!d) return null;
-  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
 };
 
 const largeAfroBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("largeAfro", "back", hatId ?? "none");
   if (!d) return null;
+  const hairColor = fill || "var(--avatar-hair, #000)";
   const hasPhysicalHat = isPhysicalHat(hatId);
+  const hideAfroPuffs = isFullCoverageHat(hatId);
   return (
     <g>
-      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      {hasPhysicalHat && !hideAfroPuffs && (
+        <g>
+          <ellipse cx="14" cy="50" rx="16" ry="20" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <ellipse cx="86" cy="50" rx="16" ry="20" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <path d="M 6 42 Q 12 36, 22 38" fill="none" stroke="white" opacity="0.22" strokeWidth="3" strokeLinecap="round" />
+          <path d="M 78 38 Q 88 36, 94 42" fill="none" stroke="white" opacity="0.22" strokeWidth="3" strokeLinecap="round" />
+        </g>
+      )}
       {!hasPhysicalHat && (
         <path d="M25 0 Q 50 -10, 75 0" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
       )}
@@ -64,18 +143,9 @@ const doubleSpaceBunsBack: PartComponent = ({ fill, hatId }) => {
   return (
     <g>
       {d ? <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" /> : null}
-      {isClosedKnitHat(hatId) && (
-        <>
-          <circle cx="22" cy="46" r="8" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-          <circle cx="78" cy="46" r="8" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-        </>
-      )}
-      {isOpenBrimHat(hatId) && (
-        <>
-          <circle cx="20" cy="48" r="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-          <circle cx="80" cy="48" r="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-        </>
-      )}
+      {isClosedKnitHat(hatId) && bunKnotPair(hairColor, 12, 88, 46, 10)}
+      {isOpenBrimHat(hatId) && bunKnotPair(hairColor, 11, 89, 50, 11)}
+      {hasPhysicalHat && !isClosedKnitHat(hatId) && !isOpenBrimHat(hatId) && bunKnotPair(hairColor, 12, 88, 46, 10)}
       {!hasPhysicalHat && (
         <>
           <circle cx="15" cy="12" r="13" fill={hairColor} stroke="currentColor" strokeWidth="2" />
@@ -225,13 +295,25 @@ const texturedPompadourBack: PartComponent = ({ fill, hatId }) => {
 const largeHairBowBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("largeHairBow", "back", hatId ?? "none");
   if (!d) return null;
-  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return (
+    <g>
+      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {isPhysicalHat(hatId) && !isFullCoverageHat(hatId) && tuckedBowKnot(hairColor)}
+    </g>
+  );
 };
 
 const detailedHairBowBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("detailedHairBow", "back", hatId ?? "none");
   if (!d) return null;
-  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  return (
+    <g>
+      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {isPhysicalHat(hatId) && !isFullCoverageHat(hatId) && tuckedBowKnot(hairColor)}
+    </g>
+  );
 };
 
 const puffyMiddlePartBack: PartComponent = ({ fill, hatId }) => {
@@ -332,10 +414,12 @@ const bobCutSharpFront: PartComponent = ({ fill, hatId }) => {
 
 const spikyMohawkFront: PartComponent = ({ fill, headId, hairId, hatId }) => {
   const d = getHairPathData("spikyMohawk", "front", hatId ?? "none");
-  if (!d) return null;
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  const hasPhysicalHat = isPhysicalHat(hatId);
+  if (!d && !hasPhysicalHat) return null;
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
-      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {d ? <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /> : null}
     </g>
   );
 };
@@ -704,3 +788,54 @@ export const HairBack: PartRegistry<HairId> = Object.fromEntries(
 export const HairFront: PartRegistry<HairId> = Object.fromEntries(
   HairItems.map((item) => [item.id, { component: item.svg, label: item.name }]),
 ) as PartRegistry<HairId>;
+
+export function HairOnHatOverlay({
+  hairId,
+  hatId,
+  fill,
+}: {
+  hairId?: string;
+  hatId?: string;
+  fill?: string;
+}): JSX.Element | null {
+  if (!isPhysicalHat(hatId) || isFullCoverageHat(hatId) || !hairId) {
+    return null;
+  }
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  if (hairId === "singleTopKnot") {
+    return (
+      <g className="hair-on-hat">
+        <circle cx="50" cy="8" r="12" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        <path
+          d="M 44 4 A 5 4 0 0 1 54 2"
+          fill="none"
+          stroke="white"
+          opacity="0.28"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  }
+  if (hairId === "spikyMohawk") {
+    return (
+      <g className="hair-on-hat">
+        <path
+          d="M 8 18 L 2 40 L 8 66 L 18 52 L 16 28 Z"
+          fill={hairColor}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M 92 18 L 98 40 L 92 66 L 82 52 L 84 28 Z"
+          fill={hairColor}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+      </g>
+    );
+  }
+  return null;
+}

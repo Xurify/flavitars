@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors, resolveAvatarParts, resolveAvatarLogic } from "@/lib/utils/avatar-resolver";
 import { getHatClipZone, getHeadFacialTransform } from "@/lib/avatar/parts";
+import { HairOnHatOverlay } from "@/lib/avatar/parts/hair";
 import { PartCategory, SelectedPart, PartLayer } from "@/lib/svg-editor/part-data";
 
 interface ClickableAvatarLayersProps {
@@ -266,6 +267,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         showHoverEffects={showHoverEffects}
       >
         <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
+        {!hideAllHair && <HairOnHatOverlay hairId={state.hair} hatId={state.hat} fill={hairColor} />}
       </ClickableLayer>
     </g>
   );

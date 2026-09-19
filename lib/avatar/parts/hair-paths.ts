@@ -8,21 +8,42 @@ type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
 
 /** Short fringe just below a typical crown. */
 export const TUCKED_SCALP_FRONT = "M 20 32 Q 50 28, 80 32 L 78 44 Q 50 40, 22 44 Z";
-/** Tight nape+temple U for buzz / crew / fade. */
+/** Tight nape that still clears a black knit hem. */
 export const TUCKED_SHORT_NAPE =
-  "M 8 36 Q 0 52, 6 70 L 22 66 Q 10 52, 20 42 Q 50 38, 80 42 Q 90 52, 78 66 L 94 70 Q 100 52, 92 36 Q 50 32, 8 36 Z";
-/** Fuller U for medium shorts. */
+  "M 2 34 Q 0 50, 4 66 L 18 62 Q 6 50, 16 40 Q 50 34, 84 40 Q 94 50, 82 62 L 96 66 Q 100 50, 98 34 Q 50 28, 2 34 Z";
+/** Fuller U for medium / long tucked styles. Do not shorten — cowboy/bucket/flags hang depends on it. */
 export const TUCKED_NAPE_U =
   "M 10 36 Q 4 56, 10 82 L 24 78 Q 14 56, 22 42 Q 50 38, 78 42 Q 86 56, 76 78 L 90 82 Q 96 56, 90 36 Q 50 32, 10 36 Z";
-/** Afro hood: one thick U around the head, open at the crown. */
+export const TUCKED_BUZZ_NAPE =
+  "M 2 34 Q 0 48, 4 62 L 18 58 Q 6 48, 16 40 Q 50 34, 84 40 Q 94 48, 82 58 L 96 62 Q 100 48, 98 34 Q 50 28, 2 34 Z";
+export const TUCKED_CREW_NAPE =
+  "M 2 34 L 0 50 L 4 68 L 18 64 L 16 42 Q 50 36, 84 42 L 82 64 L 96 68 L 100 50 L 98 34 Q 50 28, 2 34 Z";
+export const TUCKED_FADE_NAPE =
+  "M 4 34 Q 0 46, 8 56 L 20 52 Q 8 46, 16 40 Q 50 34, 84 40 Q 92 46, 80 52 L 92 56 Q 100 46, 96 34 Q 50 28, 4 34 Z";
+export const TUCKED_CAESAR_NAPE =
+  "M 2 34 Q 0 48, 4 60 L 10 56 L 16 68 L 24 56 L 16 40 Q 50 34, 84 40 L 76 56 L 84 68 L 90 56 L 96 60 Q 100 48, 98 34 Q 50 28, 2 34 Z";
+export const TUCKED_UNDERCUT_NAPE =
+  "M 2 34 Q 0 54, 4 74 L 22 68 Q 8 52, 16 40 Q 50 36, 80 40 Q 90 46, 82 52 L 94 50 Q 98 42, 96 34 Q 50 28, 2 34 Z";
+export const TUCKED_SLICK_NAPE =
+  "M 4 34 Q 0 48, 8 60 L 22 54 Q 10 44, 18 40 Q 46 34, 76 38 Q 90 50, 96 76 L 82 74 Q 80 52, 70 42 Q 50 34, 4 34 Z";
+export const TUCKED_WAVE_NAPE =
+  "M 2 34 Q 0 46, 6 56 Q 10 68, 20 58 Q 8 48, 16 40 Q 50 34, 84 40 Q 92 48, 80 58 Q 90 68, 94 56 Q 100 46, 98 34 Q 50 28, 2 34 Z";
+export const TUCKED_MESSY_NAPE =
+  "M 2 34 Q 0 46, 4 58 L 10 70 L 16 56 L 22 68 L 24 54 L 16 40 Q 50 34, 84 40 L 76 54 L 78 68 L 84 56 L 90 70 L 96 58 Q 100 46, 98 34 Q 50 28, 2 34 Z";
+/** Short band that joins two bun knots. No hanging pigtails. */
+export const TUCKED_BUN_BAND =
+  "M 10 36 Q 4 48, 12 54 L 26 48 Q 16 42, 22 38 Q 50 34, 78 38 Q 84 42, 74 48 L 88 54 Q 96 48, 90 36 Q 50 32, 10 36 Z";
+/** Compressed afro: short connecting hood. Side puffs are drawn as ellipses. */
 export const TUCKED_AFRO_HOOD =
-  "M 6 40 C -4 58, -2 88, 18 100 L 30 92 C 16 80, 14 58, 22 42 Q 50 36, 78 42 C 86 58, 84 80, 70 92 L 82 100 C 102 88, 104 58, 94 40 Q 72 50, 50 48 Q 28 50, 6 40 Z";
-/** Mohawk under a brim: one collar/U, thicker at the nape, visible beside the head. */
+  "M 8 34 C 4 46, 8 58, 20 62 L 30 52 Q 20 42, 24 36 Q 50 24, 76 36 Q 80 42, 70 52 L 80 62 C 92 58, 96 46, 92 34 Q 50 18, 8 34 Z";
+/** High short ridge under a brim — shaved sides, not a bob. */
 export const TUCKED_MOHAWK_CREST =
-  "M 8 36 Q 0 54, 8 74 Q 28 86, 50 88 Q 72 86, 92 74 Q 100 54, 92 36 L 78 40 Q 86 54, 78 68 Q 62 78, 50 78 Q 38 78, 22 68 Q 14 54, 22 40 Z";
-/** Ponytail: U + tail lobe, one fill. */
+  "M 14 32 Q 6 44, 12 58 Q 50 64, 88 58 Q 94 44, 86 32 Q 50 28, 14 32 Z";
+/** Ponytail: tucked scalp plus one obvious tail lobe. */
 export const TUCKED_PONY_BACK =
-  "M 12 36 Q 6 54, 10 72 L 24 68 Q 16 52, 24 42 Q 40 38, 48 56 Q 60 78, 70 98 L 84 94 Q 72 74, 58 50 Q 78 40, 88 36 Q 50 32, 12 36 Z";
+  "M 8 34 Q 0 50, 8 64 L 24 58 Q 12 48, 20 40 Q 38 36, 46 54 Q 58 82, 64 100 L 84 94 Q 74 74, 56 48 Q 78 38, 94 34 Q 50 28, 8 34 Z";
+export const TUCKED_BOW_NAPE =
+  "M 2 34 Q -6 50, 2 64 L 18 60 Q 8 48, 18 40 Q 50 34, 82 40 Q 92 48, 82 60 L 98 64 Q 106 50, 98 34 Q 50 28, 2 34 Z";
 /** Astronaut visor hood-cap in world space (visor center ~50,50). */
 export const ASTRONAUT_HOOD_BACK = "M 16 56 Q 12 24, 50 16 Q 88 24, 84 56 Q 72 38, 50 34 Q 28 38, 16 56 Z";
 export const ASTRONAUT_HOOD_FRONT = "M 24 34 Q 50 20, 76 34 L 72 44 Q 50 32, 28 44 Z";
@@ -42,7 +63,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_BUZZ_NAPE,
     },
   },
   flatTopShort: {
@@ -62,7 +83,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 20 24 C 22 14, 78 14, 80 24 L 78 45 Q 50 52, 22 45 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_CREW_NAPE,
     },
   },
   caesarCrop: {
@@ -72,7 +93,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 18 24 C 24 14, 76 14, 82 24 L 78 48 Q 50 56, 22 48 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_CAESAR_NAPE,
     },
   },
   fadeCrop: {
@@ -82,7 +103,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 18 24 Q 50 10, 82 24 L 78 52 Q 50 62, 22 52 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_FADE_NAPE,
     },
   },
   undercut: {
@@ -92,7 +113,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 16 25 Q 50 10, 84 25 L 80 55 Q 50 65, 20 55 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_UNDERCUT_NAPE,
     },
   },
   slickBack: {
@@ -102,7 +123,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 15 24 C 22 10, 78 10, 85 24 L 82 62 Q 50 72, 18 62 Z",
-      hat: TUCKED_NAPE_U,
+      hat: TUCKED_SLICK_NAPE,
     },
   },
   curtains: {
@@ -122,7 +143,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 18 25 C 24 12, 76 12, 82 25 L 78 52 Q 50 62, 22 52 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_WAVE_NAPE,
     },
   },
   messyShort: {
@@ -132,7 +153,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 18 25 Q 50 9, 82 25 L 78 52 Q 50 60, 22 52 Z",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_MESSY_NAPE,
     },
   },
   shortJaggedCrop: {
@@ -306,7 +327,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "",
-      hat: TUCKED_SHORT_NAPE,
+      hat: TUCKED_BUZZ_NAPE,
     },
   },
   doubleSpaceBuns: {
@@ -316,7 +337,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "",
-      hat: TUCKED_NAPE_U,
+      hat: TUCKED_BUN_BAND,
     },
   },
   lowPonytail: {
@@ -373,7 +394,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 12 25 L 5 45 Q 8 75, 20 85 L 80 85 Q 92 75, 95 45 L 88 25 Z",
-      hat: TUCKED_NAPE_U,
+      hat: TUCKED_BOW_NAPE,
     },
   },
   detailedHairBow: {
@@ -383,7 +404,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
     },
     back: {
       noHat: "M 12 25 L 5 45 Q 8 75, 20 85 L 80 85 Q 92 75, 95 45 L 88 25 Z",
-      hat: TUCKED_NAPE_U,
+      hat: TUCKED_BOW_NAPE,
     },
   },
 };
