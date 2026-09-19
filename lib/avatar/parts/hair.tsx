@@ -105,7 +105,7 @@ const largeAfroBack: PartComponent = ({ fill, hatId }) => {
     <g>
       <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />
       {!hasPhysicalHat && (
-        <path d="M 22 -2 Q 50 -14, 78 -2" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
+        <path d="M 20 -48 Q 50 -64, 80 -48" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
       )}
     </g>
   );
@@ -798,13 +798,13 @@ export function HairOnHatOverlay({
     return (
       <g className="hair-on-hat">
         <path
-          d="M 6 32 C 2 12, 22 2, 50 0 C 78 2, 98 12, 94 32 Q 72 40, 50 38 Q 28 40, 6 32 Z"
+          d="M 12 12 C 6 -16, 24 -36, 50 -40 C 76 -36, 94 -16, 88 12 Q 68 20, 50 18 Q 32 20, 12 12 Z"
           fill={hairColor}
           stroke="currentColor"
           strokeWidth="2"
         />
         <path
-          d="M 28 8 Q 50 0, 72 8"
+          d="M 28 -28 Q 50 -42, 72 -28"
           fill="none"
           stroke="white"
           opacity="0.22"
@@ -833,14 +833,14 @@ export function HairOnHatOverlay({
     return (
       <g className="hair-on-hat">
         <path
-          d="M 8 18 L 2 40 L 8 66 L 18 52 L 16 28 Z"
+          d="M 14 20 L 10 40 L 14 60 L 22 50 L 20 28 Z"
           fill={hairColor}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinejoin="round"
         />
         <path
-          d="M 92 18 L 98 40 L 92 66 L 82 52 L 84 28 Z"
+          d="M 86 20 L 90 40 L 86 60 L 78 50 L 80 28 Z"
           fill={hairColor}
           stroke="currentColor"
           strokeWidth="2"
