@@ -33,14 +33,13 @@ export const TUCKED_MESSY_NAPE =
 /** Short band that joins two bun knots. No hanging pigtails. */
 export const TUCKED_BUN_BAND =
   "M 10 36 Q 4 48, 12 54 L 26 48 Q 16 42, 22 38 Q 50 34, 78 38 Q 84 42, 74 48 L 88 54 Q 96 48, 90 36 Q 50 32, 10 36 Z";
-/** Compressed afro: one connected crown cloud. Hat clip punches the knit hole. */
+/** Compressed afro: fat U around the crown, joined under the jaw so sides are not islands. */
 export const TUCKED_AFRO_HOOD =
-  "M 1 40 C 0 18, 18 4, 50 2 C 82 4, 100 18, 99 40 C 100 66, 84 78, 70 68 Q 50 80, 30 68 C 16 78, 0 66, 1 40 Z";
-/** Solid visor puff — not the hollow hood-cap ring used for other styles. */
-export const ASTRONAUT_AFRO_FILL = "M 20 60 Q 16 22, 50 18 Q 84 22, 80 60 Q 50 70, 20 60 Z";
-/** Full afro sits high on the skull so decorative hats perch on the apex. */
-export const FULL_AFRO =
-  "M 4 36 A 46 50 0 1 1 96 36 A 46 50 0 1 1 4 36";
+  "M 0 40 C -4 18, 16 4, 50 2 C 84 4, 104 18, 100 40 C 104 74, 86 98, 68 90 Q 50 102, 32 90 C 14 98, -4 74, 0 40 Z";
+/** Solid upper-visor cap. A disk around the face reads as a ring once the head sits in front. */
+export const ASTRONAUT_AFRO_FILL = "M 18 50 Q 12 16, 50 12 Q 88 16, 82 50 Q 50 58, 18 50 Z";
+/** Full afro is a tall sphere so perch hats sit on the apex, not in a bob. */
+export const FULL_AFRO = "M 0 30 A 50 54 0 1 1 100 30 A 50 54 0 1 1 0 30";
 /** High short ridge under a brim — shaved sides, not a bob. */
 export const TUCKED_MOHAWK_CREST =
   "M 14 32 Q 6 44, 12 58 Q 50 64, 88 58 Q 94 44, 86 32 Q 50 28, 14 32 Z";

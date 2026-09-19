@@ -797,15 +797,18 @@ export function HairOnHatOverlay({
   if (hairId === "largeAfro") {
     return (
       <g className="hair-on-hat">
-        <ellipse cx="34" cy="14" rx="12" ry="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-        <ellipse cx="50" cy="10" rx="14" ry="10" fill={hairColor} stroke="currentColor" strokeWidth="2" />
-        <ellipse cx="66" cy="14" rx="12" ry="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
         <path
-          d="M 40 6 Q 50 2, 60 6"
+          d="M 6 32 C 2 12, 22 2, 50 0 C 78 2, 98 12, 94 32 Q 72 40, 50 38 Q 28 40, 6 32 Z"
+          fill={hairColor}
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <path
+          d="M 28 8 Q 50 0, 72 8"
           fill="none"
           stroke="white"
           opacity="0.22"
-          strokeWidth="3"
+          strokeWidth="4"
           strokeLinecap="round"
         />
       </g>

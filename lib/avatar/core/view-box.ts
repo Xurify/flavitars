@@ -38,6 +38,9 @@ export function getAvatarViewBox(state: Pick<AvatarState, "hat" | "hair">): stri
   if (TALL_HATS.has(state.hat)) {
     return "0 -24 100 132";
   }
+  if (state.hair === "largeAfro") {
+    return "0 -16 100 124";
+  }
   if (TALL_HAIR.has(state.hair) && !isPhysicalHat(state.hat)) {
     return "0 -24 100 132";
   }
