@@ -4,6 +4,18 @@ import { getHeadHairTransform, isClosedKnitHat, isFullCoverageHat, isOpenBrimHat
 import { getHairPathData, getHairHighlightPath } from "./hair-paths";
 import { HairIds, type HairId } from "./hair-ids";
 
+function hairPaint(fill: string | undefined, hatId: string | undefined): {
+  fill: string;
+  stroke: string;
+  strokeWidth: number;
+} {
+  const hairColor = fill || "var(--avatar-hair, #000)";
+  if (isPhysicalHat(hatId)) {
+    return { fill: hairColor, stroke: "none", strokeWidth: 0 };
+  }
+  return { fill: hairColor, stroke: "currentColor", strokeWidth: 2 };
+}
+
 function bunKnotPair(
   hairColor: string,
   leftX: number,
@@ -118,7 +130,7 @@ const largeAfroBack: PartComponent = ({ fill, hatId }) => {
   const hasPhysicalHat = isPhysicalHat(hatId);
   return (
     <g>
-      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      <path d={d} {...hairPaint(hairColor, hatId)} />
       {!hasPhysicalHat && (
         <path d="M 22 -8 Q 50 -20, 78 -8" fill="none" stroke="white" opacity="0.1" strokeWidth="12" strokeLinecap="round" />
       )}
@@ -363,7 +375,13 @@ const longStraightLayeredBack: PartComponent = ({ fill, hatId }) => {
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g>
-      <path d={d} fill={hairColor} stroke="black" strokeWidth="1.5" />
+      <path
+        d={d}
+        fill={hairColor}
+        stroke={isPhysicalHat(hatId) ? "none" : "black"}
+        strokeWidth={isPhysicalHat(hatId) ? 0 : 1.5}
+      />
+      {!isPhysicalHat(hatId) && (
       <g stroke="black" opacity="0.08" strokeWidth="1.5" strokeLinecap="round" fill="none">
         <path d="M 23 30 C 17 50, 17 76, 21 97" />
         <path d="M 36 22 C 31 47, 32 74, 35 98" />
@@ -371,6 +389,7 @@ const longStraightLayeredBack: PartComponent = ({ fill, hatId }) => {
         <path d="M 64 22 C 69 47, 68 74, 65 98" />
         <path d="M 77 30 C 83 50, 83 76, 79 97" />
       </g>
+      )}
     </g>
   );
 };
@@ -381,13 +400,20 @@ const shortCurlyBobBack: PartComponent = ({ fill, hatId }) => {
   const hairColor = fill || "var(--avatar-hair, #E8C872)";
   return (
     <g>
-      <path d={d} fill={hairColor} stroke="black" strokeWidth="1.5" />
+      <path
+        d={d}
+        fill={hairColor}
+        stroke={isPhysicalHat(hatId) ? "none" : "black"}
+        strokeWidth={isPhysicalHat(hatId) ? 0 : 1.5}
+      />
+      {!isPhysicalHat(hatId) && (
       <g stroke="black" opacity="0.12" strokeWidth="1.5" fill="none" strokeLinecap="round">
         <path d="M 22 40 Q 18 55, 25 70 Q 20 80, 28 90" />
         <path d="M 35 35 Q 30 50, 38 65 Q 32 75, 40 88" />
         <path d="M 65 35 Q 70 50, 62 65 Q 68 75, 60 88" />
         <path d="M 78 40 Q 82 55, 75 70 Q 80 80, 72 90" />
       </g>
+      )}
     </g>
   );
 };
@@ -398,12 +424,20 @@ const longStraightLayeredFront: PartComponent = ({ fill, hatId }) => {
   const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g>
-      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path
+        d={d}
+        fill={hairColor}
+        stroke={isPhysicalHat(hatId) ? "none" : "currentColor"}
+        strokeWidth={isPhysicalHat(hatId) ? 0 : 2}
+        strokeLinejoin="round"
+      />
+      {!isPhysicalHat(hatId) && (
       <g fill="none" stroke="black" strokeLinecap="round">
         <path d="M 50 10 C 47 17, 45 23, 44 29" opacity="0.22" strokeWidth="1.5" />
         <path d="M 23 35 C 18 52, 18 72, 21 92" opacity="0.18" strokeWidth="1.4" />
         <path d="M 77 35 C 82 52, 82 72, 79 92" opacity="0.18" strokeWidth="1.4" />
       </g>
+      )}
     </g>
   );
 };
@@ -553,8 +587,10 @@ const fadeCropFront: PartComponent = ({ fill, hatId }) => {
   if (!d) return null;
   return (
     <g>
-      <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+      <path d={d} {...hairPaint(fill, hatId)} />
+      {!isPhysicalHat(hatId) && (
       <path d="M 21 31 Q 50 38, 79 31" fill="none" stroke="white" opacity="0.14" strokeWidth="2.5" strokeLinecap="round" />
+      )}
     </g>
   );
 };
@@ -727,14 +763,18 @@ const shortCurlyBobFront: PartComponent = ({ fill, hatId }) => {
   const hairColor = fill || "var(--avatar-hair, #E8C872)";
   return (
     <g>
-      <path d={d} fill={hairColor} stroke="black" strokeWidth="1.5" />
-      <path d="M 28 18 Q 35 12, 42 18 M 58 18 Q 65 12, 72 18" fill="none" stroke="black" opacity="0.12" strokeWidth="1" />
-      <g stroke="black" opacity="0.15" strokeWidth="1" fill="none" strokeLinecap="round">
-        <path d="M 10 45 Q 5 60, 12 75" />
-        <path d="M 22 50 Q 15 65, 25 80" />
-        <path d="M 90 45 Q 95 60, 88 75" />
-        <path d="M 78 50 Q 85 65, 75 80" />
-      </g>
+      <path d={d} {...hairPaint(hairColor, hatId)} />
+      {!isPhysicalHat(hatId) && (
+        <>
+          <path d="M 28 18 Q 35 12, 42 18 M 58 18 Q 65 12, 72 18" fill="none" stroke="black" opacity="0.12" strokeWidth="1" />
+          <g stroke="black" opacity="0.15" strokeWidth="1" fill="none" strokeLinecap="round">
+            <path d="M 10 45 Q 5 60, 12 75" />
+            <path d="M 22 50 Q 15 65, 25 80" />
+            <path d="M 90 45 Q 95 60, 88 75" />
+            <path d="M 78 50 Q 85 65, 75 80" />
+          </g>
+        </>
+      )}
     </g>
   );
 };

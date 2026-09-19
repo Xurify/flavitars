@@ -8,6 +8,9 @@ type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
 
 /** Short fringe just below a typical crown. */
 export const TUCKED_SCALP_FRONT = "M 20 32 Q 50 28, 80 32 L 78 44 Q 50 40, 22 44 Z";
+/** Side locks in front of the body — not a back-of-neck collar. */
+export const TUCKED_SIDE_LOCKS =
+  "M 8 40 Q 2 64, 8 96 L 20 94 Q 14 64, 18 46 Z M 92 40 Q 98 64, 92 96 L 80 94 Q 86 64, 82 46 Z";
 /** Tight nape that still clears a black knit hem. */
 export const TUCKED_SHORT_NAPE =
   "M 2 34 Q 0 50, 4 66 L 18 62 Q 6 50, 16 40 Q 50 34, 84 40 Q 94 50, 82 62 L 96 66 Q 100 50, 98 34 Q 50 28, 2 34 Z";
@@ -193,7 +196,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   jaggedFringeBob: {
     front: {
       noHat: "M 12 15 Q 50 2, 88 15 L 82 35 L 68 22 L 50 35 L 32 22 L 18 35 Z",
-      hat: "M 20 28 Q 50 22, 80 28 L 76 36 L 64 30 L 50 36 L 36 30 L 24 36 Z",
+      hat: `M 20 28 Q 50 22, 80 28 L 76 36 L 64 30 L 50 36 L 36 30 L 24 36 Z ${TUCKED_SIDE_LOCKS}`,
     },
     back: {
       noHat: "M 15 15 Q 5 45, 10 95 L 90 95 Q 95 45, 85 15 Z",
@@ -237,7 +240,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   longStraightLayered: {
     front: {
       noHat: "M 14 24 C 19 10, 35 5, 50 6 C 65 5, 81 10, 86 24 L 82 34 C 68 25, 58 20, 50 23 C 42 20, 32 25, 18 34 Z",
-      hat: "M 20 28 C 28 22, 40 20, 50 22 C 60 20, 72 22, 80 28 L 76 36 C 66 30, 58 28, 50 30 C 42 28, 34 30, 24 36 Z",
+      hat: `M 20 28 C 28 22, 40 20, 50 22 C 60 20, 72 22, 80 28 L 76 36 C 66 30, 58 28, 50 30 C 42 28, 34 30, 24 36 Z ${TUCKED_SIDE_LOCKS}`,
     },
     back: {
       noHat: "M 16 24 C 7 41, 7 77, 13 99 L 87 99 C 93 77, 93 41, 84 24 C 72 10, 28 10, 16 24 Z",
@@ -267,7 +270,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   roundedCurls: {
     front: {
       noHat: "M 12 22 C 15 5, 45 5, 52 10 Q 75 10, 90 18 L 86 35 C 75 22, 55 25, 40 25 Q 25 25, 12 28 Z",
-      hat: "M 22 28 C 32 22, 44 22, 50 24 C 62 22, 74 22, 80 28 L 76 36 C 66 30, 56 30, 50 32 C 44 30, 34 30, 24 36 Z",
+      hat: `M 22 28 C 32 22, 44 22, 50 24 C 62 22, 74 22, 80 28 L 76 36 C 66 30, 56 30, 50 32 C 44 30, 34 30, 24 36 Z ${TUCKED_SIDE_LOCKS}`,
     },
     back: {
       noHat: "M 15 25 C 0 45, 0 90, 30 100 C 40 105, 50 100, 70 100 C 100 90, 100 45, 85 25 L 65 8 Z",
@@ -277,7 +280,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   trapezoidCut: {
     front: {
       noHat: "M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z",
-      hat: TUCKED_SCALP_FRONT,
+      hat: `${TUCKED_SCALP_FRONT} ${TUCKED_SIDE_LOCKS}`,
     },
     back: {
       noHat: "M 15 20 L 5 45 Q 8 95, 12 95 L 88 95 Q 92 95, 95 45 L 85 20 Z",
@@ -287,7 +290,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   roundedMiddlePart: {
     front: {
       noHat: "M 15 20 C 30 10, 45 10, 50 15 C 55 10, 70 10, 85 20 L 80 32 Q 50 15, 20 32 Z",
-      hat: "M 22 28 C 32 22, 44 22, 50 24 C 56 22, 68 22, 78 28 L 74 36 Q 50 30, 26 36 Z",
+      hat: `M 22 28 C 32 22, 44 22, 50 24 C 56 22, 68 22, 78 28 L 74 36 Q 50 30, 26 36 Z ${TUCKED_SIDE_LOCKS}`,
     },
     back: {
       noHat: "M 15 20 L 8 45 Q 10 95, 12 95 L 88 95 Q 90 95, 92 45 L 85 20 Z",
@@ -413,6 +416,8 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   },
 };
 
+const PHYSICAL_HAT_BACK_KEEP = new Set<HairId>(["largeAfro", "aviatorFlaps"]);
+
 export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId): string {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return "";
@@ -423,6 +428,14 @@ export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId):
     }
     if (layer === "front") return ASTRONAUT_HOOD_FRONT;
     if (layer === "back") return ASTRONAUT_HOOD_BACK;
+    return "";
+  }
+
+  if (layer === "back" && isPhysicalHat(hatId) && !PHYSICAL_HAT_BACK_KEEP.has(hairId)) {
+    if (hairId === "lowPonytail") {
+      const tail = paths.back;
+      return typeof tail === "string" ? tail : tail.noHat;
+    }
     return "";
   }
 
