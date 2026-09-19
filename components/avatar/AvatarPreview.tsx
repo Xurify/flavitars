@@ -27,7 +27,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   size = "preview",
   className,
   showBackground = true,
-  centered = false,
+  centered: _centered = false,
 }): React.JSX.Element => {
   const { hairColor } = resolveAvatarColors(state);
 
@@ -37,7 +37,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   return (
     <div
       className={cn(
-        "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
+        "relative shrink-0 flex items-center justify-center overflow-visible transition-all duration-300",
         showBackground &&
           "bg-white border border-border/80 shadow-lg shadow-black/[0.04] ring-1 ring-black/[0.03]",
         sizeClasses[size],
@@ -47,11 +47,9 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
     >
       <svg
         viewBox={getAvatarViewBox(state)}
-        className={cn(
-          "w-full h-full text-foreground transform transition-transform duration-300",
-          !centered && "scale-[0.96] translate-y-[-1%]"
-        )}
+        className="w-full h-full text-foreground"
         xmlns="http://www.w3.org/2000/svg"
+        overflow="visible"
       >
         <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 

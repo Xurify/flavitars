@@ -54,7 +54,7 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
   return (
     <div
       className={cn(
-        "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
+        "relative shrink-0 flex items-center justify-center overflow-visible transition-all duration-300",
         showBackground &&
           "bg-white border border-zinc-200/80 shadow-md shadow-black/[0.05] ring-1 ring-black/[0.03] rounded-xl",
         sizeClasses[size],
@@ -64,11 +64,9 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
     >
       <svg
         viewBox={viewBox}
-        className={cn(
-          "w-full h-full text-foreground transform transition-transform duration-300",
-          previewMode === "full" && "scale-[0.96] translate-y-[-1%]"
-        )}
+        className="w-full h-full text-foreground"
         xmlns="http://www.w3.org/2000/svg"
+        overflow="visible"
       >
         <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 

@@ -19,6 +19,7 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="100"
       height="100"
+      overflow="visible"
       style={{
         // @ts-expect-error CSS custom properties
         "--avatar-hair": hairColor,
