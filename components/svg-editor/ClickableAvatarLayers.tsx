@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors, resolveAvatarParts, resolveAvatarLogic } from "@/lib/utils/avatar-resolver";
-import { getHeadFacialTransform, getHatClipZone } from "@/lib/avatar/parts";
+import { getHatClipZone, getHeadFacialTransform } from "@/lib/avatar/parts";
+import { HairOnHatOverlay } from "@/lib/avatar/parts/hair";
 import { PartCategory, SelectedPart, PartLayer } from "@/lib/svg-editor/part-data";
 
 interface ClickableAvatarLayersProps {
@@ -94,11 +95,10 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
   } = resolveAvatarParts(state);
 
   const { isSkiMask } = resolveAvatarLogic(state);
-
-  const clipZone = getHatClipZone(state.hat);
-  const hasHat = state.hat && state.hat !== "none";
-  const shouldClipHair = hasHat && clipZone.hidesHair;
-  const hairClipMaskId = shouldClipHair ? `${filterId}-hair-clip-mask` : undefined;
+  const hatClip = getHatClipZone(state.hat);
+  const hideAllHair = Boolean(hatClip.hideAllHair);
+  const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
+  const hairMask = !hideAllHair && hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   const isPartSelected = (category: PartCategory, layer?: PartLayer) => {
     if (!selectedPart) return false;
@@ -118,8 +118,9 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         showHoverEffects={showHoverEffects}
         className="hair-back-set"
       >
-        <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined}>
-          {pathOverride && pathOverride.layer === "back" ? (
+        <g mask={hairMask}>
+          {!hideAllHair &&
+            (pathOverride && pathOverride.layer === "back" ? (
             <path
               d={pathOverride.path}
               fill={hairColor}
@@ -129,7 +130,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
             />
           ) : (
             <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
-          )}
+          ))}
         </g>
       </ClickableLayer>
 
@@ -222,8 +223,9 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         showHoverEffects={showHoverEffects}
         className="hair-front-set"
       >
-        <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined}>
-          {pathOverride && pathOverride.layer === "front" ? (
+        <g mask={hairMask}>
+          {!hideAllHair &&
+            (pathOverride && pathOverride.layer === "front" ? (
             <path
               d={pathOverride.path}
               fill={hairColor}
@@ -233,7 +235,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
             />
           ) : (
             <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
-          )}
+          ))}
         </g>
       </ClickableLayer>
 
@@ -264,7 +266,8 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         onSelect={onPartSelect}
         showHoverEffects={showHoverEffects}
       >
-        <HatSet fill={hatColor} headId={state.head} hatId={state.hat} />
+        <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
+        {!hideAllHair && <HairOnHatOverlay hairId={state.hair} hatId={state.hat} fill={hairColor} />}
       </ClickableLayer>
     </g>
   );

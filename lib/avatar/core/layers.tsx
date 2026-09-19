@@ -1,7 +1,8 @@
 import React from "react";
 import { AvatarState } from "../types";
 import { resolveAvatarColors, resolveAvatarParts, resolveAvatarLogic } from "../../utils/avatar-resolver";
-import { getHeadFacialTransform, getHatClipZone } from "../parts";
+import { getHatClipZone, getHeadFacialTransform } from "../parts";
+import { HairOnHatOverlay } from "../parts/hair";
 
 interface AvatarLayersProps {
   state: AvatarState;
@@ -14,21 +15,19 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
     resolveAvatarParts(state);
 
   const { isSkiMask } = resolveAvatarLogic(state);
-
-  // Get the hat's clip zone (new physics system)
-  const clipZone = getHatClipZone(state.hat);
-  const hasHat = state.hat && state.hat !== "none";
-  const shouldClipHair = hasHat && clipZone.hidesHair;
-
-  // The mask ID for this hat's clip zone
-  const hairClipMaskId = shouldClipHair ? `${filterId}-hair-clip-mask` : undefined;
+  const hatClip = getHatClipZone(state.hat);
+  const hideAllHair = Boolean(hatClip.hideAllHair);
+  const hatHidesHair = hatClip.hidesHair && Boolean(hatClip.clipPath);
+  const hairMask = !hideAllHair && hatHidesHair ? `url(#${filterId}-hair-clip-mask)` : undefined;
 
   return (
     <g>
-      {/* LAYER 1: Back Hair - flows behind head, clipped by hat zone */}
-      <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined} className="hair-back-set">
+      {/* LAYER 1: Back hair is the volume around the hat. Clip the hat footprint so hair cannot sit in hollows. */}
+      {!hideAllHair && (
+      <g mask={hairMask} className="hair-back-set">
         <HairBackSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
+      )}
 
       {/* LAYER 2: Body/Neck */}
       <g className="body-set" style={{ color: bodyColor }}>
@@ -53,10 +52,12 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
         </g>
       </g>
 
-      {/* LAYER 4: Front Hair - clipped by hat zone to prevent overflow */}
-      <g mask={hairClipMaskId ? `url(#${hairClipMaskId})` : undefined} className="hair-front-set">
+      {/* LAYER 4: Front hair tucked under the hat crown */}
+      {!hideAllHair && (
+      <g mask={hairMask} className="hair-front-set">
         <HairFrontSet fill={hairColor} hatId={state.hat} headId={state.head} hairId={state.hair} />
       </g>
+      )}
 
       {/* LAYER 5: Accessories (glasses, earrings, etc.) */}
       {(!isSkiMask || state.accessories === "headphones") && (
@@ -72,7 +73,8 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
       )}
 
       {/* LAYER 6: Hat on top of everything */}
-      <HatSet fill={hatColor} headId={state.head} hatId={state.hat} />
+      <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
+      {!hideAllHair && <HairOnHatOverlay hairId={state.hair} hatId={state.hat} fill={hairColor} />}
     </g>
   );
 };

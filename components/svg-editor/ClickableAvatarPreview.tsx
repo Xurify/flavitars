@@ -4,6 +4,7 @@ import React, { useId } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
+import { getAvatarViewBox } from "@/lib/avatar/core/view-box";
 import { ClickableAvatarLayers } from "./ClickableAvatarLayers";
 import { SelectedPart } from "@/lib/svg-editor/part-data";
 import { cn } from "@/lib/utils/strings";
@@ -48,12 +49,12 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
   const baseId = useId();
   const filterId = `filter-${baseId.replace(/[^a-zA-Z0-9]/g, "")}`;
 
-  const viewBox = previewMode === "head-only" ? "0 -10 100 85" : "0 0 100 100";
+  const viewBox = previewMode === "head-only" ? "0 -10 100 85" : getAvatarViewBox(state);
 
   return (
     <div
       className={cn(
-        "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
+        "relative shrink-0 flex items-center justify-center overflow-visible transition-all duration-300",
         showBackground &&
           "bg-white border border-zinc-200/80 shadow-md shadow-black/[0.05] ring-1 ring-black/[0.03] rounded-xl",
         sizeClasses[size],
@@ -63,11 +64,9 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
     >
       <svg
         viewBox={viewBox}
-        className={cn(
-          "w-full h-full text-foreground transform transition-transform duration-300",
-          previewMode === "full" && "scale-[0.85] translate-y-[-5%]"
-        )}
+        className="w-full h-full text-foreground"
         xmlns="http://www.w3.org/2000/svg"
+        overflow="visible"
       >
         <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 

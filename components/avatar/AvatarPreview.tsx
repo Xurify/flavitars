@@ -3,6 +3,7 @@ import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
 import { AvatarLayers } from "@/lib/avatar/core/layers";
+import { getAvatarViewBox } from "@/lib/avatar/core/view-box";
 import { cn } from "@/lib/utils/strings";
 
 interface AvatarPreviewProps {
@@ -26,7 +27,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   size = "preview",
   className,
   showBackground = true,
-  centered = false,
+  centered: _centered = false,
 }): React.JSX.Element => {
   const { hairColor } = resolveAvatarColors(state);
 
@@ -36,7 +37,7 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   return (
     <div
       className={cn(
-        "relative shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300",
+        "relative shrink-0 flex items-center justify-center overflow-visible transition-all duration-300",
         showBackground &&
           "bg-white border border-border/80 shadow-lg shadow-black/[0.04] ring-1 ring-black/[0.03]",
         sizeClasses[size],
@@ -45,12 +46,10 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
       style={{ "--avatar-hair": hairColor } as React.CSSProperties}
     >
       <svg
-        viewBox="0 0 100 100"
-        className={cn(
-          "w-full h-full text-foreground transform transition-transform duration-300",
-          !centered && "scale-[0.88] translate-y-[-4%]"
-        )}
+        viewBox={getAvatarViewBox(state)}
+        className="w-full h-full text-foreground"
         xmlns="http://www.w3.org/2000/svg"
+        overflow="visible"
       >
         <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
 

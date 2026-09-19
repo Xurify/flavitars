@@ -1,6 +1,6 @@
 import { PartRegistry, createAvatarItem } from "./common";
 
-export const HeadIds = ["square", "rounded", "angular", "oval"] as const;
+export const HeadIds = ["square", "rounded", "angular", "oval", "slender"] as const;
 export type HeadId = (typeof HeadIds)[number];
 
 export const HEAD_PATHS: Record<string, string> = {
@@ -8,6 +8,7 @@ export const HEAD_PATHS: Record<string, string> = {
   rounded: "M20 30 C 20 10, 80 10, 80 30 C 80 60, 80 85, 50 92 C 20 85, 20 60, 20 30 Z",
   angular: "M20 20 L 80 20 L 75 75 L 50 92 L 25 75 Z",
   oval: "M20 40 C 20 10, 80 10, 80 40 C 80 70, 75 90, 50 90 C 25 90, 20 70, 20 40 Z",
+  slender: "M22 30 C 22 10, 78 10, 78 30 C 78 60, 77 84, 50 92 C 23 84, 22 60, 22 30 Z",
 };
 
 export const SquareHead = createAvatarItem({
@@ -40,9 +41,18 @@ export const OvalHead = createAvatarItem({
   svg: ({ fill }) => <path d={HEAD_PATHS.oval} fill={fill} stroke="currentColor" strokeWidth="2" />
 });
 
+export const SlenderHead = createAvatarItem({
+  id: "slender",
+  name: "Slender",
+  svg: ({ fill }) => (
+    <path d={HEAD_PATHS.slender} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  )
+});
+
 export const HeadShapes: PartRegistry<HeadId> = {
   square: { component: SquareHead.svg, label: SquareHead.name },
   rounded: { component: RoundedHead.svg, label: RoundedHead.name },
   angular: { component: AngularHead.svg, label: AngularHead.name },
   oval: { component: OvalHead.svg, label: OvalHead.name },
+  slender: { component: SlenderHead.svg, label: SlenderHead.name },
 };

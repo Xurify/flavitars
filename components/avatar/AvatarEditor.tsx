@@ -258,7 +258,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
 
               <div
                 ref={previewReference}
-                className="relative z-10 scale-[0.9] sm:scale-100 lg:scale-105 transition-transform duration-300 drop-shadow-sm"
+                className="relative z-10 drop-shadow-sm"
               >
                 <AvatarPreview state={avatarState} size="preview" showBackground={true} />
               </div>

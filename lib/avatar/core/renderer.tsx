@@ -3,6 +3,9 @@ import { resolveAvatarColors } from "../../utils/avatar-resolver";
 import { AvatarFilters } from "./filters";
 import { AvatarLayers } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
+import { getAvatarViewBox } from "./view-box";
+
+export { getAvatarViewBox } from "./view-box";
 
 export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
   const { hairColor, skinTone } = resolveAvatarColors(state);
@@ -11,11 +14,12 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
 
   const svgContent = (
     <svg
-      viewBox="5 5 90 90"
+      viewBox={getAvatarViewBox(state)}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="100"
       height="100"
+      overflow="visible"
       style={{
         // @ts-expect-error CSS custom properties
         "--avatar-hair": hairColor,
