@@ -55,8 +55,11 @@ const singleTopKnotBack: PartComponent = ({ fill, hatId }) => {
 const doubleSpaceBunsBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("doubleSpaceBuns", "back", hatId ?? "none");
   const hideBuns = isFullCoverageHat(hatId);
-  if (hideBuns) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
+  if (hideBuns) {
+    if (!d) return null;
+    return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />;
+  }
   const hasPhysicalHat = isPhysicalHat(hatId);
   return (
     <g>
@@ -363,8 +366,15 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
   const hasPhysicalHat = isPhysicalHat(hatId);
   const hideBuns = isFullCoverageHat(hatId);
   const d = getHairPathData("doubleSpaceBuns", "front", hatId ?? "none");
-  if (hideBuns) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
+  if (hideBuns) {
+    if (!d) return null;
+    return (
+      <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
+        <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" />
+      </g>
+    );
+  }
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
       {d ? <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" /> : null}
