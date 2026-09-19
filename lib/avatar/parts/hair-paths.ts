@@ -40,9 +40,9 @@ export const TUCKED_AFRO_HOOD =
 export const ASTRONAUT_AFRO_FILL = "M 16 56 Q 12 24, 50 16 Q 88 24, 84 56 Q 50 58, 16 56 Z";
 /** Afro sits on the skull, still inside a modest viewBox. */
 export const FULL_AFRO = "M 6 12 A 44 38 0 1 1 94 12 A 44 38 0 1 1 6 12";
-/** High short ridge under a brim — shaved sides, not a bob. */
+/** One nape ridge under a brim — tucked at the hem, peeks at the neck not the ears. */
 export const TUCKED_MOHAWK_CREST =
-  "M 14 32 Q 6 44, 12 58 Q 50 64, 88 58 Q 94 44, 86 32 Q 50 28, 14 32 Z";
+  "M 42 32 Q 50 24, 58 32 C 60 52, 56 70, 50 78 C 10 80, 2 92, 16 102 Q 50 110, 84 102 C 98 92, 90 80, 50 78 C 44 70, 40 52, 42 32 Z";
 /** Ponytail: tucked scalp plus one obvious tail lobe. */
 export const TUCKED_PONY_BACK =
   "M 8 34 Q 0 50, 8 64 L 24 58 Q 12 48, 20 40 Q 38 36, 46 54 Q 58 82, 64 100 L 84 94 Q 74 74, 56 48 Q 78 38, 94 34 Q 50 28, 8 34 Z";
@@ -364,7 +364,7 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   spikyMohawk: {
     front: {
       noHat: "M 22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
-      hat: TUCKED_SCALP_FRONT,
+      hat: "",
     },
     back: {
       noHat: "",

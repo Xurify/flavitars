@@ -93,7 +93,22 @@ const spikyMohawkBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("spikyMohawk", "back", hatId ?? "none");
   if (!d) return null;
   const hairColor = fill || "var(--avatar-hair, #000)";
-  return <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />;
+  const hasPhysicalHat = isPhysicalHat(hatId);
+  return (
+    <g>
+      <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {hasPhysicalHat && (
+        <path
+          d="M 50 38 Q 51 70, 50 100"
+          fill="none"
+          stroke="white"
+          opacity="0.2"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      )}
+    </g>
+  );
 };
 
 const largeAfroBack: PartComponent = ({ fill, hatId }) => {
@@ -825,26 +840,6 @@ export function HairOnHatOverlay({
           opacity="0.28"
           strokeWidth="2"
           strokeLinecap="round"
-        />
-      </g>
-    );
-  }
-  if (hairId === "spikyMohawk") {
-    return (
-      <g className="hair-on-hat">
-        <path
-          d="M 14 20 L 10 40 L 14 60 L 22 50 L 20 28 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M 86 20 L 90 40 L 86 60 L 78 50 L 80 28 Z"
-          fill={hairColor}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinejoin="round"
         />
       </g>
     );
