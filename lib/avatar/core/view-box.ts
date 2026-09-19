@@ -27,8 +27,10 @@ const TALL_HAIR = new Set<AvatarState["hair"]>([
   "texturedPompadour",
 ]);
 
+const PERCH_HATS = new Set<AvatarState["hat"]>(["crown", "halo", "propellerHat", "nurseCap", "chefHat"]);
+
 export function getAvatarViewBox(state: Pick<AvatarState, "hat" | "hair">): string {
-  if (EXTRA_TALL_HATS.has(state.hat)) {
+  if (EXTRA_TALL_HATS.has(state.hat) || (PERCH_HATS.has(state.hat) && TALL_HAIR.has(state.hair))) {
     return "0 -52 100 160";
   }
   if (TALL_HATS.has(state.hat) || TALL_HAIR.has(state.hair)) {

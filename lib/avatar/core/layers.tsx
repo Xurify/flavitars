@@ -72,7 +72,7 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId }) =
       )}
 
       {/* LAYER 6: Hat on top of everything */}
-      <HatSet fill={hatColor} headId={state.head} hatId={state.hat} />
+      <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
     </g>
   );
 };

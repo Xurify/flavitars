@@ -1,5 +1,5 @@
 import { PartRegistry, PartComponent, AvatarItem, createAvatarItem } from "./common";
-import { getHeadHairTransform, isFullCoverageHat, isPhysicalHat } from "./hats";
+import { getHeadHairTransform, isClosedKnitHat, isFullCoverageHat, isOpenBrimHat, isPhysicalHat } from "./hats";
 import { getHairPathData, getHairHighlightPath } from "./hair-paths";
 import { HairIds, type HairId } from "./hair-ids";
 
@@ -46,25 +46,48 @@ const sweptFringeBack: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const singleTopKnotBack: PartComponent = () => null;
+const singleTopKnotBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("singleTopKnot", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
 
 const doubleSpaceBunsBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("doubleSpaceBuns", "back", hatId ?? "none");
+  const hideBuns = isFullCoverageHat(hatId);
+  if (hideBuns) return null;
+  const hairColor = fill || "var(--avatar-hair, #000)";
   const hasPhysicalHat = isPhysicalHat(hatId);
   return (
     <g>
-      {d ? <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" /> : null}
+      {d ? <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" /> : null}
+      {isClosedKnitHat(hatId) && (
+        <>
+          <circle cx="22" cy="46" r="8" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <circle cx="78" cy="46" r="8" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        </>
+      )}
+      {isOpenBrimHat(hatId) && (
+        <>
+          <circle cx="20" cy="48" r="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <circle cx="80" cy="48" r="9" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+        </>
+      )}
       {!hasPhysicalHat && (
         <>
-          <circle cx="15" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-          <circle cx="85" cy="12" r="13" fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+          <circle cx="15" cy="12" r="13" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <circle cx="85" cy="12" r="13" fill={hairColor} stroke="currentColor" strokeWidth="2" />
         </>
       )}
     </g>
   );
 };
 
-const sidePartShortBack: PartComponent = () => null;
+const sidePartShortBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("sidePartShort", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
 
 const jaggedFringeBobBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("jaggedFringeBob", "back", hatId ?? "none");
@@ -166,7 +189,11 @@ const messyShortBack: PartComponent = ({ fill, hatId }) => {
   return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
 };
 
-const buzzCutBack: PartComponent = () => null;
+const buzzCutBack: PartComponent = ({ fill, hatId }) => {
+  const d = getHairPathData("buzzCut", "back", hatId ?? "none");
+  if (!d) return null;
+  return <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />;
+};
 
 const sharpBobYellowHighlightBack: PartComponent = ({ fill, hatId }) => {
   const d = getHairPathData("sharpBobYellowHighlight", "back", hatId ?? "none");
@@ -336,16 +363,15 @@ const doubleSpaceBunsFront: PartComponent = ({ fill, headId, hairId, hatId }) =>
   const hasPhysicalHat = isPhysicalHat(hatId);
   const hideBuns = isFullCoverageHat(hatId);
   const d = getHairPathData("doubleSpaceBuns", "front", hatId ?? "none");
-  const bunX = hasPhysicalHat ? 9 : 15;
-  const bunY = hasPhysicalHat ? 46 : 12;
-  const bunR = hasPhysicalHat ? 8 : 11;
+  if (hideBuns) return null;
+  const hairColor = fill || "var(--avatar-hair, #000)";
   return (
     <g transform={getHeadHairTransform(headId, hairId, -1, hatId)}>
-      {d && !hideBuns ? <path d={d} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" /> : null}
-      {!hideBuns && (
+      {d ? <path d={d} fill={hairColor} stroke="currentColor" strokeWidth="2" /> : null}
+      {!hasPhysicalHat && (
         <>
-          <circle cx={bunX} cy={bunY} r={bunR} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
-          <circle cx={100 - bunX} cy={bunY} r={bunR} fill={fill || "var(--avatar-hair, #000)"} stroke="currentColor" strokeWidth="2" />
+          <circle cx="15" cy="12" r="11" fill={hairColor} stroke="currentColor" strokeWidth="2" />
+          <circle cx="85" cy="12" r="11" fill={hairColor} stroke="currentColor" strokeWidth="2" />
         </>
       )}
     </g>

@@ -265,7 +265,7 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
         onSelect={onPartSelect}
         showHoverEffects={showHoverEffects}
       >
-        <HatSet fill={hatColor} headId={state.head} hatId={state.hat} />
+        <HatSet fill={hatColor} headId={state.head} hatId={state.hat} hairId={state.hair} />
       </ClickableLayer>
     </g>
   );

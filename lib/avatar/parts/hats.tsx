@@ -64,6 +64,50 @@ export interface HatClipZone {
 export const SMALL_HATS: HatId[] = ["crown", "halo", "propellerHat", "nurseCap", "chefHat", "patternedHeadband"];
 export const FLOATING_HATS: HatId[] = ["halo"];
 export const FULL_COVERAGE_HATS: HatId[] = ["astronautHelmet", "skiMask", "samuraiHelmet"];
+export const CLOSED_KNIT_HATS: HatId[] = [
+  "beanie",
+  "beret",
+  "ushanka",
+  "militaryHelmet",
+  "topHat",
+  "vikingHelmet",
+  "wizardHat",
+  "pirateHat",
+  "detectiveHat",
+];
+export const OPEN_BRIM_HATS: HatId[] = ["bucketHat", "cowboyHat", "strawHat", "flagsCap", "baseballCap"];
+
+const DECORATIVE_HAIR_PERCH: Record<string, number> = {
+  largeAfro: -18,
+  spikyMohawk: -26,
+  doubleSpaceBuns: -16,
+  singleTopKnot: -14,
+  largeHairBow: -14,
+  detailedHairBow: -12,
+  texturedPompadour: -8,
+};
+
+export function getDecorativeHatPerchY(hatId: string | undefined, hairId: string | undefined): number {
+  if (!hatId || !hairId || !(SMALL_HATS as readonly string[]).includes(hatId)) {
+    return 0;
+  }
+  if (hatId === "patternedHeadband") {
+    return 0;
+  }
+  const perchY = DECORATIVE_HAIR_PERCH[hairId] ?? 0;
+  if (hatId === "halo" && perchY !== 0) {
+    return perchY - 8;
+  }
+  return perchY;
+}
+
+export function isClosedKnitHat(hatId: string | undefined): boolean {
+  return Boolean(hatId && (CLOSED_KNIT_HATS as readonly string[]).includes(hatId));
+}
+
+export function isOpenBrimHat(hatId: string | undefined): boolean {
+  return Boolean(hatId && (OPEN_BRIM_HATS as readonly string[]).includes(hatId));
+}
 
 export function isPhysicalHat(hatId: string | undefined): boolean {
   if (!hatId || hatId === "none") {
@@ -86,41 +130,41 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
     scale: 1,
   },
 
-  // BEANIE: Crown art peaks at y=-10 — clip must cover that, not stop at y=0
+  // BEANIE: knit crown only — nape must escape below the rib
   beanie: {
-    clipPath: "M15 36 Q 15 -12, 50 -12 Q 85 -12, 85 36 Z",
-    escapeY: 36,
-    sideEscapeX: [10, 90],
+    clipPath: "M18 33 Q 18 -12, 50 -12 Q 82 -12, 82 33 Z",
+    escapeY: 33,
+    sideEscapeX: [16, 84],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.1,
   },
 
-  // BASEBALL CAP: Front bill extends right, back opening allows ponytail
+  // BASEBALL CAP: crown + front panel, not the bill
   baseballCap: {
-    clipPath: "M16 34 Q 16 -8, 50 -8 Q 82 -8, 82 32 L 96 24 L 96 38 H 16 Z",
+    clipPath: "M20 24 Q 48 -6, 76 24 L 76 34 H 20 Z",
     escapeY: 34,
-    sideEscapeX: [12, 88],
+    sideEscapeX: [16, 84],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.1,
   },
 
-  // BUCKET HAT: Crown to y=-5 plus brim. Clip the hollow so hair cannot sit in the crown gap.
+  // BUCKET HAT: crown hollow only. Brim is a ring — hair hangs under it.
   bucketHat: {
-    clipPath: "M8 44 Q 8 -8, 50 -8 Q 92 -8, 92 44 Z",
-    escapeY: 44,
-    sideEscapeX: [5, 95],
+    clipPath: "M28 22 L 32 -4 Q 50 -10, 68 -4 L 72 22 Z",
+    escapeY: 22,
+    sideEscapeX: [24, 76],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.1,
   },
 
-  // FLAGS CAP: Similar to baseball cap
+  // FLAGS CAP: crown only, leave nape / sideburns
   flagsCap: {
-    clipPath: "M14 36 Q 14 -8, 50 -8 Q 86 -8, 86 34 L 96 36 L 96 44 H 14 Z",
+    clipPath: "M18 28 Q 50 -6, 82 28 L 82 36 H 18 Z",
     escapeY: 36,
-    sideEscapeX: [10, 90],
+    sideEscapeX: [16, 84],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.12,
@@ -136,21 +180,21 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
     scale: 1,
   },
 
-  // COWBOY HAT: Crown covers top, wide brim on sides
+  // COWBOY HAT: crown body only — wide brim is a ring over hair
   cowboyHat: {
-    clipPath: "M8 44 Q 8 18, 28 18 L 28 6 Q 50 -12, 72 6 L 72 18 Q 92 18, 92 44 Q 50 54, 8 44 Z",
-    escapeY: 44,
-    sideEscapeX: [5, 95],
+    clipPath: "M28 14 Q 50 -12, 72 14 L 74 28 Q 50 24, 26 28 Z",
+    escapeY: 28,
+    sideEscapeX: [22, 78],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.1,
   },
 
-  // DETECTIVE HAT: Similar to fedora
+  // DETECTIVE HAT: crown slab, not the brim disk
   detectiveHat: {
-    clipPath: "M14 44 Q 14 6, 50 6 Q 86 6, 86 44 Q 50 50, 14 44 Z",
-    escapeY: 44,
-    sideEscapeX: [12, 88],
+    clipPath: "M20 14 Q 50 -6, 80 14 L 80 32 H 20 Z",
+    escapeY: 32,
+    sideEscapeX: [16, 84],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.1,
@@ -267,11 +311,11 @@ export const HAT_CLIP_ZONES: Record<HatId, HatClipZone> = {
     scale: 1,
   },
 
-  // STRAW HAT: Wide brim
+  // STRAW HAT: crown only — brim is a ring
   strawHat: {
-    clipPath: "M4 42 Q 4 8, 50 8 Q 96 8, 96 42 Q 50 52, 4 42 Z",
-    escapeY: 40,
-    sideEscapeX: [0, 100],
+    clipPath: "M26 14 Q 50 -8, 74 14 L 76 28 Q 50 24, 24 28 Z",
+    escapeY: 28,
+    sideEscapeX: [20, 80],
     allowsBackHair: true,
     hidesHair: true,
     scale: 1.15,
@@ -375,9 +419,10 @@ export const getHeadHatTransform = (
   baseTranslateY?: number,
   squareStretch?: number,
   uniformScale?: boolean,
+  hairId?: string,
 ) => {
   const layout = getHatLayout(hatId);
-  const definedOffset = baseTranslateY ?? layout.baseTranslateY;
+  const definedOffset = (baseTranslateY ?? layout.baseTranslateY) + getDecorativeHatPerchY(hatId, hairId);
   const stretch = squareStretch ?? layout.squareStretch;
   const uniform = uniformScale ?? layout.uniformScale;
 
@@ -569,8 +614,8 @@ export const PropellerHat = createAvatarItem({
   id: "propellerHat",
   name: "Propeller Hat",
   config: { clippingY: 0 },
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 2, 1.15, false)}>
+  svg: ({ headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, 2, 1.15, false, hairId)}>
       <path d="M22 18 Q 35 10, 50 10 L 50 32 Q 35 33, 22 30 Z" fill="#EF4444" stroke="currentColor" strokeWidth="2.5" />
       <path d="M50 10 Q 65 10, 78 18 L 78 30 Q 65 33, 50 32 Z" fill="#3B82F6" stroke="currentColor" strokeWidth="2.5" />
       <path d="M32 14 Q 50 12, 68 14 L 68 31 Q 50 33, 32 31 Z" fill="#22C55E" opacity="0.8" />
@@ -587,8 +632,8 @@ export const ChefHat = createAvatarItem({
   id: "chefHat",
   name: "Chef Hat",
   config: { clippingY: 0 },
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, -11)}>
+  svg: ({ headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, -11, undefined, undefined, hairId)}>
       <path d="M30 15 Q 20 0, 35 -10 Q 50 -15, 65 -10 Q 80 0, 70 15 Z" fill="white" stroke="currentColor" strokeWidth="2.5" />
       <rect x="30" y="15" width="40" height="15" fill={"white"} stroke="currentColor" strokeWidth="2.5" />
     </g>
@@ -693,8 +738,8 @@ export const DetectiveHat = createAvatarItem({
 export const NurseCap = createAvatarItem({
   id: "nurseCap",
   name: "Nurse Cap",
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+  svg: ({ headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1, false, hairId)}>
       <path d="M35 15 L 40 5 H 60 L 65 15 Z" fill="white" stroke="currentColor" strokeWidth="2" />
       <rect x="47" y="8.5" width="6" height="2" rx="0.5" fill="red" />
       <rect x="49" y="6.5" width="2" height="6" rx="0.5" fill="red" />
@@ -786,8 +831,8 @@ export const PatternedHeadband = createAvatarItem({
   id: "patternedHeadband",
   name: "Patterned Headband",
   config: { clippingY: 18 },
-  svg: ({ fill, headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+  svg: ({ fill, headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1, false, hairId)}>
       <defs>
         <clipPath id="headbandClip">
           <path d="M 15 25 C 15 5, 85 5, 85 25 L 85 40 C 85 20, 15 20, 15 40 Z" />
@@ -868,8 +913,8 @@ export const FlagsCap = createAvatarItem({
 export const Crown = createAvatarItem({
   id: "crown",
   name: "Crown",
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+  svg: ({ headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1, false, hairId)}>
       <path d="M20 30 L 20 10 L 35 22 L 50 5 L 65 22 L 80 10 L 80 30 Z" fill="#FBBF24" stroke="#B45309" strokeWidth="1.5" />
     </g>
   ),
@@ -878,8 +923,8 @@ export const Crown = createAvatarItem({
 export const Halo = createAvatarItem({
   id: "halo",
   name: "Halo",
-  svg: ({ headId, hatId }) => (
-    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1)}>
+  svg: ({ headId, hatId, hairId }) => (
+    <g transform={getHeadHatTransform(headId, hatId, 0, 1.1, false, hairId)}>
       <ellipse cx="50" cy="0" rx="30" ry="8" fill="none" stroke="#FDE047" strokeWidth="4" opacity="0.92" />
     </g>
   ),

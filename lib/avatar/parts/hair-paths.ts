@@ -6,6 +6,27 @@ export type HairLayer = "front" | "back" | "highlight";
 type HairPathSingle = string;
 type HairPathVariant = HairPathSingle | { noHat: string; hat: string };
 
+/** Short fringe just below a typical crown. */
+export const TUCKED_SCALP_FRONT = "M 20 32 Q 50 28, 80 32 L 78 44 Q 50 40, 22 44 Z";
+/** Tight nape+temple U for buzz / crew / fade. */
+export const TUCKED_SHORT_NAPE =
+  "M 8 36 Q 0 52, 6 70 L 22 66 Q 10 52, 20 42 Q 50 38, 80 42 Q 90 52, 78 66 L 94 70 Q 100 52, 92 36 Q 50 32, 8 36 Z";
+/** Fuller U for medium shorts. */
+export const TUCKED_NAPE_U =
+  "M 10 36 Q 4 56, 10 82 L 24 78 Q 14 56, 22 42 Q 50 38, 78 42 Q 86 56, 76 78 L 90 82 Q 96 56, 90 36 Q 50 32, 10 36 Z";
+/** Afro hood: one thick U around the head, open at the crown. */
+export const TUCKED_AFRO_HOOD =
+  "M 6 40 C -4 58, -2 88, 18 100 L 30 92 C 16 80, 14 58, 22 42 Q 50 36, 78 42 C 86 58, 84 80, 70 92 L 82 100 C 102 88, 104 58, 94 40 Q 72 50, 50 48 Q 28 50, 6 40 Z";
+/** Mohawk under a brim: one collar/U, thicker at the nape, visible beside the head. */
+export const TUCKED_MOHAWK_CREST =
+  "M 8 36 Q 0 54, 8 74 Q 28 86, 50 88 Q 72 86, 92 74 Q 100 54, 92 36 L 78 40 Q 86 54, 78 68 Q 62 78, 50 78 Q 38 78, 22 68 Q 14 54, 22 40 Z";
+/** Ponytail: U + tail lobe, one fill. */
+export const TUCKED_PONY_BACK =
+  "M 12 36 Q 6 54, 10 72 L 24 68 Q 16 52, 24 42 Q 40 38, 48 56 Q 60 78, 70 98 L 84 94 Q 72 74, 58 50 Q 78 40, 88 36 Q 50 32, 12 36 Z";
+/** Astronaut visor hood-cap in world space (visor center ~50,50). */
+export const ASTRONAUT_HOOD_BACK = "M 16 56 Q 12 24, 50 16 Q 88 24, 84 56 Q 72 38, 50 34 Q 28 38, 16 56 Z";
+export const ASTRONAUT_HOOD_FRONT = "M 24 34 Q 50 20, 76 34 L 72 44 Q 50 32, 28 44 Z";
+
 type HighlightVariant = string | { noHat: string; hat: string };
 type HairPathEntry = { front: HairPathVariant; back: HairPathVariant; highlight?: HighlightVariant };
 
@@ -17,81 +38,102 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   buzzCut: {
     front: {
       noHat: "M 20 25 C 20 10, 80 10, 80 25 L 30 25 Q 45 25, 30 25 Z",
-      hat: "M 24 28 Q 50 24, 76 28 L 74 36 Q 50 32, 26 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "",
+    back: {
+      noHat: "",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   flatTopShort: {
     front: {
       noHat: "M 12 18 Q 50 5, 88 18 L 88 38 L 12 38 Z",
-      hat: "M 20 25 Q 50 22, 80 25 L 80 38 L 20 38 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 15 20 Q 10 50, 15 75 L 85 75 Q 90 50, 85 20 Z",
-      hat: "M 22 35 Q 20 55, 22 75 L 78 75 Q 80 55, 78 35 Q 50 38, 22 35 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
   crewCut: {
     front: {
       noHat: "M 18 23 C 22 9, 78 9, 82 23 L 80 34 Q 50 28, 20 34 Z",
-      hat: "M 22 27 Q 50 24, 78 27 L 76 36 Q 50 31, 24 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 20 24 C 22 14, 78 14, 80 24 L 78 45 Q 50 52, 22 45 Z",
-      hat: "M 18 32 C 24 26, 76 26, 82 32 L 78 48 Q 50 54, 22 48 Z",
+      hat: TUCKED_SHORT_NAPE,
     },
   },
   caesarCrop: {
     front: {
       noHat: "M 16 18 C 28 8, 70 8, 84 18 L 82 34 L 75 30 L 68 36 L 60 30 L 52 36 L 44 30 L 36 36 L 28 30 L 20 36 Z",
-      hat: "M 22 25 Q 50 20, 78 25 L 76 36 L 68 32 L 60 38 L 52 32 L 44 38 L 36 32 L 28 38 L 22 34 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 18 24 C 24 14, 76 14, 82 24 L 78 48 Q 50 56, 22 48 Z",
+    back: {
+      noHat: "M 18 24 C 24 14, 76 14, 82 24 L 78 48 Q 50 56, 22 48 Z",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   fadeCrop: {
     front: {
       noHat: "M 16 20 Q 50 8, 84 20 L 82 32 Q 50 24, 18 32 Z",
-      hat: "M 24 26 Q 50 22, 76 26 L 74 34 Q 50 29, 26 34 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 18 24 Q 50 10, 82 24 L 78 52 Q 50 62, 22 52 Z",
+    back: {
+      noHat: "M 18 24 Q 50 10, 82 24 L 78 52 Q 50 62, 22 52 Z",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   undercut: {
     front: {
       noHat: "M 12 24 C 28 4, 70 3, 88 15 L 82 30 C 66 22, 44 23, 22 42 L 15 42 Z",
-      hat: "M 18 28 C 36 18, 63 18, 82 25 L 78 34 C 62 28, 44 29, 24 44 L 18 42 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 16 25 Q 50 10, 84 25 L 80 55 Q 50 65, 20 55 Z",
+    back: {
+      noHat: "M 16 25 Q 50 10, 84 25 L 80 55 Q 50 65, 20 55 Z",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   slickBack: {
     front: {
       noHat: "M 12 24 C 20 5, 44 2, 58 8 C 72 8, 84 12, 90 24 L 82 38 Q 50 25, 18 38 Z",
-      hat: "M 22 27 C 32 19, 62 17, 78 26 L 76 38 Q 50 29, 24 38 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 15 24 C 22 10, 78 10, 85 24 L 82 62 Q 50 72, 18 62 Z",
+    back: {
+      noHat: "M 15 24 C 22 10, 78 10, 85 24 L 82 62 Q 50 72, 18 62 Z",
+      hat: TUCKED_NAPE_U,
+    },
   },
   curtains: {
     front: {
       noHat: "M 15 22 C 25 8, 42 8, 50 18 C 58 8, 75 8, 85 22 L 80 40 Q 66 28, 54 42 L 50 54 L 46 42 Q 34 28, 20 40 Z",
-      hat: "M 24 25 C 33 17, 43 16, 50 24 C 57 16, 67 17, 76 25 L 74 34 Q 50 32, 26 34 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 17 25 C 25 12, 75 12, 83 25 L 80 65 Q 50 74, 20 65 Z",
-      hat: "M 16 34 C 24 28, 76 28, 84 34 L 80 68 Q 50 76, 20 68 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
   shortWaves: {
     front: {
       noHat: "M 15 22 C 22 7, 78 7, 85 22 L 82 36 Q 50 29, 18 36 Z",
-      hat: "M 23 27 Q 50 22, 77 27 L 75 37 Q 50 31, 25 37 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 18 25 C 24 12, 76 12, 82 25 L 78 52 Q 50 62, 22 52 Z",
+    back: {
+      noHat: "M 18 25 C 24 12, 76 12, 82 25 L 78 52 Q 50 62, 22 52 Z",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   messyShort: {
     front: {
       noHat: "M 14 22 L 20 9 L 30 17 L 38 7 L 48 16 L 58 7 L 68 17 L 80 10 L 86 24 L 82 38 Q 50 26, 18 38 Z",
-      hat: "M 22 27 L 30 22 L 39 27 L 49 21 L 59 27 L 70 22 L 78 28 L 75 38 Q 50 31, 25 38 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 18 25 Q 50 9, 82 25 L 78 52 Q 50 60, 22 52 Z",
+    back: {
+      noHat: "M 18 25 Q 50 9, 82 25 L 78 52 Q 50 60, 22 52 Z",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   shortJaggedCrop: {
     front: {
@@ -106,9 +148,12 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   sidePartShort: {
     front: {
       noHat: "M 14 18 Q 30 2, 86 10 L 80 25 Q 40 18, 20 45 Z",
-      hat: "M 22 27 Q 30 2, 79 22 L 74 30 Q 40 18, 21 47 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "",
+    back: {
+      noHat: "",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   bobCutSharp: {
     front: {
@@ -187,9 +232,12 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   messySideSwept: {
     front: {
       noHat: "M 10 20 L 15 4 C 28 -5, 42 -5, 48 2 Q 78 0, 95 12 L 91 32 C 78 18, 55 18, 42 22 Q 25 25, 12 28 Z",
-      hat: "M 12 28 Q 25 25, 42 25 C 55 25, 78 25, 88 32 C 85 35, 75 35, 60 38 Q 30 40, 12 28 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 10 25 C -20 45, -25 90, 15 100 C 25 105, 35 100, 45 105 C 55 100, 65 105, 75 102 C 85 105, 125 90, 80 15 L 90 25 L 65 5 Z",
+    back: {
+      noHat: "M 10 25 C -20 45, -25 90, 15 100 C 25 105, 35 100, 45 105 C 55 100, 65 105, 75 102 C 85 105, 125 90, 80 15 L 90 25 L 65 5 Z",
+      hat: TUCKED_NAPE_U,
+    },
   },
   roundedCurls: {
     front: {
@@ -204,11 +252,11 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   trapezoidCut: {
     front: {
       noHat: "M 12 18 C 25 5, 65 2, 90 22 L 85 38 Q 60 15, 20 38 Z",
-      hat: "M 22 18 C 25 5, 65 2, 79 17 L 78 40 Q 60 15, 20 38 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 15 20 L 5 45 Q 8 95, 12 95 L 88 95 Q 92 95, 95 45 L 85 20 Z",
-      hat: "M 20 20 L 12 49 Q 8 95, 12 95 L 88 95 Q 92 95, 88 49 L 79 21 Z",
+      hat: "M 16 36 L 10 56 Q 8 95, 12 95 L 88 95 Q 92 95, 90 56 L 84 36 Q 50 32, 16 36 Z",
     },
   },
   roundedMiddlePart: {
@@ -244,49 +292,58 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   sweptFringe: {
     front: {
       noHat: "M 14 15 Q 40 4, 86 10 L 80 25 Q 40 16, 22 48 L 14 28 Z",
-      hat: "M 20.25 25.7 Q 38.25 19.7, 63.25 23.7 L 58.25 35.7 Q 38.25 28.7, 26.25 45.7 L 20.25 33.7 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 10 15 Q 10 -10, 50 -10 Q 90 -10, 90 15 L 98 85 H 2 Z",
-      hat: "M 14 28 Q 12 50, 16 85 H 84 Q 88 50, 86 28 Q 50 32, 14 28 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
   singleTopKnot: {
     front: {
       noHat: "M 10 25 Q 50 2, 90 25 L 90 35 Q 50 22, 10 35 Z",
-      hat: "M 22 28 Q 50 24, 78 28 L 76 36 Q 50 32, 24 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "",
+    back: {
+      noHat: "",
+      hat: TUCKED_SHORT_NAPE,
+    },
   },
   doubleSpaceBuns: {
     front: {
       noHat: "M 10 15 Q 50 -2, 90 15 L 86 30 Q 50 20, 14 30 Z",
-      hat: "M 20 28 Q 50 22, 80 28 L 76 36 Q 50 30, 24 36 Z M 4 38 L 16 36 L 14 50 L 4 52 Z M 96 38 L 84 36 L 86 50 L 96 52 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "",
+    back: {
+      noHat: "",
+      hat: TUCKED_NAPE_U,
+    },
   },
   lowPonytail: {
     front: {
       noHat: "M 18 30 C 18 10, 40 8, 50 8 C 60 8, 82 10, 82 30 L 82 40 C 82 30, 60 25, 50 25 C 40 25, 18 30, 18 40 Z",
-      hat: "M 22 28 C 28 22, 40 20, 50 22 C 60 20, 72 22, 78 28 L 76 36 C 66 30, 58 28, 50 30 C 42 28, 34 30, 24 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
-    back: "M 50 35 Q 60 40, 75 95 L 82 92 Q 68 40, 60 35 Z",
+    back: {
+      noHat: "M 50 35 Q 60 40, 75 95 L 82 92 Q 68 40, 60 35 Z",
+      hat: TUCKED_PONY_BACK,
+    },
   },
   largeAfro: {
     front: "",
     back: {
       noHat: "M 5 50 A 45 45 0 1 1 95 50 A 45 45 0 1 1 5 50",
-      hat: "M 8 50 A 42 44 0 1 1 92 50 A 42 44 0 1 1 8 50",
+      hat: TUCKED_AFRO_HOOD,
     },
   },
   spikyMohawk: {
     front: {
       noHat: "M 22 28 L 15 15 L 30 22 L 35 6 L 45 18 L 50 -2 L 55 18 L 65 6 L 70 22 L 85 15 L 78 28 Q 50 24, 22 28 Z",
-      hat: "M 20 28 Q 50 24, 78 30 L 76 38 Q 50 34, 24 38 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "",
-      hat: "M 18 36 Q 12 50, 16 62 L 28 58 Q 22 50, 28 42 Q 50 38, 72 42 Q 78 50, 72 58 L 84 62 Q 88 50, 82 36 Q 50 32, 18 36 Z",
+      hat: TUCKED_MOHAWK_CREST,
     },
   },
   aviatorFlaps: {
@@ -302,31 +359,31 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
   texturedPompadour: {
     front: {
       noHat: "M 12 18 C 12 0, 40 -5, 52 5 C 65 -5, 95 0, 88 22 L 85 42 C 75 35, 60 38, 50 35 Q 25 35, 12 32 Z",
-      hat: "M 20 28 C 28 22, 44 20, 52 24 C 62 20, 76 22, 80 28 L 78 38 C 68 32, 58 34, 50 32 Q 30 34, 22 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 20 25 L 15 45 Q 15 55, 30 60 L 70 60 Q 85 55, 85 45 L 80 25 Z",
-      hat: "M 16 36 L 14 50 Q 16 62, 30 64 L 70 64 Q 84 62, 86 50 L 84 36 Q 50 40, 16 36 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
   largeHairBow: {
     front: {
       noHat: "M 10 20 C 5 0, 45 -10, 50 10 C 55 -10, 95 0, 90 20 L 95 35 Q 92 45, 80 42 L 20 42 Q 8 45, 5 35 Z",
-      hat: "M 22 28 Q 50 22, 78 28 L 74 36 Q 50 32, 26 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 12 25 L 5 45 Q 8 75, 20 85 L 80 85 Q 92 75, 95 45 L 88 25 Z",
-      hat: "M 14 36 L 8 54 Q 10 78, 22 88 L 78 88 Q 90 78, 92 54 L 86 36 Q 50 40, 14 36 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
   detailedHairBow: {
     front: {
       noHat: "M 10 20 C 5 2, 45 -5, 50 12 C 55 -5, 95 2, 90 20 L 92 28 Q 90 32, 80 30 L 20 30 Q 10 32, 8 28 Z",
-      hat: "M 22 28 Q 50 22, 78 28 L 74 36 Q 50 32, 26 36 Z",
+      hat: TUCKED_SCALP_FRONT,
     },
     back: {
       noHat: "M 12 25 L 5 45 Q 8 75, 20 85 L 80 85 Q 92 75, 95 45 L 88 25 Z",
-      hat: "M 14 36 L 8 54 Q 10 78, 22 88 L 78 88 Q 90 78, 92 54 L 86 36 Q 50 40, 14 36 Z",
+      hat: TUCKED_NAPE_U,
     },
   },
 };
@@ -334,6 +391,12 @@ export const HAIR_PATHS: Record<HairId, HairPathEntry> = {
 export function getHairPathData(hairId: HairId, layer: HairLayer, hatId: HatId): string {
   const paths = HAIR_PATHS[hairId];
   if (!paths) return "";
+
+  if (hatId === "astronautHelmet" && hairId !== "bald") {
+    if (layer === "front") return ASTRONAUT_HOOD_FRONT;
+    if (layer === "back") return ASTRONAUT_HOOD_BACK;
+    return "";
+  }
 
   if (layer === "highlight") {
     const highlight = paths.highlight ?? "";
