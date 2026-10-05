@@ -4,15 +4,22 @@ import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
 export const UrsulaHairIds = ["ursulaCoiffure"] as const;
 export type UrsulaHairId = (typeof UrsulaHairIds)[number];
 
+/**
+ * Short layered cut: parted on her left, the top lifts and sweeps across to the other temple,
+ * the sides stay close to the head so both ears (and the pearls) show.
+ */
 const URSULA_HAIR: Record<UrsulaHairId, HairSpec> = {
   ursulaCoiffure: {
-    cap: capAbove("M 12 62 L 21 62 L 21 40 C 23 32, 28 28, 36 26 C 46 28, 60 27, 70 29 C 76 31, 79 36, 79 40 L 79 62 L 88 62"),
+    cap: capAbove(
+      "M 12 52 L 20.5 52 L 20.5 47 C 22 41, 25.5 36, 31 33 C 38 29.5, 46 28, 54 26.5 C 60 25, 64 23, 67 20.5 C 72 22.5, 77 27, 79 33 L 79.5 47 L 88 47",
+    ),
     front:
-      "M 14 40 C 10 22, 18 6, 36 3 C 50 0, 70 2, 82 10 C 90 16, 91 28, 88 40 C 89 50, 90 58, 87 64 Q 84 67, 80 64 L 79 46 L 21 46 L 20 64 Q 16 67, 13 64 C 10 58, 11 50, 14 40 Z",
+      "M 17 54 C 13 53, 10.5 48, 10.5 42 C 10 30, 15 18, 25 10.5 C 33 4.5, 44 2.5, 54 4 C 63 5.5, 70 9, 75 12 C 81 15.5, 85.5 22, 86.5 30 C 87.5 37, 87 43, 85 47 C 83.5 50, 81.5 50.5, 80 48.5 L 80 40 L 21 40 L 21 50 C 20.5 52.5, 19 54, 17 54 Z M 17.5 48 C 15.5 51, 14.8 54, 14.5 57.5 C 11.5 54.5, 10.5 50.5, 11.5 46 Z M 87 43 C 87.6 47.5, 86.8 51.5, 84.2 54.5 C 84 51.5, 83.2 49, 82 47 Z",
     details:
-      "M 36 6 C 34 12, 35 20, 36 26 M 38 8 C 52 4, 70 8, 82 18 M 37 15 C 52 10, 70 14, 84 27 M 30 10 C 22 16, 18 26, 17 40 M 84 34 C 86 44, 86 52, 84 60 M 16 46 C 14 52, 15 58, 16 62",
-    shine: "M 40 6 C 54 3, 70 6, 78 12 C 70 10, 54 9, 42 11 Z M 20 24 C 22 18, 26 14, 30 12 C 27 16, 24 20, 23 26 Z",
-    top: 3,
+      "M 66 10 C 52 7, 36 9, 25 17 C 18 23, 14.5 32, 15 42 M 68 16 C 55 13, 40 15, 30 22.5 M 66 21 C 56 19, 44 21.5, 35 27 M 64 6 C 65.5 11, 66.5 16, 67 20.5 M 74 14 C 80 19, 84 27, 84 38",
+    shine:
+      "M 27 12.5 C 35 6.5, 47 4.5, 58 6 C 47 8, 37 10.5, 29.5 16 Z M 18 32 C 20 25, 23.5 20, 28.5 16.5 C 25.5 21.5, 23 26.5, 21.8 32.5 Z",
+    top: 4,
   },
 };
 

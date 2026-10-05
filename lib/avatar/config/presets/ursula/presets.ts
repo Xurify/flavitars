@@ -7,7 +7,7 @@ export const URSULA_PRESETS: Record<
   "ursula": {
     name: "Ursula von der Leyen",
     description: "President of the European Commission, with her signature short swept-back blonde hair, red blazer, and white collared shirt.",
-    head: "rounded",
+    head: "slender",
     eyes: "ursulaEyes",
     eyebrows: "ursulaEyebrows",
     nose: "refinedButton",

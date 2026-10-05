@@ -84,6 +84,20 @@ import {
 } from "../config/presets/ursula";
 
 import {
+  DrewBodies,
+  DrewBodyIds,
+  DrewEyebrows,
+  DrewEyebrowsIds,
+  DrewEyes,
+  DrewEyesIds,
+  DrewHairBack,
+  DrewHairFront,
+  DrewHairIds,
+  DrewMouthIds,
+  DrewMouths,
+} from "../config/presets/drew";
+
+import {
   PrvyEyes,
   PrvyEyesIds,
   PrvyExtras,
@@ -95,12 +109,12 @@ import {
 } from "../config/presets/prvy";
 
 export const AllNoses = { ...Noses, ...PrvyNoses };
-export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront };
-export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack };
-export const AllEyes = { ...Eyes, ...MarikaEyes, ...UrsulaEyes, ...PrvyEyes };
-export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows };
-export const AllMouths = { ...Mouths, ...MarikaMouths, ...UrsulaMouths, ...PrvyMouths };
-export const AllBodies = { ...Bodies, ...MarikaBodies, ...UrsulaBodies };
+export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront, ...DrewHairFront };
+export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack, ...DrewHairBack };
+export const AllEyes = { ...Eyes, ...MarikaEyes, ...UrsulaEyes, ...PrvyEyes, ...DrewEyes };
+export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows, ...DrewEyebrows };
+export const AllMouths = { ...Mouths, ...MarikaMouths, ...UrsulaMouths, ...PrvyMouths, ...DrewMouths };
+export const AllBodies = { ...Bodies, ...MarikaBodies, ...UrsulaBodies, ...DrewBodies };
 export const AllAccessories = { ...Accessories, ...MarikaAccessories, ...UrsulaAccessories };
 export const AllExtras = { ...Extras, ...MarikaExtras, ...UrsulaExtras, ...PrvyExtras };
 
@@ -124,15 +138,25 @@ export interface AvatarState {
   containHair: boolean;
 }
 
-export type AllHairId = HairId | (typeof MarikaHairIds)[number] | (typeof UrsulaHairIds)[number];
-export type AllEyesId = EyesId | (typeof MarikaEyesIds)[number] | (typeof UrsulaEyesIds)[number] | (typeof PrvyEyesIds)[number];
-export type AllEyebrowsId = EyebrowsId | (typeof MarikaEyebrowsIds)[number] | (typeof UrsulaEyebrowsIds)[number];
+export type AllHairId = HairId | (typeof MarikaHairIds)[number] | (typeof UrsulaHairIds)[number] | (typeof DrewHairIds)[number];
+export type AllEyesId =
+  | EyesId
+  | (typeof MarikaEyesIds)[number]
+  | (typeof UrsulaEyesIds)[number]
+  | (typeof PrvyEyesIds)[number]
+  | (typeof DrewEyesIds)[number];
+export type AllEyebrowsId =
+  | EyebrowsId
+  | (typeof MarikaEyebrowsIds)[number]
+  | (typeof UrsulaEyebrowsIds)[number]
+  | (typeof DrewEyebrowsIds)[number];
 export type AllMouthId =
   | MouthId
   | (typeof MarikaMouthIds)[number]
   | (typeof UrsulaMouthIds)[number]
-  | (typeof PrvyMouthIds)[number];
-export type AllBodyId = BodyId | (typeof MarikaBodyIds)[number] | (typeof UrsulaBodyIds)[number];
+  | (typeof PrvyMouthIds)[number]
+  | (typeof DrewMouthIds)[number];
+export type AllBodyId = BodyId | (typeof MarikaBodyIds)[number] | (typeof UrsulaBodyIds)[number] | (typeof DrewBodyIds)[number];
 export type AllAccessoryId = AccessoryId | (typeof MarikaAccessoryIds)[number] | (typeof UrsulaAccessoryIds)[number];
 export type AllExtrasId =
   | ExtrasId
