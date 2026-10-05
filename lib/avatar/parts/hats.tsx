@@ -105,7 +105,12 @@ const noneHat: PartComponent = () => null;
 const Beanie: PartComponent = ({ fill = "#334155" }) => (
   <g>
     <path d="M 17 27 C 16 2, 84 2, 83 27 Z" fill={fill} {...ink} />
-    <path d="M 30 9 V 26 M 40 6 V 26 M 50 5 V 26 M 60 6 V 26 M 70 9 V 26" stroke="black" strokeOpacity="0.15" strokeWidth="1.2" />
+    <path
+      d="M 30 12 V 26 M 40 10 V 26 M 50 9.5 V 26 M 60 10 V 26 M 70 12 V 26"
+      stroke="black"
+      strokeOpacity="0.15"
+      strokeWidth="1.2"
+    />
     <path d="M 14 24 Q 50 19, 86 24 L 86 31 Q 86 35, 82 35 Q 50 31, 18 35 Q 14 35, 14 31 Z" fill={fill} {...ink} />
     <path d="M 14 24 Q 50 19, 86 24 L 86 31 Q 86 35, 82 35 Q 50 31, 18 35 Q 14 35, 14 31 Z" {...shade} />
     <path
@@ -124,14 +129,14 @@ const BaseballCap: PartComponent = ({ fill = "#334155" }) => (
   <g>
     <path d={capCrown} fill={fill} {...ink} />
     <path
-      d="M 50 6 V 28 M 33 9 Q 37 18, 35 28 M 67 9 Q 63 18, 65 28"
+      d="M 50 10 V 28 M 34 12 Q 37 19, 35 28 M 66 12 Q 63 19, 65 28"
       fill="none"
       stroke="black"
       strokeOpacity="0.18"
       strokeWidth="1.2"
     />
-    <path d="M 28 12 Q 40 7, 50 7" {...shine} />
-    <circle cx="50" cy="5.5" r="2" fill={fill} {...ink} strokeWidth={1.5} />
+    <path d="M 28 14 Q 39 10.5, 47 10.2" {...shine} />
+    <circle cx="50" cy="9.3" r="2" fill={fill} {...ink} strokeWidth={1.5} />
     <path d={capVisor} fill={fill} {...ink} />
     <path d={capVisor} {...shade} />
   </g>
