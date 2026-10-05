@@ -4,67 +4,50 @@ import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
 export const UrsulaHairIds = ["ursulaCoiffure"] as const;
 export type UrsulaHairId = (typeof UrsulaHairIds)[number];
 
-/** Where the crest lifts off the side part and rolls up and over. */
-const LIFT = "M 36.5 26.3 C 31 17.5, 32.5 4, 42 -3.5";
+/** The swept-up line: from the left of the forehead up into the crest, curling over to the right. */
+const LIFT = "M 36 28.6 C 30 20, 32 5, 43 -2.5 C 48 -5.5, 53 -5.5, 57.5 -4.2";
 
-/** Underside of the curl the crest ends in, over the far temple. */
-const CURL = "M 86.8 32.2 C 84 30.6, 81.8 27.8, 80.6 24";
-
-/** Split between the upper and lower lock on the part side. */
-const SPLIT = "M 9.4 33 C 12.5 33.5, 15.5 35.5, 18.5 39";
+/** Underside of the roll where the hair comes down past the right temple. */
+const ROLL = "M 85.8 36 C 83.2 34, 81.4 30.5, 81 26";
 
 const SHADE = "#8A4E08";
 
 /**
- * Her coiffure, drawn as locks rather than one mass: from a deep side part the crest lifts off a
- * shoulder, sweeps across and curls under over the far temple; below it a lock flares out and
- * flicks at the jaw. On the part side two softer locks fall over the ear and flick out too. The
- * hairline runs diagonally (temple bare on the part side), and the lobes and pearls show.
+ * Her coiffure: the forehead is an open dome, and the hair is swept up and back from it into a
+ * big crest that leans to her right (viewer's left), then rolls over and down past the other
+ * temple, where the side flicks out. Both sides are full down to the earlobes, so the pearls show.
  */
 const URSULA_HAIR: Record<UrsulaHairId, HairSpec> = {
   ursulaCoiffure: {
-    cap: capAbove(
-      "M 12 57 L 21 57 L 21 46 C 21.5 39, 24 33, 29 29.5 C 32 27.5, 35 26.5, 38 26.3 C 48 26.6, 59 29.6, 67 34 C 72.5 37.5, 76 42, 78.5 47.5 L 79 57 L 88 57",
-    ),
+    cap: capAbove("M 12 56 L 21 56 L 21 46 C 22 36, 27 30.5, 35 28.6 Q 50 25.6, 65 28.6 C 73 30.5, 78 36, 79 46 L 79 56 L 88 56"),
     front: [
-      "M 21.5 56.5 C 18 59.5, 13 61.5, 8.5 60.5",
-      "C 10 58, 9.5 55, 8.5 51.5 C 7 46, 7 40.5, 8.5 36.5 C 9.2 34.8, 9.6 34, 9.4 33",
-      "C 7.8 28, 8.5 20, 13 14 C 15.5 10.5, 19 8, 22.5 6.5",
-      "C 24.5 -1, 30 -8, 38 -9.4 C 46 -10.8, 55 -7.5, 62 -5.5 C 69 -6.8, 77 -3, 82 3 C 86.5 8, 88.8 12.5, 88.8 18",
-      "C 89.5 23, 89.3 28.5, 86.8 32.2",
-      "C 89.5 33, 91.8 36, 92.3 40.5 C 92.8 45, 91.6 49.5, 91.2 53 C 91 55.5, 91.6 58, 92.6 60.2",
-      "C 88.5 61.5, 83.5 60, 79.5 56.5 L 79 40 L 21 40 Z",
+      "M 21.5 56 C 18 59.5, 14 61.5, 9.5 60",
+      "C 6.8 54, 6 46, 7 38 C 8 28, 12 19, 18 12",
+      "C 23 5, 28 -4, 36 -8.5 C 42 -11.5, 49 -10.5, 52.5 -6.5",
+      "C 54.5 -4.5, 57 -4, 60 -4.6 C 70 -6.5, 80 -1.5, 85.5 5.5 C 89.5 11.5, 91 19.5, 89.8 27",
+      "C 89.2 31, 87.4 34, 85.8 36",
+      "C 90.5 37.5, 94 41, 94.4 46 C 94.8 51, 93 55.5, 95.5 59.5",
+      "C 90.5 61.5, 85 60.5, 79.5 56.5 L 79 40 L 21 40 Z",
     ].join(" "),
     back: "M 15 46 C 10.5 53, 11.5 61, 15.5 64.5 C 18.5 67, 22.5 66.5, 25 63.5 L 75 63.5 C 77.5 66.5, 81.5 67, 84.5 64.5 C 88.5 61, 89.5 53, 85 46 Z",
     paint: () => (
       <g>
         <g fill={SHADE}>
-          <path d={`${LIFT} L 42 -14 L -10 -14 L -10 70 L 22 70 Z`} fillOpacity="0.18" />
-          <path d={`${SPLIT} L 22 70 L -10 70 L -10 33 Z`} fillOpacity="0.1" />
-          <path d={`${CURL} L 79 30 L 79 70 L 100 70 L 100 32.2 Z`} fillOpacity="0.22" />
-          <path
-            d="M 38 26.3 C 48 26.6, 59 29.6, 67 34 C 72.5 37.5, 76 42, 78.5 47.5 L 81 45.5 C 78 39, 73 33, 66 29 C 58 25, 48 23, 39.5 23 Z"
-            fillOpacity="0.16"
-          />
+          <path d={`${LIFT} L 58 -14 L -10 -14 L -10 70 L 22 70 Z`} fillOpacity="0.13" />
+          <path d={`${ROLL} L 79 25 L 79 70 L 100 70 L 100 36 Z`} fillOpacity="0.2" />
         </g>
         <g fill="none" stroke="currentColor" strokeLinecap="round">
           <path d={LIFT} strokeWidth="1.8" strokeOpacity="0.85" />
-          <path d={CURL} strokeWidth="1.5" strokeOpacity="0.7" />
-          <path d={SPLIT} strokeWidth="1.3" strokeOpacity="0.55" />
-          <path d="M 38.5 18 C 46 11, 58 8.5, 70 11.5 C 76 13, 80.5 16.5, 84 21" strokeWidth="1.2" strokeOpacity="0.45" />
-          <path d="M 43 6 C 52 1, 63 0.5, 72 3 M 62 -5.5 C 60.5 -1, 57 2.5, 52 4.5" strokeWidth="1.1" strokeOpacity="0.35" />
-          <path d="M 11 41 C 10.2 47, 11 53, 13.5 58 M 89.5 38 C 90 44, 89.3 50, 88.6 56" strokeWidth="1" strokeOpacity="0.3" />
+          <path d={ROLL} strokeWidth="1.5" strokeOpacity="0.7" />
+          <path d="M 47 27 C 45 18, 51 9.5, 62 6.5 C 70 4.5, 77 7, 82 12.5 M 58 -3.8 C 62 2, 70 4, 80 4.5" strokeWidth="1.2" strokeOpacity="0.45" />
+          <path d="M 24 16 C 19 24, 16.5 32, 16.5 40 M 11 41 C 10.5 48, 11.5 54, 14.5 58" strokeWidth="1.1" strokeOpacity="0.35" />
+          <path d="M 89.5 43 C 90 48, 89.6 53, 89.2 57" strokeWidth="1" strokeOpacity="0.3" />
         </g>
       </g>
     ),
-    shine: [
-      "M 33 0 C 38 -5.5, 47 -7.5, 55 -5 C 47 -4, 40 -1.5, 35.5 3 Z M 64 -2 C 69 -3.5, 75 -2, 79 2 C 74 0.5, 69 0, 65.5 1 Z",
-      "M 46 14 C 55 9.5, 66 9.5, 76 14 C 67 12.5, 57 13, 48 17 Z",
-      "M 12 25 C 13.5 20, 16 16.5, 19.5 13.5 C 17.5 17.5, 15.5 21.5, 15 26.5 Z",
-      "M 90 40 C 90.5 43, 90.3 46, 89.6 49 C 89.2 46, 89.2 43, 89.5 40 Z",
-    ].join(" "),
-    top: -6,
-    peak: -9.5,
+    shine: "M 35 -2 C 39 -6.5, 45 -8.5, 50 -7.5 C 45 -6, 40 -3.5, 37 0 Z M 62 -2 C 68 -3.5, 75 -2, 80 1.5 C 74 0, 68 0, 63.5 1 Z M 58 14 C 66 10, 74 11, 80 16 C 73 13.5, 66 13.5, 60 16.5 Z",
+    top: -7,
+    peak: -10,
   },
 };
 

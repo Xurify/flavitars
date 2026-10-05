@@ -146,7 +146,7 @@ export const AvatarOverlays: React.FC<AvatarOverlaysProps> = ({ state, filterId,
       <g className="avatar-overlays">
         {wrap(
           { category: "hat", partId: state.hat },
-          <FlagsCapBadge uid={filterId} />
+          <FlagsCapBadge uid={filterId} lifted />
         )}
       </g>
     );

@@ -55,9 +55,9 @@ const ASTRONAUT_GLASS = { cx: 50, cy: 52, r: 44 };
 export const HAT_FITS: Record<HatId, HatFit> = {
   none: { kind: "none" },
   beanie: { kind: "seat", seat: { mid: 30, edge: 30 } },
-  baseballCap: { kind: "seat", seat: { mid: 30, edge: 29 } },
+  baseballCap: { kind: "seat", seat: { mid: 27, edge: 26 } },
   bucketHat: { kind: "seat", seat: { mid: 30, edge: 30 } },
-  flagsCap: { kind: "seat", seat: { mid: 30, edge: 29 } },
+  flagsCap: { kind: "seat", seat: { mid: 27, edge: 26 } },
   patternedHeadband: { kind: "band" },
   cowboyHat: { kind: "seat", seat: { mid: 30, edge: 30 } },
   detectiveHat: { kind: "seat", seat: { mid: 30, edge: 30 } },
@@ -122,11 +122,14 @@ const Beanie: PartComponent = ({ fill = "#334155" }) => (
   </g>
 );
 
+/** Caps are drawn sitting on y≈29 and raised to their seat, so the bill clears the brows. */
+const CAP_LIFT = "translate(0, -3)";
+
 const capCrown = "M 16 29 C 15 3, 85 3, 84 29 Z";
 const capVisor = "M 13 29 Q 50 23, 87 29 Q 90 36, 82 38 Q 50 32, 18 38 Q 10 36, 13 29 Z";
 
 const BaseballCap: PartComponent = ({ fill = "#334155" }) => (
-  <g>
+  <g transform={CAP_LIFT}>
     <path d={capCrown} fill={fill} {...ink} />
     <path
       d="M 50 10 V 28 M 34 12 Q 37 19, 35 28 M 66 12 Q 63 19, 65 28"
@@ -166,8 +169,8 @@ export const FlagsLogo = ({ uid }: { uid: string }) => (
 );
 
 /** The logo as a patch sewn on the front panel; also drawn over the texture filter for glitch avatars. */
-export const FlagsCapBadge = ({ uid = "fv" }: { uid?: string }) => (
-  <g transform="translate(43, 7.6)">
+export const FlagsCapBadge = ({ uid = "fv", lifted = false }: { uid?: string; lifted?: boolean }) => (
+  <g transform={`translate(43, ${lifted ? 4.6 : 7.6})`}>
     <g transform="scale(0.014)">
       <FlagsLogo uid={uid} />
     </g>
@@ -185,7 +188,7 @@ const FlagsCap: PartComponent = ({ uid = "fv", texture }) => {
   const crownClip = `${uid}-flagscap-crown`;
   const isGlitch = texture === "glitch";
   return (
-    <g>
+    <g transform={CAP_LIFT}>
       <defs>
         <clipPath id={crownClip}>
           <path d={FLAGS_CAP_CROWN} />
