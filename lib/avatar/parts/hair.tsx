@@ -1,13 +1,12 @@
 import React from "react";
 import { mirrorPath } from "../anatomy";
 import { PartRegistry } from "./common";
+import { arcPoints, scallop } from "./shapes";
 import { HairSpec, renderHairBack, renderHairFront } from "./hair-engine";
 import { HairIds, type HairId } from "./hair-ids";
 
 export { HairIds, type HairId };
 export type { HairSpec };
-
-type Point = readonly [number, number];
 
 /** Region above a hairline. The hairline runs left to right in absolute coordinates. */
 export const capAbove = (hairline: string) => {
@@ -17,26 +16,6 @@ export const capAbove = (hairline: string) => {
   const rest = hairline.trim().replace(/^M\s*-?[\d.]+[\s,]+-?[\d.]+/, "");
   return `M -40 -60 L -40 ${y0} L ${x0} ${y0} ${rest} L ${x1} ${y1} L 140 ${y1} L 140 -60 Z`;
 };
-
-/** Bumpy outline through the given points (clockwise), for curls and fluffy volume. */
-export const scallop = (points: readonly Point[], { bulge = 0.62, closed = true } = {}) => {
-  let d = `M ${points[0][0]} ${points[0][1]}`;
-  const count = closed ? points.length : points.length - 1;
-  for (let i = 1; i <= count; i++) {
-    const [x, y] = points[i % points.length];
-    const [px, py] = points[i - 1];
-    const r = +(Math.hypot(x - px, y - py) * bulge).toFixed(2);
-    d += ` A ${r} ${r} 0 0 1 ${x} ${y}`;
-  }
-  return closed ? `${d} Z` : d;
-};
-
-/** Points on an ellipse arc, clockwise in screen space, angles in degrees (0 = right, 90 = down). */
-export const arcPoints = (cx: number, cy: number, rx: number, ry: number, from: number, to: number, steps: number): Point[] =>
-  Array.from({ length: steps + 1 }, (_, i) => {
-    const a = ((from + ((to - from) * i) / steps) * Math.PI) / 180;
-    return [+(cx + rx * Math.cos(a)).toFixed(2), +(cy + ry * Math.sin(a)).toFixed(2)] as const;
-  });
 
 const both = (leftSide: string) => `${leftSide} ${mirrorPath(leftSide)}`;
 
@@ -158,6 +137,7 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
       "M 15 32 L 11 20 L 19 20 L 16 9 L 27 13 L 29 2 L 38 9 L 44 0 L 50 8 L 57 0 L 62 9 L 71 3 L 73 13 L 84 9 L 81 20 L 89 20 L 85 32 Z",
     details: "M 30 14 L 36 22 M 50 10 L 50 20 M 68 14 L 63 22",
     top: 0,
+    peak: 0,
   },
 
   shortJaggedCrop: {
@@ -328,7 +308,8 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
     front: `${DOME.low} M 39 6 A 11 9.5 0 1 1 61 6 A 11 9.5 0 1 1 39 6 Z`,
     details: "M 44 3 Q 50 0, 56 4 M 42 8 Q 50 12, 58 8 M 34 18 Q 42 14, 48 14 M 66 18 Q 58 14, 52 14",
     accents: () => <path d="M 42 14 Q 50 17, 58 14" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" />,
-    top: -3.5,
+    top: 13,
+    peak: -4,
   },
 
   doubleSpaceBuns: {
@@ -336,6 +317,7 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
     front: `${DOME.low} ${both("M 12 10 A 10 10 0 1 1 32 10 A 10 10 0 1 1 12 10 Z")}`,
     details: `M 50 9 L 50 24 ${both("M 16 7 Q 22 3, 28 8 M 15 13 Q 22 17, 29 12")}`,
     top: 3,
+    peak: -1,
   },
 
   lowPonytail: {
@@ -357,10 +339,10 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
 
   spikyMohawk: {
     stubble: capAbove(HAIRLINE.high),
-    cap: "M 38 -40 L 38 31 Q 50 28, 62 31 L 62 -40 Z",
-    front: "M 37 24 L 30 6 L 40 12 L 41 -6 L 50 5 L 56 -9 L 59 10 L 70 3 L 63 24 Z",
+    cap: "M 39 -40 L 39 21 Q 44 22, 50 26 Q 56 22, 61 21 L 61 -40 Z",
+    front: "M 38 22 L 30 6 L 40 12 L 41 -6 L 50 5 L 56 -9 L 59 10 L 70 3 L 62 22 Z",
     details: "M 44 22 L 43 6 M 52 22 L 55 0",
-    top: -9,
+    peak: -9,
   },
 
   aviatorFlaps: {
@@ -391,7 +373,8 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
     front: `${DOME.medium} M 50 10 C 38 -14, 8 -8, 14 12 C 18 22, 36 22, 50 10 Z M 50 10 C 62 -14, 92 -8, 86 12 C 82 22, 64 22, 50 10 Z M 44 10 A 6 6 0 1 1 56 10 A 6 6 0 1 1 44 10 Z`,
     back: "M 16 28 C 8 44, 8 70, 14 80 L 86 80 C 92 70, 92 44, 84 28 Z",
     details: "M 22 6 Q 30 10, 40 10 M 78 6 Q 70 10, 60 10 M 22 14 Q 32 16, 42 12 M 78 14 Q 68 16, 58 12",
-    top: -6,
+    top: 11,
+    peak: -8,
   },
 
   detailedHairBow: {
@@ -399,7 +382,8 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
     front: `${DOME.medium} M 50 11 C 42 -6, 20 -4, 22 10 C 23 18, 38 18, 50 11 Z M 50 11 C 58 -6, 80 -4, 78 10 C 77 18, 62 18, 50 11 Z M 45 11 A 5 5 0 1 1 55 11 A 5 5 0 1 1 45 11 Z`,
     back: "M 16 28 C 8 44, 8 78, 12 94 L 88 94 C 92 78, 92 44, 84 28 Z",
     details: "M 28 5 Q 34 10, 42 11 M 72 5 Q 66 10, 58 11 M 30 12 Q 36 15, 44 12 M 70 12 Q 64 15, 56 12",
-    top: -1,
+    top: 11,
+    peak: -5,
   },
 };
 

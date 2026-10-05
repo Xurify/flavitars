@@ -6,6 +6,13 @@
  * `faceOffset`, which is the space eyes, brows, nose, mouth, extras and accessories are drawn in.
  */
 
+/**
+ * The one frame every avatar is shown in (editor preview, item tiles, exports, API). It is sized
+ * for the tallest hat on the tallest hair, so avatars never shrink to fit an item.
+ */
+export const AVATAR_FRAME = { x: -9, y: -18, size: 118 } as const;
+export const AVATAR_VIEWBOX = `${AVATAR_FRAME.x} ${AVATAR_FRAME.y} ${AVATAR_FRAME.size} ${AVATAR_FRAME.size}`;
+
 export const HeadIds = ["square", "rounded", "angular", "oval", "slender"] as const;
 export type HeadId = (typeof HeadIds)[number];
 

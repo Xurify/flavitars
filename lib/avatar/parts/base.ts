@@ -17,6 +17,8 @@ export interface PartProps {
   uid?: string;
   /** Top of the hair silhouette (or head when bald); used by hats that rest on the hair. */
   hairTop?: number;
+  /** Highest point of the hair including buns and spikes; floating items clear it. */
+  hairPeak?: number;
   /** Region of head and hair left visible by a worn hat; parts outside it are cut away. */
   keep?: string;
 }
@@ -30,6 +32,8 @@ export interface PartDefinition<P = object> {
   label: string;
   isExclusive?: boolean;
   presetOnly?: boolean;
+  /** Takes the user's colour for its category (hat colour, lens colour). */
+  colorable?: boolean;
   tags?: string[];
   incompatibleWith?: string[];
   requiresParts?: string[];

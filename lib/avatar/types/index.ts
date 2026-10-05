@@ -1,4 +1,5 @@
 import React from "react";
+import { FABRIC_PALETTE, HAIR_PALETTE, LENS_PALETTE, SKIN_PALETTE, paletteSwatches } from "../colors";
 
 export type AvatarCategory =
   | "head"
@@ -197,7 +198,7 @@ export const DEFAULT_AVATAR_STATE: AvatarState = {
   skinTone: "light",
   hairColor: "black",
   hatColor: "black",
-  accessoryColor: "blue",
+  accessoryColor: "electric",
   bodyColor: "royal",
   texture: "halftone",
   containHair: false,
@@ -285,7 +286,7 @@ export const CATEGORIES: CategoryConfig[] = [
   },
   {
     id: "extras",
-    label: "Extras",
+    label: "Details",
     icon: "✨",
     stateKey: "extras",
     allowNone: true,
@@ -312,7 +313,7 @@ export const CATEGORIES: CategoryConfig[] = [
   },
   {
     id: "texture",
-    label: "Style",
+    label: "Texture",
     icon: "🎨",
     stateKey: "texture",
     allowNone: false,
@@ -321,68 +322,8 @@ export const CATEGORIES: CategoryConfig[] = [
   },
 ] as const;
 
-export const SKIN_TONES: SkinTone[] = [
-  // Human Tones
-  { id: "paper", name: "Paper", color: "#FFFFFF" },
-  { id: "porcelain", name: "Porcelain", color: "#FFF5EE" },
-  { id: "pale", name: "Pale", color: "#FFDFC4" },
-  { id: "fair", name: "Fair", color: "#FFE0BD" },
-  { id: "light", name: "Light", color: "#F0D5BE" },
-  { id: "warm-beige", name: "Warm Beige", color: "#E8BEAC" },
-  { id: "tan", name: "Tan", color: "#D1A384" },
-  { id: "olive", name: "Olive", color: "#A57257" },
-  { id: "medium", name: "Medium", color: "#C68642" },
-  { id: "dark", name: "Dark", color: "#8D5524" },
-  { id: "deep", name: "Deep", color: "#55331B" },
-  // Creative & Fantasy
-  { id: "zombie", name: "Zombie", color: "#7BB661" },
-  { id: "alien", name: "Alien", color: "#BEF264" },
-  { id: "ghoul", name: "Ghoul", color: "#A3C1AD" },
-  { id: "martian", name: "Martian", color: "#EF4444" },
-  { id: "crimson", name: "Crimson", color: "#991B1B" },
-  { id: "oceanic", name: "Oceanic", color: "#1D4ED8" },
-  { id: "azure", name: "Azure", color: "#3B82F6" },
-  { id: "sky", name: "Sky", color: "#7DD3FC" },
-  { id: "lavender", name: "Lavender", color: "#C084FC" },
-  { id: "orchid", name: "Orchid", color: "#A855F7" },
-  { id: "candy", name: "Candy", color: "#F472B6" },
-  { id: "bubblegum", name: "Bubblegum", color: "#FB7185" },
-  { id: "inferno", name: "Inferno", color: "#F97316" },
-  { id: "gold", name: "Gold", color: "#FBBF24" },
-  { id: "bronze", name: "Bronze", color: "#B45309" },
-  { id: "silver", name: "Silver", color: "#CBD5E1" },
-  { id: "ghost", name: "Ghost", color: "#F1F5F9" },
-];
-
-export const HAIR_COLORS: HairColor[] = [
-  { id: "black", name: "Black", color: "#1a1a1a" },
-  { id: "darkBrown", name: "Dark Brown", color: "#3b2b23" },
-  { id: "brown", name: "Brown", color: "#c5845eff" },
-  { id: "lightBrown", name: "Light Brown", color: "#a67c52" },
-  { id: "auburn", name: "Auburn", color: "#8b3a2b" },
-  { id: "blonde", name: "Blonde", color: "#EAB308" },
-  { id: "goldenBlonde", name: "Golden Blonde", color: "#f3d289" },
-  { id: "ashBlonde", name: "Ash Blonde", color: "#d6ccc2" },
-  { id: "platinumBlonde", name: "Platinum Blonde", color: "#fefcd7" },
-  { id: "orange", name: "Orange", color: "#EA580C" },
-  { id: "red", name: "Red", color: "#DC2626" },
-  { id: "purple", name: "Purple", color: "#8B5CF6" },
-  { id: "blue", name: "Blue", color: "#3B82F6" },
-  { id: "green", name: "Green", color: "#10B981" },
-  { id: "pink", name: "Pink", color: "#EC4899" },
-  { id: "khaki", name: "Khaki", color: "#E7DBC4" },
-  { id: "royal", name: "Royal Blue", color: "#2563EB" },
-  { id: "grey", name: "Grey", color: "#a1a1a1" },
-  { id: "white", name: "White", color: "#E5E7EB" },
-  { id: "lilac", name: "Lilac", color: "#E9D5FF" },
-] as const;
-
-export const ACCESSORY_ACCENT_COLORS: HairColor[] = [
-  { id: "fire", name: "Fire Reflective", color: "#EF4444" },
-  { id: "electric", name: "Electric Blue", color: "#3B82F6" },
-  { id: "emerald", name: "Emerald Mirror", color: "#10B981" },
-  { id: "nebula", name: "Nebula Purple", color: "#8B5CF6" },
-  { id: "solar", name: "Solar Orange", color: "#F59E0B" },
-  { id: "chrome", name: "Chrome Silver", color: "#94A3B8" },
-  { id: "black", name: "Obsidian Black", color: "#1A1A1A" },
-];
+export const SKIN_TONES: SkinTone[] = paletteSwatches(SKIN_PALETTE);
+export const HAIR_COLORS: HairColor[] = paletteSwatches(HAIR_PALETTE);
+/** Hat colours (fabric names). */
+export const FABRIC_COLORS: HairColor[] = paletteSwatches(FABRIC_PALETTE);
+export const ACCESSORY_ACCENT_COLORS: HairColor[] = paletteSwatches(LENS_PALETTE);

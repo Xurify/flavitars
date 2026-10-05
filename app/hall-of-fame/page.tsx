@@ -49,7 +49,6 @@ export default function PresetsPage(): React.JSX.Element {
                       state={avatarState}
                       size="preview"
                       showBackground={false}
-                      centered={true}
                       className="w-full h-full drop-shadow-xs"
                     />
                   </div>

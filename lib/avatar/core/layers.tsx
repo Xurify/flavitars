@@ -42,6 +42,21 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
   const common = { headId: state.head, hatId: state.hat, hairId: state.hair, uid } as const;
   const hairProps = { fill: hairColor, keep: fit.keep, ...common };
 
+  const accessories =
+    fit.showAccessories &&
+    wrap(
+      { category: "accessories", partId: state.accessories },
+      <g transform={getHeadFacialTransform(state.head)} className="accessory-set">
+        <AccessorySet
+          fill={hairColor}
+          secondaryFill={accessoryColor}
+          accessoryColorId={state.accessoryColor}
+          hairTop={fit.hairTop}
+          {...common}
+        />
+      </g>,
+    );
+
   return (
     <g>
       <defs>
@@ -81,19 +96,17 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
         {wrap(
           { category: "head", partId: state.head },
           <g>
-            {fit.showFace && <Ears fill={skinTone} {...common} />}
+            {fit.showEars && <Ears fill={skinTone} {...common} />}
             <HeadShape fill={skinTone} {...common} />
           </g>,
         )}
-        {fit.showFace && (
-          <g style={{ color: facialFeaturesColor }} transform={getHeadFacialTransform(state.head)}>
-            {wrap({ category: "extras", partId: state.extras }, <ExtraSet {...common} />)}
-            {wrap({ category: "eyebrows", partId: state.eyebrows }, <EyebrowSet {...common} />)}
-            {wrap({ category: "eyes", partId: state.eyes }, <EyeSet {...common} />)}
-            {wrap({ category: "nose", partId: state.nose }, <NoseSet {...common} />)}
-            {wrap({ category: "mouth", partId: state.mouth }, <MouthSet {...common} />)}
-          </g>
-        )}
+        <g style={{ color: facialFeaturesColor }} transform={getHeadFacialTransform(state.head)}>
+          {wrap({ category: "extras", partId: state.extras }, <ExtraSet {...common} />)}
+          {wrap({ category: "eyebrows", partId: state.eyebrows }, <EyebrowSet {...common} />)}
+          {wrap({ category: "eyes", partId: state.eyes }, <EyeSet {...common} />)}
+          {wrap({ category: "nose", partId: state.nose }, <NoseSet {...common} />)}
+          {wrap({ category: "mouth", partId: state.mouth }, <MouthSet {...common} />)}
+        </g>
       </g>
 
       {fit.showHair &&
@@ -104,26 +117,16 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
           </g>,
         )}
 
-      {fit.showAccessories &&
-        wrap(
-          { category: "accessories", partId: state.accessories },
-          <g transform={getHeadFacialTransform(state.head)} className="accessory-set">
-            <AccessorySet
-              fill={hairColor}
-              secondaryFill={accessoryColor}
-              accessoryColorId={state.accessoryColor}
-              hairTop={fit.hairTop}
-              {...common}
-            />
-          </g>,
-        )}
+      {!fit.accessoriesOverHat && accessories}
 
       {wrap(
         { category: "hat", partId: state.hat },
         <g className="hat-set">
-          <HatSet fill={hatColor} hairTop={fit.hairTop} {...common} />
+          <HatSet fill={hatColor} hairTop={fit.hairTop} hairPeak={fit.hairPeak} {...common} />
         </g>,
       )}
+
+      {fit.accessoriesOverHat && accessories}
     </g>
   );
 };

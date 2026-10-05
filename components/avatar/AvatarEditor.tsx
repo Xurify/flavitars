@@ -6,19 +6,20 @@ import { useQueryStates } from "nuqs";
 import { toast } from "sonner";
 import { PenToolIcon, SparklesIcon } from "lucide-react";
 
+import { CATEGORIES, AvatarCategory, AvatarState } from "@/lib/avatar/types";
 import {
-  SKIN_TONES,
-  HAIR_COLORS,
-  ACCESSORY_ACCENT_COLORS,
-  CATEGORIES,
-  AvatarCategory,
-  AvatarState,
-} from "@/lib/avatar/types";
+  FABRIC_PALETTE,
+  HAIR_PALETTE,
+  LENS_PALETTE,
+  SKIN_PALETTE,
+  paletteSwatches,
+} from "@/lib/avatar/colors";
 import { buildAvatarSvgApiUrl, generateShareableURL } from "@/lib/avatar/engine/url";
 import { Hats } from "@/lib/avatar/parts/hats";
 import { Accessories, AccessoryId } from "@/lib/avatar/parts/accessories";
+import { getHairSpec } from "@/lib/avatar/parts/hair";
 import { AvatarStateParams, avatarSearchParams } from "@/lib/avatar/config/params";
-import { resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
+import { resolveAvatarFit, resolveAvatarStateFromParams } from "@/lib/utils/avatar-resolver";
 import { exportToImage, exportToSVG } from "@/lib/utils/export";
 import { getAvatarIdFromState } from "@/lib/avatar/engine/avatar-generator";
 import { avatarStateToSearchParams } from "@/lib/svg-editor/part-data";
@@ -26,9 +27,27 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { AvatarPreview } from "./AvatarPreview";
 import { CategorySelector } from "./CategorySelector";
-import { ItemGrid } from "./ItemGrid";
+import { ItemGrid, getVisibleItemIds } from "./ItemGrid";
 import { ColorPicker } from "./ColorPicker";
 import { ActionBar } from "./ActionBar";
+
+/** Tab order: the head, then the face top to bottom, then what is worn. CATEGORIES order is fixed by id packing. */
+const EDITOR_CATEGORY_ORDER: AvatarCategory[] = [
+  "head",
+  "hair",
+  "eyebrows",
+  "eyes",
+  "nose",
+  "mouth",
+  "extras",
+  "hats",
+  "accessories",
+  "body",
+  "texture",
+];
+const EDITOR_CATEGORIES = EDITOR_CATEGORY_ORDER.map(
+  (id) => CATEGORIES.find((category) => category.id === id)!
+);
 
 interface AvatarEditorProps {
   initialState?: AvatarState;
@@ -61,8 +80,8 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
   const previewReference = useRef<HTMLDivElement>(null);
   const controlsContainerReference = useRef<HTMLDivElement>(null);
 
-  const handleCategoryChange = (categoryIdentifier: string): void => {
-    setActiveCategory(categoryIdentifier as AvatarCategory);
+  const handleCategoryChange = (categoryIdentifier: AvatarCategory): void => {
+    setActiveCategory(categoryIdentifier);
     if (controlsContainerReference.current) {
       controlsContainerReference.current.scrollTop = 0;
     }
@@ -75,57 +94,9 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
   const handleItemSelect = (itemIdentifier: string): void => {
     const categoryConfig = CATEGORIES.find((category) => category.id === activeCategory);
     if (!categoryConfig) return;
-    const stateKey = categoryConfig.stateKey;
-    const selectedItem = categoryConfig.items[itemIdentifier];
-    const allowedColors = selectedItem?.component?.colors;
-
-    const updates: Partial<AvatarStateParams> = {
-      [categoryConfig.id === "hats" ? "hat" : (categoryConfig.stateKey as string)]: itemIdentifier,
-    };
-
-    const colorKey = (
-      stateKey === "hat"
-        ? "hatColor"
-        : stateKey === "accessories"
-          ? "accessoryColor"
-          : stateKey === "hair"
-            ? "hairColor"
-            : stateKey === "body"
-              ? "bodyColor"
-              : stateKey + "Color"
-    ) as keyof AvatarState;
-
-    const paramColorKey = (
-      stateKey === "hat"
-        ? "hat_color"
-        : stateKey === "accessories"
-          ? "accessory_color"
-          : stateKey === "hair"
-            ? "hair_color"
-            : stateKey === "body"
-              ? "body_color"
-              : stateKey + "_color"
-    ) as keyof typeof avatarSearchParams;
-
-    if (allowedColors && !allowedColors.includes(avatarState[colorKey] as string)) {
-      (updates as Record<keyof AvatarStateParams, AvatarStateParams[keyof AvatarStateParams]>)[
-        paramColorKey
-      ] = allowedColors[0];
-    }
-
-    handleParamsChange(updates);
-  };
-
-  const handleSkinToneSelect = (skinToneIdentifier: string): void => {
-    handleParamsChange({ skin_tone: skinToneIdentifier });
-  };
-
-  const handleHairColorSelect = (hairColorIdentifier: string): void => {
-    handleParamsChange({ hair_color: hairColorIdentifier });
-  };
-
-  const handleBodyColorSelect = (bodyColorIdentifier: string): void => {
-    handleParamsChange({ body_color: bodyColorIdentifier });
+    handleParamsChange({
+      [categoryConfig.id === "hats" ? "hat" : categoryConfig.stateKey]: itemIdentifier,
+    });
   };
 
   const handleRandomize = useCallback((): void => {
@@ -133,16 +104,14 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
       list[Math.floor(Math.random() * list.length)];
 
     const randomState: Partial<AvatarStateParams> = {
-      skin_tone: pickRandomItem(SKIN_TONES).id,
-      hair_color: pickRandomItem(HAIR_COLORS).id,
-      hat_color: pickRandomItem(HAIR_COLORS).id,
-      accessory_color: pickRandomItem(ACCESSORY_ACCENT_COLORS).id,
-      body_color: pickRandomItem(HAIR_COLORS).id,
+      skin_tone: pickRandomItem(paletteSwatches(SKIN_PALETTE)).id,
+      hair_color: pickRandomItem(paletteSwatches(HAIR_PALETTE)).id,
+      hat_color: pickRandomItem(paletteSwatches(FABRIC_PALETTE)).id,
+      accessory_color: pickRandomItem(paletteSwatches(LENS_PALETTE)).id,
     };
 
     CATEGORIES.forEach((category) => {
-      const keys = category.sortedKeys;
-      const selection = pickRandomItem(keys);
+      const selection = pickRandomItem(getVisibleItemIds(category));
       (randomState as Record<string, string | boolean | null>)[
         category.id === "hats" ? "hat" : (category.stateKey as string)
       ] = selection;
@@ -172,8 +141,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
       const hasPreset = Boolean(params.preset);
       const hasId = params.id !== null && params.id !== undefined;
       const otherParamsCount = Object.entries(params).filter(
-        ([key, value]) =>
-          key !== "preset" && key !== "id" && value !== null && value !== undefined
+        ([key, value]) => key !== "preset" && key !== "id" && value !== null && value !== undefined
       ).length;
 
       let avatarId: string | number;
@@ -216,29 +184,24 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
         handleReset();
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        const currentIndex = CATEGORIES.findIndex((category) => category.id === activeCategory);
-        const nextIndex = (currentIndex + 1) % CATEGORIES.length;
-        handleCategoryChange(CATEGORIES[nextIndex].id);
+        const currentIndex = EDITOR_CATEGORY_ORDER.indexOf(activeCategory);
+        handleCategoryChange(
+          EDITOR_CATEGORY_ORDER[(currentIndex + 1) % EDITOR_CATEGORY_ORDER.length]
+        );
       } else if (event.key === "ArrowLeft") {
         event.preventDefault();
-        const currentIndex = CATEGORIES.findIndex((category) => category.id === activeCategory);
-        const previousIndex = (currentIndex - 1 + CATEGORIES.length) % CATEGORIES.length;
-        handleCategoryChange(CATEGORIES[previousIndex].id);
+        const currentIndex = EDITOR_CATEGORY_ORDER.indexOf(activeCategory);
+        handleCategoryChange(
+          EDITOR_CATEGORY_ORDER[
+            (currentIndex - 1 + EDITOR_CATEGORY_ORDER.length) % EDITOR_CATEGORY_ORDER.length
+          ]
+        );
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeCategory, handleRandomize, handleReset]);
-
-  const previewFill =
-    HAIR_COLORS.find((accent) => accent.id === avatarState.hairColor)?.color ||
-    HAIR_COLORS[0].color;
-
-  const accessoryFill =
-    ACCESSORY_ACCENT_COLORS.find(
-      (accessory) => accessory.id === (avatarState.accessoryColor || "blue")
-    )?.color || ACCESSORY_ACCENT_COLORS[0].color;
 
   return (
     <TooltipProvider delayDuration={400}>
@@ -277,13 +240,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
                   Color Studio
                 </h3>
               </div>
-              <EditorColorPickers
-                avatarState={avatarState}
-                handleSkinToneSelect={handleSkinToneSelect}
-                handleHairColorSelect={handleHairColorSelect}
-                handleParamsChange={handleParamsChange}
-                handleBodyColorSelect={handleBodyColorSelect}
-              />
+              <ColorStudio avatarState={avatarState} onChange={handleParamsChange} />
             </div>
           </div>
 
@@ -291,7 +248,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
           <div className="flex-1 flex flex-col bg-background overflow-hidden relative">
             <div className="sticky top-0 z-20 border-b border-border/70 p-3 bg-white/90 backdrop-blur-md shrink-0">
               <CategorySelector
-                categories={CATEGORIES}
+                categories={EDITOR_CATEGORIES}
                 activeCategory={activeCategory}
                 onCategoryChange={handleCategoryChange}
               />
@@ -311,51 +268,22 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
                   </span>
                 </div>
                 <span className="text-xs text-muted-foreground font-medium">
-                  {Object.keys(currentCategory.items).length} options
+                  {getVisibleItemIds(currentCategory).length} options
                 </span>
               </div>
 
               <ItemGrid
-                items={currentCategory.items}
-                backItems={currentCategory.backItems}
-                sortedKeys={currentCategory.sortedKeys}
-                selectedIndex={currentId}
+                category={currentCategory}
+                state={avatarState}
+                selectedId={currentId}
                 onSelect={handleItemSelect}
-                allowNone={currentCategory.allowNone}
-                previewFill={previewFill}
-                hatFill={
-                  HAIR_COLORS.find((accent) => accent.id === avatarState.hatColor)?.color ||
-                  HAIR_COLORS[0].color
-                }
-                hairFill={previewFill}
-                skinToneFill={
-                  SKIN_TONES.find((tone) => tone.id === avatarState.skinTone)?.color ||
-                  SKIN_TONES[0].color
-                }
-                accessoryFill={accessoryFill}
-                bodyFill={
-                  HAIR_COLORS.find((accent) => accent.id === avatarState.bodyColor)?.color ||
-                  HAIR_COLORS[0].color
-                }
-                accessoryColorId={avatarState.accessoryColor}
-                hatColorId={avatarState.hatColor}
-                bodyColorId={avatarState.bodyColor}
-                categoryId={currentCategory.id}
-                headId={avatarState.head}
               />
-
 
               <div className="lg:hidden mt-8 space-y-4 bg-white/80 p-5 border border-border/70 rounded-2xl shadow-xs">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
                   Color Studio
                 </h3>
-                <EditorColorPickers
-                  avatarState={avatarState}
-                  handleSkinToneSelect={handleSkinToneSelect}
-                  handleHairColorSelect={handleHairColorSelect}
-                  handleParamsChange={handleParamsChange}
-                  handleBodyColorSelect={handleBodyColorSelect}
-                />
+                <ColorStudio avatarState={avatarState} onChange={handleParamsChange} />
               </div>
             </div>
 
@@ -386,71 +314,65 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
   );
 };
 
-const EditorColorPickers = ({
+/** Colour controls, shown only for parts that are on the avatar and take a colour. */
+const ColorStudio = ({
   avatarState,
-  handleSkinToneSelect,
-  handleHairColorSelect,
-  handleParamsChange,
-  handleBodyColorSelect,
+  onChange,
 }: {
   avatarState: AvatarState;
-  handleSkinToneSelect: (identifier: string) => void;
-  handleHairColorSelect: (identifier: string) => void;
-  handleParamsChange: (updates: Partial<AvatarStateParams>) => void;
-  handleBodyColorSelect: (identifier: string) => void;
-}): React.JSX.Element => (
-  <div className="space-y-4">
+  onChange: (updates: Partial<AvatarStateParams>) => void;
+}): React.JSX.Element => {
+  const hat = Hats[avatarState.hat];
+  const accessory = Accessories[avatarState.accessories as AccessoryId];
+  const hairSpec = getHairSpec(avatarState.hair);
+  const hasHair =
+    resolveAvatarFit(avatarState).showHair &&
+    Boolean(hairSpec && (hairSpec.cap || hairSpec.front || hairSpec.back || hairSpec.stubble));
+
+  const sections = [
     <ColorPicker
-      label="Skin Tone"
-      colors={SKIN_TONES}
-      selectedIndex={avatarState.skinTone}
-      onSelect={handleSkinToneSelect}
-    />
-    <div className="border-t border-border/40" />
-    <ColorPicker
-      label="Hair Color"
-      colors={HAIR_COLORS}
-      selectedIndex={avatarState.hairColor}
-      onSelect={handleHairColorSelect}
-      disabled={avatarState.hair === "bald"}
-    />
-    <div className="border-t border-border/40" />
-    <ColorPicker
-      label="Hat Color"
-      colors={HAIR_COLORS}
-      allowedColorIds={(() => {
-        const hatItem = Hats[avatarState.hat];
-        return hatItem?.component?.colors;
-      })()}
-      selectedIndex={avatarState.hatColor}
-      onSelect={(identifier) => {
-        handleParamsChange({ hat_color: identifier });
-      }}
-      disabled={avatarState.hat === "none" || avatarState.hat === "chefHat"}
-    />
-    <div className="border-t border-border/40" />
-    <ColorPicker
-      label="Accessories Accent"
-      colors={ACCESSORY_ACCENT_COLORS}
-      allowedColorIds={(() => {
-        const item = Accessories[avatarState.accessories as AccessoryId];
-        return item?.component?.colors;
-      })()}
-      selectedIndex={avatarState.accessoryColor}
-      onSelect={(identifier) => {
-        handleParamsChange({ accessory_color: identifier });
-      }}
-      disabled={avatarState.accessories === "none"}
-    />
-    <div className="border-t border-border/40" />
-    <ColorPicker
-      label="Body Color"
-      colors={HAIR_COLORS}
-      selectedIndex={avatarState.bodyColor}
-      onSelect={handleBodyColorSelect}
-    />
-  </div>
-);
+      key="skin"
+      label="Skin"
+      palette={SKIN_PALETTE}
+      selectedId={avatarState.skinTone}
+      onSelect={(id) => onChange({ skin_tone: id })}
+    />,
+    hasHair && (
+      <ColorPicker
+        key="hair"
+        label="Hair"
+        palette={HAIR_PALETTE}
+        selectedId={avatarState.hairColor}
+        onSelect={(id) => onChange({ hair_color: id })}
+      />
+    ),
+    hat?.colorable && (
+      <ColorPicker
+        key="hat"
+        label="Hat"
+        context={hat.label}
+        palette={FABRIC_PALETTE}
+        selectedId={avatarState.hatColor}
+        onSelect={(id) => onChange({ hat_color: id })}
+      />
+    ),
+    accessory?.colorable && (
+      <ColorPicker
+        key="lens"
+        label="Lens"
+        context={accessory.label}
+        palette={LENS_PALETTE}
+        selectedId={avatarState.accessoryColor}
+        onSelect={(id) => onChange({ accessory_color: id })}
+      />
+    ),
+  ].filter(Boolean);
+
+  return (
+    <div className="space-y-4 divide-y divide-border/40 [&>*:not(:first-child)]:pt-4">
+      {sections}
+    </div>
+  );
+};
 
 export default AvatarEditor;
-

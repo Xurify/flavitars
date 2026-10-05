@@ -1,8 +1,5 @@
 import {
   AvatarState,
-  SKIN_TONES,
-  HAIR_COLORS,
-  ACCESSORY_ACCENT_COLORS,
   DEFAULT_AVATAR_STATE,
   CATEGORIES,
   AllEyebrows,
@@ -14,16 +11,10 @@ import {
   AllAccessories,
   AllBodies,
 } from "../avatar/types";
-import { HeadShapes, Noses, Hats, getHatFit, getHairSpec } from "../avatar/parts";
-import { getHairTop, HairSpec } from "../avatar/parts/hair-engine";
+import { HeadShapes, Noses, Hats, getHatFit, getHairSpec, EAR_ACCESSORIES } from "../avatar/parts";
+import { getHairPeak, getHairTop, HairSpec } from "../avatar/parts/hair-engine";
 import { getSeatKeepPath } from "../avatar/anatomy";
-import {
-  DEFAULT_SKIN_TONE,
-  DEFAULT_HAIR_COLOR,
-  DEFAULT_HAT_COLOR,
-  DEFAULT_ACCESSORY_COLOR,
-  DEFAULT_BODY_COLOR,
-} from "../avatar/config/constants";
+import { FABRIC_PALETTE, HAIR_PALETTE, LENS_PALETTE, SKIN_PALETTE, resolveColor } from "../avatar/colors";
 import { AvatarStateParams } from "../avatar/config/params";
 import { AVATAR_PRESETS } from "../avatar/config/presets/presets";
 import { getAvatarStateFromId } from "../avatar/engine/avatar-generator";
@@ -65,25 +56,11 @@ export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>)
 }
 
 export function resolveAvatarColors(state: AvatarState) {
-  const skinTone =
-    SKIN_TONES.find((tone) => tone.id === (state.skinTone || DEFAULT_SKIN_TONE))?.color ||
-    (state.skinTone && state.skinTone.startsWith("#") ? state.skinTone : SKIN_TONES[0].color);
-
-  const hairColor =
-    HAIR_COLORS.find((accent) => accent.id === (state.hairColor || DEFAULT_HAIR_COLOR))?.color ||
-    (state.hairColor && state.hairColor.startsWith("#") ? state.hairColor : HAIR_COLORS[0].color);
-
-  const hatColor =
-    HAIR_COLORS.find((accent) => accent.id === (state.hatColor || DEFAULT_HAT_COLOR))?.color ||
-    (state.hatColor && state.hatColor.startsWith("#") ? state.hatColor : HAIR_COLORS[0].color);
-
-  const accessoryColor =
-    ACCESSORY_ACCENT_COLORS.find((accessory) => accessory.id === (state.accessoryColor || DEFAULT_ACCESSORY_COLOR))?.color ||
-    (state.accessoryColor && state.accessoryColor.startsWith("#") ? state.accessoryColor : ACCESSORY_ACCENT_COLORS[0].color);
-
-  const bodyColor =
-    HAIR_COLORS.find((accent) => accent.id === (state.bodyColor || DEFAULT_BODY_COLOR))?.color ||
-    (state.bodyColor && state.bodyColor.startsWith("#") ? state.bodyColor : HAIR_COLORS[0].color);
+  const skinTone = resolveColor(SKIN_PALETTE, state.skinTone);
+  const hairColor = resolveColor(HAIR_PALETTE, state.hairColor);
+  const hatColor = resolveColor(FABRIC_PALETTE, state.hatColor);
+  const accessoryColor = resolveColor(LENS_PALETTE, state.accessoryColor);
+  const bodyColor = resolveColor(FABRIC_PALETTE, state.bodyColor);
 
   const isDarkSkin = () => {
     const hex = skinTone.replace("#", "");
@@ -124,6 +101,7 @@ export function resolveAvatarFit(state: AvatarState, hairSpecOverride?: HairSpec
   const fit = getHatFit(state.hat);
   const hairSpec = hairSpecOverride ?? getHairSpec(state.hair);
   const hairTop = getHairTop(hairSpec, state.head);
+  const hairPeak = getHairPeak(hairSpec, state.head);
   const isMask = fit.kind === "mask";
 
   let keep: string | undefined;
@@ -134,8 +112,11 @@ export function resolveAvatarFit(state: AvatarState, hairSpecOverride?: HairSpec
     keep,
     clipHead: fit.kind === "seat",
     showHair: !isMask,
-    showFace: !isMask,
-    showAccessories: !isMask || state.accessories === "headphones",
+    showEars: !isMask,
+    showAccessories: !(isMask && EAR_ACCESSORIES.has(state.accessories)),
+    /** Glasses, goggles and headphones are worn over a mask rather than under it. */
+    accessoriesOverHat: isMask,
     hairTop,
+    hairPeak,
   };
 }

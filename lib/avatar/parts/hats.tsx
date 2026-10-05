@@ -1,6 +1,7 @@
 import React from "react";
 import { PartRegistry, PartComponent } from "./common";
-import { HEADS, HatSeat, getHead } from "../anatomy";
+import { HEADS, HatSeat, getHead, mirrorPath } from "../anatomy";
+import { Point, scallop } from "./shapes";
 
 export const HatIds = [
   "none",
@@ -68,17 +69,17 @@ export const HAT_FITS: Record<HatId, HatFit> = {
   },
   militaryHelmet: { kind: "seat", seat: { mid: 30, edge: 30 } },
   topHat: { kind: "seat", seat: { mid: 29, edge: 29 } },
-  pirateHat: { kind: "seat", seat: { mid: 30, edge: 29 } },
+  pirateHat: { kind: "seat", seat: { mid: 30, edge: 28 } },
   vikingHelmet: { kind: "seat", seat: { mid: 31, edge: 31 } },
   samuraiHelmet: { kind: "seat", seat: { mid: 31, edge: 31 } },
   wizardHat: { kind: "seat", seat: { mid: 29, edge: 29 } },
   propellerHat: { kind: "seat", seat: { mid: 27, edge: 27 } },
   beret: { kind: "seat", seat: { mid: 25, edge: 26 } },
   strawHat: { kind: "seat", seat: { mid: 30, edge: 30 } },
-  ushanka: { kind: "seat", seat: { mid: 31, edge: 31 } },
+  ushanka: { kind: "seat", seat: { mid: 30, edge: 30 } },
   skiMask: { kind: "mask" },
   crown: { kind: "rest", sink: 4 },
-  halo: { kind: "float", gap: 7 },
+  halo: { kind: "float", gap: 5 },
 };
 
 export const getHatFit = (hatId: HatId | string | undefined): HatFit => HAT_FITS[(hatId ?? "none") as HatId] ?? HAT_FITS.none;
@@ -87,12 +88,16 @@ const ink = { stroke: "currentColor", strokeWidth: 2, strokeLinejoin: "round", s
 const shade = { fill: "black", opacity: 0.15 } as const;
 const shine = { fill: "none", stroke: "white", strokeOpacity: 0.3, strokeWidth: 2, strokeLinecap: "round" } as const;
 
-/** Rest/float hats are authored around (50, 0); this places them on the hair. */
-const restTransform = (hatId: HatId, hairTop: number | undefined, headId: string) => {
+/** Highest a floating item may sit (centre y) and still stay inside the avatar frame. */
+const FLOAT_CEILING = -10.5;
+
+/** Rest hats sit on the hair surface; float hats hover over its peak. Both are authored around (50, 0). */
+const restTransform = (hatId: HatId, headId: string, hairTop?: number, hairPeak?: number) => {
   const fit = HAT_FITS[hatId];
-  const top = hairTop ?? getHead(headId).top;
-  const offset = fit.kind === "rest" ? fit.sink : fit.kind === "float" ? -fit.gap : 0;
-  return `translate(0, ${top + offset})`;
+  const headTop = getHead(headId).top;
+  if (fit.kind === "float") return `translate(0, ${Math.max(FLOAT_CEILING, (hairPeak ?? hairTop ?? headTop) - fit.gap)})`;
+  const sink = fit.kind === "rest" ? fit.sink : 0;
+  return `translate(0, ${(hairTop ?? headTop) + sink})`;
 };
 
 const noneHat: PartComponent = () => null;
@@ -132,15 +137,21 @@ const BaseballCap: PartComponent = ({ fill = "#334155" }) => (
   </g>
 );
 
-const FlagsLogo = () => (
-  <g transform="translate(50, 18) scale(0.012) translate(-500, -500)">
-    <rect x="0" y="0" width="1000" height="1000" rx="150" fill="white" />
-    <rect x="0" y="0" width="1000" height="333" rx="150" fill="#ED1C24" />
-    <rect x="0" y="200" width="1000" height="133" fill="#ED1C24" />
-    <rect x="0" y="667" width="1000" height="333" rx="150" fill="#005BAC" />
-    <rect x="0" y="667" width="1000" height="133" fill="#005BAC" />
+/** flags.games badge, drawn in a 0–1000 box and placed by the caller. */
+const FlagsLogo = ({ uid }: { uid: string }) => (
+  <g>
+    <defs>
+      <clipPath id={`${uid}-flags-logo`}>
+        <rect x="0" y="0" width="1000" height="1000" rx="170" />
+      </clipPath>
+    </defs>
+    <g clipPath={`url(#${uid}-flags-logo)`}>
+      <rect x="0" y="0" width="1000" height="333" fill="#ED1C24" />
+      <rect x="0" y="333" width="1000" height="334" fill="white" />
+      <rect x="0" y="667" width="1000" height="333" fill="#005BAC" />
+    </g>
     <g transform="translate(500, 500)" fill="none" stroke="#005BAC" strokeWidth="45">
-      <circle r="340" fill="white" strokeWidth="50" />
+      <circle r="340" fill="white" strokeWidth="55" />
       <line x1="-340" y1="0" x2="340" y2="0" />
       <ellipse rx="340" ry="170" />
       <line x1="0" y1="-340" x2="0" y2="340" />
@@ -149,16 +160,67 @@ const FlagsLogo = () => (
   </g>
 );
 
-const FlagsCap: PartComponent = () => (
-  <g>
-    <path d={capCrown} fill="#111111" {...ink} />
-    <path d="M 33 9 Q 37 18, 35 28 M 67 9 Q 63 18, 65 28" fill="none" stroke="white" strokeOpacity="0.12" strokeWidth="1.2" />
-    <circle cx="50" cy="5.5" r="2" fill="#111111" {...ink} strokeWidth={1.5} />
-    <FlagsLogo />
-    <path d={capVisor} fill="#111111" {...ink} />
-    <path d="M 18 33 Q 50 28, 82 33" fill="none" stroke="white" strokeOpacity="0.12" strokeWidth="1.2" />
-  </g>
-);
+const FLAGS_CAP_CROWN = "M 15.5 29.5 C 14 -3.5, 86 -3.5, 84.5 29.5 Z";
+
+const FlagsCap: PartComponent = ({ uid = "fv" }) => {
+  const sheen = `${uid}-flagscap-sheen`;
+  const crownClip = `${uid}-flagscap-crown`;
+  return (
+    <g>
+      <defs>
+        <radialGradient id={sheen} cx="36%" cy="18%" r="80%">
+          <stop offset="0%" stopColor="#50535E" />
+          <stop offset="50%" stopColor="#1D1E23" />
+          <stop offset="100%" stopColor="#0D0D10" />
+        </radialGradient>
+        <clipPath id={crownClip}>
+          <path d={FLAGS_CAP_CROWN} />
+        </clipPath>
+      </defs>
+      <path d={FLAGS_CAP_CROWN} fill={`url(#${sheen})`} {...ink} />
+      <g clipPath={`url(#${crownClip})`} fill="none" strokeLinecap="round">
+        <path d="M 50 4.5 Q 36 9, 30.5 30 M 50 4.5 Q 64 9, 69.5 30" stroke="#07070A" strokeWidth="1" />
+        <path
+          d="M 49 5.5 Q 35.2 10, 29.4 30 M 51 5.5 Q 64.8 10, 70.6 30"
+          stroke="#62666F"
+          strokeWidth="0.6"
+          strokeDasharray="1.2 1"
+        />
+        <path d="M 50 4.5 Q 26 6, 17 26 M 50 4.5 Q 74 6, 83 26" stroke="#07070A" strokeWidth="0.9" />
+        <circle cx="24" cy="15" r="0.9" fill="#0B0B0D" stroke="#62666F" strokeWidth="0.5" />
+        <circle cx="76" cy="15" r="0.9" fill="#0B0B0D" stroke="#62666F" strokeWidth="0.5" />
+        <path d="M 22 13 Q 33 5, 46 4.5" stroke="white" strokeOpacity="0.2" strokeWidth="1.8" />
+      </g>
+      <path d="M 16.4 25.6 Q 50 21, 83.6 25.6" fill="none" stroke="#ED1C24" strokeWidth="1.25" />
+      <path d="M 16.2 27 Q 50 22.4, 83.8 27" fill="none" stroke="white" strokeWidth="1.05" />
+      <path d="M 16 28.4 Q 50 23.8, 84 28.4" fill="none" stroke="#005BAC" strokeWidth="1.25" />
+      <g transform="translate(50, 14.2)">
+        <rect x="-8.6" y="-6.9" width="17.2" height="15" rx="3.6" fill="black" opacity="0.45" />
+        <rect x="-8.2" y="-7.6" width="16.4" height="14.4" rx="3.4" fill="#F8F8F6" stroke="#C9CBD1" strokeWidth="0.6" />
+        <rect
+          x="-7.3"
+          y="-6.7"
+          width="14.6"
+          height="12.6"
+          rx="2.8"
+          fill="none"
+          stroke="#9EA2AA"
+          strokeWidth="0.35"
+          strokeDasharray="0.8 0.6"
+        />
+        <g transform="translate(-6, -6) scale(0.012)">
+          <FlagsLogo uid={uid} />
+        </g>
+      </g>
+      <circle cx="50" cy="4.3" r="2.2" fill="#1C1D22" {...ink} strokeWidth={1.3} />
+      <circle cx="49.4" cy="3.7" r="0.65" fill="white" opacity="0.5" />
+      <path d={capVisor} fill="#121215" {...ink} />
+      <path d="M 15 30.6 Q 50 25, 85 30.6" fill="none" stroke="white" strokeOpacity="0.16" strokeWidth="1" />
+      <path d="M 16.5 32.6 Q 50 27.2, 83.5 32.6" fill="none" stroke="#62666F" strokeWidth="0.55" strokeDasharray="1.2 0.9" />
+      <path d="M 18 34.6 Q 50 29.4, 82 34.6" fill="none" stroke="#62666F" strokeWidth="0.55" strokeDasharray="1.2 0.9" />
+    </g>
+  );
+};
 
 const BucketHat: PartComponent = ({ fill = "#334155" }) => (
   <g>
@@ -217,7 +279,7 @@ const DetectiveHat: PartComponent = ({ fill = "#78350F" }) => (
 );
 
 const NurseCap: PartComponent = ({ hairTop, headId }) => (
-  <g transform={restTransform("nurseCap", hairTop, headId)}>
+  <g transform={restTransform("nurseCap", headId, hairTop)}>
     <path d="M 34 2 L 38 -10 H 62 L 66 2 Q 50 -1, 34 2 Z" fill="white" {...ink} />
     <rect x="47" y="-7" width="6" height="2" rx="0.5" fill="#EF4444" />
     <rect x="49" y="-9" width="2" height="6" rx="0.5" fill="#EF4444" />
@@ -227,12 +289,12 @@ const NurseCap: PartComponent = ({ hairTop, headId }) => (
 const ChefHat: PartComponent = () => (
   <g>
     <path
-      d="M 24 22 C 10 20, 10 2, 24 2 C 22 -12, 40 -16, 46 -8 C 52 -18, 72 -14, 70 -2 C 86 -4, 90 18, 76 22 Z"
+      d="M 23 22 C 9 21, 9 3, 22 3 C 21 -9, 37 -13, 44 -6 C 50 -15, 68 -12, 69 -2 C 84 -4, 90 18, 77 22 Z"
       fill="white"
       {...ink}
     />
     <path
-      d="M 36 -4 Q 38 8, 36 18 M 60 -4 Q 58 8, 60 18"
+      d="M 36 -1 Q 38 9, 36 19 M 60 0 Q 58 10, 60 19"
       fill="none"
       stroke="black"
       strokeOpacity="0.1"
@@ -293,9 +355,9 @@ const MilitaryHelmet: PartComponent = ({ fill = "#52663B" }) => (
 
 const TopHat: PartComponent = ({ fill = "#B91C1C" }) => (
   <g>
-    <path d="M 26 27 L 27 -14 Q 50 -17, 73 -14 L 74 27 Z" fill="#1a1a1a" {...ink} />
+    <path d="M 26 27 L 27 -12 Q 50 -14.5, 73 -12 L 74 27 Z" fill="#1a1a1a" {...ink} />
     <path d="M 26.5 14 Q 50 11, 73.5 14 L 73.8 22 Q 50 19, 26.2 22 Z" fill={fill} />
-    <path d="M 33 -8 V 10" stroke="white" strokeOpacity="0.15" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M 33 -6 V 10" stroke="white" strokeOpacity="0.15" strokeWidth="2.5" strokeLinecap="round" />
     <path
       d="M 10 29 Q 12 24, 24 25 Q 50 22, 76 25 Q 88 24, 90 29 Q 90 33, 84 33 Q 50 30, 16 33 Q 10 33, 10 29 Z"
       fill="#1a1a1a"
@@ -304,45 +366,80 @@ const TopHat: PartComponent = ({ fill = "#B91C1C" }) => (
   </g>
 );
 
-const PirateHat: PartComponent = ({ fill = "#1A1A1A" }) => (
-  <g>
-    <path
-      d="M 6 26 Q 12 10, 26 12 Q 34 -2, 50 -2 Q 66 -2, 74 12 Q 88 10, 94 26 Q 82 30, 70 31 Q 50 34, 30 31 Q 18 30, 6 26 Z"
-      fill={fill}
-      {...ink}
-    />
-    <path
-      d="M 8 25 Q 18 28, 30 29 Q 50 32, 70 29 Q 82 28, 92 25"
-      fill="none"
-      stroke="#EAB308"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <g transform="translate(50, 15)">
-      <path d="M -7 -4 L 7 4 M -7 4 L 7 -4" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <ellipse cx="0" cy="-2" rx="4.5" ry="4" fill="white" />
-      <rect x="-2.5" y="1" width="5" height="3" rx="1" fill="white" />
-      <circle cx="-1.7" cy="-2.4" r="1.1" fill="#1a1a1a" />
-      <circle cx="1.7" cy="-2.4" r="1.1" fill="#1a1a1a" />
+const PirateHat: PartComponent = ({ fill = "#1A1A1A" }) => {
+  const outline =
+    "M 5 27 C 6 18, 9 10, 13 5 C 20 11, 30 12, 36 9 C 40 0, 45 -3, 50 -3 C 55 -3, 60 0, 64 9 C 70 12, 80 11, 87 5 C 91 10, 94 18, 95 27 C 80 31.5, 65 33.5, 50 33.5 C 35 33.5, 20 31.5, 5 27 Z";
+  return (
+    <g>
+      <path d={outline} fill={fill} {...ink} />
+      <path
+        d="M 7 27 C 22 31, 36 32.5, 50 32.5 C 64 32.5, 78 31, 93 27 L 93 24 C 78 28, 64 29.5, 50 29.5 C 36 29.5, 22 28, 7 24 Z"
+        {...shade}
+      />
+      <path
+        d="M 9 24 C 9.5 17, 11.5 11.5, 14 8.5 C 21 14, 31 15, 37.5 12 C 41 4, 45.5 1, 50 1 C 54.5 1, 59 4, 62.5 12 C 69 15, 79 14, 86 8.5 C 88.5 11.5, 90.5 17, 91 24"
+        fill="none"
+        stroke="#E2B13C"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 9 27.5 C 23 31, 36 32, 50 32 C 64 32, 77 31, 91 27.5"
+        fill="none"
+        stroke="#E2B13C"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path d="M 40 6 Q 45 2.5, 50 2.5" fill="none" stroke="white" strokeOpacity="0.2" strokeWidth="1.5" strokeLinecap="round" />
+      <g transform="translate(50, 17.5) scale(0.95)">
+        <path d="M -8 -4.5 L 8 5 M -8 5 L 8 -4.5" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
+        <circle cx="-8.3" cy="-4.7" r="1.5" fill="white" />
+        <circle cx="-8.3" cy="5.2" r="1.5" fill="white" />
+        <circle cx="8.3" cy="-4.7" r="1.5" fill="white" />
+        <circle cx="8.3" cy="5.2" r="1.5" fill="white" />
+        <ellipse cx="0" cy="-1.8" rx="5" ry="4.6" fill="white" />
+        <rect x="-2.8" y="1.6" width="5.6" height="3.4" rx="1.2" fill="white" />
+        <circle cx="-1.9" cy="-2.2" r="1.3" fill={fill} />
+        <circle cx="1.9" cy="-2.2" r="1.3" fill={fill} />
+        <path d="M -1.3 2.7 V 4.6 M 0 2.7 V 4.6 M 1.3 2.7 V 4.6" stroke={fill} strokeWidth="0.5" />
+      </g>
     </g>
-  </g>
-);
+  );
+};
 
-const VikingHelmet: PartComponent = ({ fill = "#71717A" }) => (
+const vikingHorn =
+  "M 22 23 C 12 22, 4 14, 3 1 C 2.6 -5, 4.5 -10, 8 -13 C 8 -5, 10.5 4, 17.5 10.5 C 20 12.5, 22.5 13.5, 25 13.5 Z";
+
+const VikingHelmet: PartComponent = ({ fill = "#8E949C" }) => (
   <g>
-    <path d="M 22 20 Q 6 10, 6 -12 Q 14 -2, 28 8 Z" fill="#F5F5F4" {...ink} strokeWidth={1.5} />
-    <path d="M 78 20 Q 94 10, 94 -12 Q 86 -2, 72 8 Z" fill="#F5F5F4" {...ink} strokeWidth={1.5} />
-    <path d="M 16 30 C 14 0, 86 0, 84 30 Z" fill={fill} {...ink} />
-    <path d="M 45 4 Q 50 2, 55 4 L 55 30 L 45 30 Z" fill="black" opacity="0.2" />
-    <path d="M 26 10 Q 36 4, 46 4" {...shine} strokeOpacity={0.25} />
-    <path d="M 13 27 Q 50 22, 87 27 L 87 34 Q 50 30, 13 34 Z" fill={fill} {...ink} />
-    <path d="M 13 27 Q 50 22, 87 27 L 87 34 Q 50 30, 13 34 Z" {...shade} />
-    <g fill="black" opacity="0.4">
-      <circle cx="20" cy="30" r="1.2" />
-      <circle cx="35" cy="28.5" r="1.2" />
-      <circle cx="50" cy="28" r="1.2" />
-      <circle cx="65" cy="28.5" r="1.2" />
-      <circle cx="80" cy="30" r="1.2" />
+    {[vikingHorn, mirrorPath(vikingHorn)].map((horn) => (
+      <g key={horn}>
+        <path d={horn} fill="#F3EAD6" {...ink} strokeWidth={1.8} />
+      </g>
+    ))}
+    <g fill="none" stroke="#B9A889" strokeWidth="1.1" strokeLinecap="round">
+      <path d="M 6.5 -1 Q 9 0.5, 11 -1.5 M 6 5 Q 9 7, 12.5 5 M 8 11 Q 11 13, 15 11" />
+      <path d="M 93.5 -1 Q 91 0.5, 89 -1.5 M 94 5 Q 91 7, 87.5 5 M 92 11 Q 89 13, 85 11" />
+    </g>
+    <path d="M 18 22.5 L 25 13.5 L 27 21 Z M 82 22.5 L 75 13.5 L 73 21 Z" fill="#D4A23A" {...ink} strokeWidth={1.4} />
+    <path d="M 15.5 29.5 C 13.5 1.5, 86.5 1.5, 84.5 29.5 Z" fill={fill} {...ink} />
+    <path d="M 15.5 29.5 C 14.5 15, 22 7, 31 4.5 C 25 10, 22 19, 22.5 29.5 Z" fill="white" opacity="0.12" />
+    <path d="M 45.5 4 Q 50 2.6, 54.5 4 L 55.5 29.5 L 44.5 29.5 Z" fill={fill} {...ink} strokeWidth={1.6} />
+    <path d="M 45.5 4 Q 50 2.6, 54.5 4 L 55.5 29.5 L 44.5 29.5 Z" fill="black" opacity="0.18" />
+    <g fill="black" opacity="0.35">
+      <circle cx="50" cy="8" r="1" />
+      <circle cx="50" cy="14" r="1" />
+      <circle cx="50" cy="20" r="1" />
+    </g>
+    <path d="M 12.5 27 Q 50 22, 87.5 27 L 87.5 34 Q 50 29.5, 12.5 34 Z" fill={fill} {...ink} />
+    <path d="M 12.5 27 Q 50 22, 87.5 27 L 87.5 34 Q 50 29.5, 12.5 34 Z" fill="black" opacity="0.2" />
+    <g fill="#E8E4DA" opacity="0.75">
+      <circle cx="19" cy="29.6" r="1.1" />
+      <circle cx="31" cy="28.1" r="1.1" />
+      <circle cx="43" cy="27.4" r="1.1" />
+      <circle cx="57" cy="27.4" r="1.1" />
+      <circle cx="69" cy="28.1" r="1.1" />
+      <circle cx="81" cy="29.6" r="1.1" />
     </g>
   </g>
 );
@@ -367,11 +464,24 @@ const SamuraiHelmet: PartComponent = () => (
 
 const WizardHat: PartComponent = ({ fill = "#6D28D9" }) => (
   <g>
-    <path d="M 22 27 Q 34 -4, 50 -28 Q 56 -36, 64 -34 Q 58 -26, 60 -12 Q 66 8, 78 27 Z" fill={fill} {...ink} />
-    <path d="M 54 -20 L 56 -15 L 61 -14 L 57 -11 L 58 -6 L 54 -9 L 50 -6 L 51 -11 L 47 -14 L 52 -15 Z" fill="#FDE68A" />
-    <circle cx="40" cy="8" r="1.4" fill="#FDE68A" />
-    <circle cx="64" cy="12" r="1" fill="#F9A8D4" />
-    <circle cx="46" cy="-6" r="0.9" fill="#67E8F9" />
+    <path
+      d="M 22 27 C 28 11, 40 -3, 56 -10 C 64 -13.5, 74 -13.5, 80 -6 C 82 -3, 82 1, 79.5 3 C 76 -3.5, 70 -4.5, 64.5 -1.5 C 66 9, 71 18, 78 27 Z"
+      fill={fill}
+      {...ink}
+    />
+    <path
+      d="M 64.5 -1.5 C 62 4, 58 7, 54 9"
+      fill="none"
+      stroke="black"
+      strokeOpacity="0.2"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+    <path d="M 38 2 L 39.6 6 L 44 6.4 L 40.6 9.1 L 41.8 13.4 L 38 11 L 34.2 13.4 L 35.4 9.1 L 32 6.4 L 36.4 6 Z" fill="#FDE68A" />
+    <circle cx="56" cy="14" r="1.3" fill="#FDE68A" />
+    <circle cx="66" cy="20" r="1" fill="#F9A8D4" />
+    <circle cx="48" cy="20" r="0.9" fill="#67E8F9" />
+    <circle cx="80" cy="3.5" r="2.2" fill="#FDE68A" {...ink} strokeWidth={1.2} />
     <path
       d="M 8 30 Q 10 24, 24 24 Q 50 21, 76 24 Q 90 24, 92 30 Q 92 34, 86 34 Q 50 30, 14 34 Q 8 34, 8 30 Z"
       fill={fill}
@@ -383,22 +493,17 @@ const WizardHat: PartComponent = ({ fill = "#6D28D9" }) => (
 
 const PropellerHat: PartComponent = () => (
   <g>
-    <defs />
-    <path d="M 18 29 C 17 6, 50 4, 50 4 L 50 29 Z" fill="#EF4444" {...ink} />
-    <path d="M 82 29 C 83 6, 50 4, 50 4 L 50 29 Z" fill="#3B82F6" {...ink} />
-    <path d="M 34 7 Q 42 4.5, 50 4 L 50 29 L 34 29 Z" fill="#22C55E" />
-    <path d="M 50 4 Q 58 4.5, 66 7 L 66 29 L 50 29 Z" fill="#FACC15" />
-    <path d="M 18 29 C 17 6, 83 6, 82 29 Z" fill="none" {...ink} />
-    <path d="M 15 27 Q 50 22, 85 27 L 85 31 Q 50 27, 15 31 Z" fill="#1E3A8A" {...ink} />
-    <path d="M 50 4 V -4" {...ink} />
-    <path
-      d="M 37 -5 Q 43 -9, 50 -5 Q 57 -1, 63 -5"
-      fill="#FACC15"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
-    />
-    <circle cx="50" cy="-5" r="1.6" fill="#1a1a1a" />
+    <path d="M 17.5 29 C 16.5 6, 50 4, 50 4 L 50 29 Z" fill="#EF4444" {...ink} />
+    <path d="M 82.5 29 C 83.5 6, 50 4, 50 4 L 50 29 Z" fill="#3B82F6" {...ink} />
+    <path d="M 33.5 7 Q 41.5 4.6, 50 4 L 50 29 L 33.5 29 Z" fill="#22C55E" />
+    <path d="M 50 4 Q 58.5 4.6, 66.5 7 L 66.5 29 L 50 29 Z" fill="#FACC15" />
+    <path d="M 17.5 29 C 16.5 6, 83.5 6, 82.5 29 Z" fill="none" {...ink} />
+    <path d="M 26 12 Q 34 7, 42 6" fill="none" stroke="white" strokeOpacity="0.3" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M 14.5 26.5 Q 50 21.5, 85.5 26.5 L 85.5 31 Q 50 26.5, 14.5 31 Z" fill="#1E3A8A" {...ink} />
+    <path d="M 50 4 V -3" {...ink} />
+    <path d="M 50 -3.5 C 44 -8.5, 33 -8, 31 -5 C 33 -2, 44 -1.5, 50 -3.5 Z" fill="#FACC15" {...ink} strokeWidth={1.5} />
+    <path d="M 50 -3.5 C 56 1.5, 67 1, 69 -2 C 67 -5, 56 -5.5, 50 -3.5 Z" fill="#F97316" {...ink} strokeWidth={1.5} />
+    <circle cx="50" cy="-3.5" r="2" fill="#EF4444" {...ink} strokeWidth={1.3} />
   </g>
 );
 
@@ -432,97 +537,166 @@ const StrawHat: PartComponent = ({ fill = "#B91C1C" }) => (
   </g>
 );
 
-const Ushanka: PartComponent = ({ fill = "#475569" }) => (
+/** Fur edge: a closed outline through `points` with small fluffy bumps every ~`step` units. */
+const furOutline = (points: readonly Point[], step = 3.2) => {
+  const dense: Point[] = [];
+  points.forEach(([x, y], index) => {
+    const [nx, ny] = points[(index + 1) % points.length];
+    const count = Math.max(1, Math.round(Math.hypot(nx - x, ny - y) / step));
+    for (let i = 0; i < count; i++) dense.push([x + ((nx - x) * i) / count, y + ((ny - y) * i) / count]);
+  });
+  return scallop(dense, { bulge: 0.58 });
+};
+
+const ushankaFlap = furOutline([
+  [11, 31],
+  [26, 31],
+  [26, 58],
+  [23, 64],
+  [18.5, 66],
+  [14, 64],
+  [11, 58],
+]);
+
+const ushankaBand = furOutline([
+  [9, 34],
+  [8, 26],
+  [11, 20],
+  [22, 17],
+  [36, 15.5],
+  [50, 15],
+  [64, 15.5],
+  [78, 17],
+  [89, 20],
+  [92, 26],
+  [91, 34],
+  [70, 32.5],
+  [50, 32],
+  [30, 32.5],
+]);
+
+const Ushanka: PartComponent = ({ fill = "#6B4423" }) => (
   <g>
-    <path
-      d="M 10 30 L 10 58 Q 10 64, 17 64 Q 25 64, 25 58 L 25 30 Z M 90 30 L 90 58 Q 90 64, 83 64 Q 75 64, 75 58 L 75 30 Z"
-      fill="#94A3B8"
-      {...ink}
-    />
-    <path
-      d="M 14 40 V 58 M 20 40 V 60 M 86 40 V 58 M 80 40 V 60"
-      stroke="black"
-      strokeOpacity="0.12"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-    />
-    <path d="M 18 27 C 16 2, 84 2, 82 27 Z" fill={fill} {...ink} />
-    <path d="M 28 10 Q 38 5, 50 5" {...shine} strokeOpacity={0.15} />
-    <path d="M 9 25 Q 50 18, 91 25 L 91 34 Q 91 37, 87 37 Q 50 31, 13 37 Q 9 37, 9 34 Z" fill="#94A3B8" {...ink} />
-    <path
-      d="M 16 28 l 3 3 M 28 26 l 3 3 M 42 25 l 3 3 M 56 25 l 3 3 M 70 26 l 3 3 M 82 28 l 3 3"
-      stroke="black"
-      strokeOpacity="0.15"
-      strokeWidth="1"
-      strokeLinecap="round"
-    />
+    {[ushankaFlap, mirrorPath(ushankaFlap)].map((flap) => (
+      <path key={flap} d={flap} fill={fill} {...ink} strokeWidth={1.6} />
+    ))}
+    <g fill="none" stroke="black" strokeOpacity="0.18" strokeWidth="1" strokeLinecap="round">
+      <path d="M 15 37 l 0.8 3 M 21 36 l -0.8 3 M 14.5 46 l 0.8 3 M 22 45 l -0.8 3 M 16 54 l 0.8 3 M 21 55 l -0.8 3" />
+      <path d="M 85 37 l -0.8 3 M 79 36 l 0.8 3 M 85.5 46 l -0.8 3 M 78 45 l 0.8 3 M 84 54 l -0.8 3 M 79 55 l 0.8 3" />
+    </g>
+    <path d="M 17.5 22 C 16 0, 84 0, 82.5 22 Z" fill={fill} {...ink} />
+    <path d="M 17.5 22 C 16 0, 84 0, 82.5 22 Z" fill="black" opacity="0.28" />
+    <path d="M 50 7 V 16" stroke="black" strokeOpacity="0.25" strokeWidth="1.2" strokeLinecap="round" />
+    <path d="M 28 8 Q 37 3.5, 47 3" fill="none" stroke="white" strokeOpacity="0.18" strokeWidth="1.8" strokeLinecap="round" />
+    <path d={ushankaBand} fill={fill} {...ink} strokeWidth={1.6} />
+    <g fill="none" stroke="black" strokeOpacity="0.18" strokeWidth="1" strokeLinecap="round">
+      <path d="M 15 24 l 1 2.5 M 24 21 l -0.8 2.8 M 33 20 l 0.8 2.8 M 42 19.5 l -0.6 2.8 M 51 19.5 l 0.6 2.8 M 60 19.5 l -0.6 2.8 M 69 20 l 0.8 2.8 M 78 21 l -0.8 2.8 M 86 24 l -1 2.5" />
+      <path d="M 20 29 l 0.8 2 M 30 28 l -0.8 2 M 40 27.5 l 0.6 2 M 55 27.5 l -0.6 2 M 65 28 l 0.8 2 M 75 28.5 l -0.8 2" />
+    </g>
+    <path d="M 20 21 Q 35 17.5, 50 17.2" fill="none" stroke="white" strokeOpacity="0.2" strokeWidth="2" strokeLinecap="round" />
   </g>
 );
 
-const SkiMask: PartComponent = ({ fill = "#1e293b", headId }) => {
+/** Eye and mouth openings of the ski mask; the face is drawn underneath and shows through. */
+const skiMaskHoles = (faceOffset: number) => {
+  const eyeY = 45 + faceOffset;
+  const mouthY = 77.5 + faceOffset;
+  const eye = (x: number) => `M ${x - 8.5} ${eyeY} a 8.5 6.8 0 1 0 17 0 a 8.5 6.8 0 1 0 -17 0 Z`;
+  const mouth = `M 38 ${mouthY} a 5.5 5.5 0 0 1 5.5 -5.5 h 13 a 5.5 5.5 0 0 1 0 11 h -13 a 5.5 5.5 0 0 1 -5.5 -5.5 Z`;
+  return `${eye(34.5)} ${eye(65.5)} ${mouth}`;
+};
+
+const SkiMask: PartComponent = ({ fill = "#D33C3C", headId, uid = "fv" }) => {
   const head = HEADS[headId] ?? HEADS.square;
-  const offset = head.faceOffset;
-  const hole = fill.toLowerCase() === "#1a1a1a" ? "#434244" : "#1a1a1a";
+  const clip = `${uid}-skimask`;
+  const scale = "translate(50, 52) scale(1.05) translate(-50, -52)";
+  const holes = skiMaskHoles(head.faceOffset);
   return (
     <g>
-      <g transform="translate(50, 52) scale(1.04) translate(-50, -52)">
-        <path d={head.path} fill={fill} {...ink} />
+      <defs>
+        <clipPath id={clip}>
+          <path d={head.path} transform={scale} />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${clip})`}>
+        <path d={`M -50 -50 H 150 V 150 H -50 Z ${holes}`} fillRule="evenodd" fill={fill} />
+        <path
+          d={`M 30 -10 V 120 M 40 -10 V 120 M 50 -10 V 120 M 60 -10 V 120 M 70 -10 V 120 M 20 -10 V 120 M 80 -10 V 120`}
+          stroke="black"
+          strokeOpacity="0.08"
+          strokeWidth="1.4"
+        />
+        <path d={holes} fill="none" stroke="black" strokeOpacity="0.18" strokeWidth="3.5" />
       </g>
-      <path d="M 26 36 Q 50 32, 74 36" fill="none" stroke="black" strokeOpacity="0.15" strokeWidth="1.5" />
-      <g transform={`translate(0, ${offset})`}>
-        <rect x="24" y="38" width="52" height="14" rx="7" fill={hole} />
-        <rect x="38" y="70" width="24" height="10" rx="5" fill={hole} />
-      </g>
+      <path d={head.path} transform={scale} fill="none" {...ink} />
+      <path d={holes} fill="none" {...ink} />
+      <path
+        d="M 27 18 Q 50 13, 73 18"
+        transform={scale}
+        fill="none"
+        stroke="white"
+        strokeOpacity="0.18"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </g>
   );
 };
 
 const Crown: PartComponent = ({ hairTop, headId }) => (
-  <g transform={restTransform("crown", hairTop, headId)}>
+  <g transform={restTransform("crown", headId, hairTop)}>
     <path
-      d="M 30 2 L 28 -18 L 39 -8 L 50 -22 L 61 -8 L 72 -18 L 70 2 Q 50 -1, 30 2 Z"
+      d="M 32 2 L 30 -11 L 40 -4.5 L 50 -14 L 60 -4.5 L 70 -11 L 68 2 Q 50 -1, 32 2 Z"
       fill="#FBBF24"
       stroke="#92400E"
       strokeWidth="1.5"
       strokeLinejoin="round"
     />
-    <path d="M 30 -3 Q 50 -6, 70 -3" fill="none" stroke="#92400E" strokeOpacity="0.4" strokeWidth="1" />
-    <circle cx="50" cy="-8" r="2" fill="#EF4444" />
-    <circle cx="39" cy="-3" r="1.3" fill="#3B82F6" />
-    <circle cx="61" cy="-3" r="1.3" fill="#3B82F6" />
+    <path d="M 31.5 -2.5 Q 50 -5.5, 68.5 -2.5" fill="none" stroke="#92400E" strokeOpacity="0.4" strokeWidth="1" />
+    <circle cx="50" cy="-6" r="1.8" fill="#EF4444" />
+    <circle cx="40" cy="-1.5" r="1.2" fill="#3B82F6" />
+    <circle cx="60" cy="-1.5" r="1.2" fill="#3B82F6" />
+    <circle cx="30" cy="-11" r="1.2" fill="#FBBF24" stroke="#92400E" strokeWidth="1" />
+    <circle cx="50" cy="-14" r="1.2" fill="#FBBF24" stroke="#92400E" strokeWidth="1" />
+    <circle cx="70" cy="-11" r="1.2" fill="#FBBF24" stroke="#92400E" strokeWidth="1" />
   </g>
 );
 
-const Halo: PartComponent = ({ hairTop, headId }) => (
-  <g transform={restTransform("halo", hairTop, headId)}>
-    <ellipse cx="50" cy="0" rx="24" ry="5.5" fill="none" stroke="#FDE047" strokeWidth="3.5" />
-    <ellipse cx="50" cy="0" rx="24" ry="5.5" fill="none" stroke="#CA8A04" strokeOpacity="0.4" strokeWidth="0.8" />
+const Halo: PartComponent = ({ hairTop, hairPeak, headId }) => (
+  <g transform={restTransform("halo", headId, hairTop, hairPeak)}>
+    <ellipse cx="50" cy="0" rx="22" ry="4.5" fill="none" stroke="#FDE047" strokeWidth="3.2" />
+    <ellipse cx="50" cy="0" rx="22" ry="4.5" fill="none" stroke="#CA8A04" strokeOpacity="0.4" strokeWidth="0.8" />
   </g>
 );
 
 export const Hats: PartRegistry<HatId> = {
   none: { component: noneHat, label: "None" },
-  beanie: { component: Beanie, label: "Beanie" },
-  baseballCap: { component: BaseballCap, label: "Baseball Cap" },
-  bucketHat: { component: BucketHat, label: "Bucket Hat" },
+  beanie: { component: Beanie, label: "Beanie", colorable: true },
+  baseballCap: { component: BaseballCap, label: "Baseball Cap", colorable: true },
+  bucketHat: { component: BucketHat, label: "Bucket Hat", colorable: true },
   flagsCap: { component: FlagsCap, label: "Flags Cap" },
-  patternedHeadband: { component: PatternedHeadband, label: "Patterned Headband" },
-  cowboyHat: { component: CowboyHat, label: "Cowboy Hat", tags: ["brown", "black", "orange", "khaki"] },
-  detectiveHat: { component: DetectiveHat, label: "Detective Hat", tags: ["brown", "black", "khaki"] },
+  patternedHeadband: { component: PatternedHeadband, label: "Patterned Headband", colorable: true },
+  cowboyHat: { component: CowboyHat, label: "Cowboy Hat", colorable: true, tags: ["brown", "black", "orange", "khaki"] },
+  detectiveHat: { component: DetectiveHat, label: "Detective Hat", colorable: true, tags: ["brown", "black", "khaki"] },
   nurseCap: { component: NurseCap, label: "Nurse Cap" },
   chefHat: { component: ChefHat, label: "Chef Hat" },
   astronautHelmet: { component: AstronautHelmet, label: "Astronaut Helmet" },
-  militaryHelmet: { component: MilitaryHelmet, label: "Military Helmet" },
-  topHat: { component: TopHat, label: "Top Hat" },
-  pirateHat: { component: PirateHat, label: "Pirate Hat", tags: ["black", "orange", "red", "purple", "green", "pink", "blue"] },
-  vikingHelmet: { component: VikingHelmet, label: "Viking Helmet" },
+  militaryHelmet: { component: MilitaryHelmet, label: "Military Helmet", colorable: true },
+  topHat: { component: TopHat, label: "Top Hat", colorable: true },
+  pirateHat: {
+    component: PirateHat,
+    label: "Pirate Hat",
+    colorable: true,
+    tags: ["black", "orange", "red", "purple", "green", "pink", "blue"],
+  },
+  vikingHelmet: { component: VikingHelmet, label: "Viking Helmet", colorable: true },
   samuraiHelmet: { component: SamuraiHelmet, label: "Samurai Helmet", tags: ["red", "black"] },
-  wizardHat: { component: WizardHat, label: "Wizard Hat" },
+  wizardHat: { component: WizardHat, label: "Wizard Hat", colorable: true },
   propellerHat: { component: PropellerHat, label: "Propeller Hat" },
-  beret: { component: Beret, label: "Beret" },
-  strawHat: { component: StrawHat, label: "Straw Hat", tags: ["khaki", "brown", "black"] },
-  ushanka: { component: Ushanka, label: "Ushanka" },
-  skiMask: { component: SkiMask, label: "Ski Mask" },
+  beret: { component: Beret, label: "Beret", colorable: true },
+  strawHat: { component: StrawHat, label: "Straw Hat", colorable: true, tags: ["khaki", "brown", "black"] },
+  ushanka: { component: Ushanka, label: "Ushanka", colorable: true },
+  skiMask: { component: SkiMask, label: "Ski Mask", colorable: true },
   crown: { component: Crown, label: "Crown" },
   halo: { component: Halo, label: "Halo" },
 };

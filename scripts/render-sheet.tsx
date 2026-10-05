@@ -11,17 +11,27 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "../lib/avatar/types";
 import { AvatarFilters, AVATAR_FILTER_PREFIX } from "../lib/avatar/core/filters";
 import { AvatarLayers } from "../lib/avatar/core/layers";
+import { AVATAR_FRAME } from "../lib/avatar/anatomy";
 
 type Cell = { label: string; state: AvatarState };
 
-let viewBox = "-10 -25 120 125";
+let viewBox = `${AVATAR_FRAME.x - 4} ${AVATAR_FRAME.y - 4} ${AVATAR_FRAME.size + 8} ${AVATAR_FRAME.size + 8}`;
 
 function svgFor(state: AvatarState) {
   const filterId = `${AVATAR_FILTER_PREFIX}-${state.texture}`;
   return renderToStaticMarkup(
     <svg viewBox={viewBox} xmlns="http://www.w3.org/2000/svg" width="240" height="250">
       <rect x="-50" y="-50" width="200" height="200" fill="#eef2f7" />
-      <rect x="5" y="5" width="90" height="90" fill="none" stroke="#94a3b8" strokeDasharray="1 1" strokeWidth="0.3" />
+      <rect
+        x={AVATAR_FRAME.x}
+        y={AVATAR_FRAME.y}
+        width={AVATAR_FRAME.size}
+        height={AVATAR_FRAME.size}
+        fill="none"
+        stroke="#94a3b8"
+        strokeDasharray="1 1"
+        strokeWidth="0.4"
+      />
       <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
       <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
         <AvatarLayers state={state} filterId={filterId} />

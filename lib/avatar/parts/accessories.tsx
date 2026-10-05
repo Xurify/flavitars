@@ -168,7 +168,14 @@ const safetyGoggles: PartComponent = ({ headId }) => (
   <g>
     <rect x="18" y="38" width="64" height="20" rx="8" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M18 48 H 82" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-    <rect x={getTemple(headId, true).x - 1} y="42" width={21 - getTemple(headId, true).x} height="12" rx="1" fill="currentColor" />
+    <rect
+      x={getTemple(headId, true).x - 1}
+      y="42"
+      width={21 - getTemple(headId, true).x}
+      height="12"
+      rx="1"
+      fill="currentColor"
+    />
     <rect x="79" y="42" width={getTemple(headId, false).x + 1 - 79} height="12" rx="1" fill="currentColor" />
   </g>
 );
@@ -279,7 +286,6 @@ const skiGoggles: PartComponent = ({ headId, secondaryFill, accessoryColorId }) 
     </g>
   );
 };
-skiGoggles.colors = ["fire", "electric", "emerald", "nebula", "solar", "chrome", "obsidian"];
 
 const browlineGlasses: PartComponent = () => (
   <g transform="translate(50, 45)">
@@ -478,6 +484,20 @@ const goldHoopSingle: PartComponent = ({ headId }) => (
   </g>
 );
 
+/** Hang from the ears, so they are hidden when the ears are (ski mask). */
+export const EAR_ACCESSORIES: ReadonlySet<string> = new Set([
+  "goldHoopSingle",
+  "hoops",
+  "chunkyHoops",
+  "goldHexHoops",
+  "diamondStuds",
+  "pearlEarrings",
+  "goldDropEarrings",
+  "pinkDropEarrings",
+  "ursulaPearlEarrings",
+  "marikaAtelierEarrings",
+]);
+
 export const AccessoryItems: AvatarItem[] = [
   createAvatarItem({ id: "none", name: "None", svg: noneAccessory }),
   createAvatarItem({ id: "roundGlasses", name: "Round Glasses", svg: roundGlasses }),
@@ -515,5 +535,8 @@ export const AccessoryItems: AvatarItem[] = [
 ];
 
 export const Accessories: PartRegistry<AccessoryId> = Object.fromEntries(
-  AccessoryItems.map((item) => [item.id, { component: item.svg, label: item.name, tags: item.tags }])
+  AccessoryItems.map((item) => [
+    item.id,
+    { component: item.svg, label: item.name, tags: item.tags, colorable: item.id === "skiGoggles" },
+  ]),
 ) as PartRegistry<AccessoryId>;

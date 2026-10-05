@@ -1,272 +1,91 @@
 import React from "react";
 import { CheckIcon } from "lucide-react";
-import { HeadId, HeadShapes } from "@/lib/avatar/parts/head";
-import { PartComponent, PartDefinition } from "@/lib/avatar/parts";
-import { AvatarCategory, HAIR_COLORS, ACCESSORY_ACCENT_COLORS } from "@/lib/avatar/types";
+import { AvatarState, CategoryConfig } from "@/lib/avatar/types";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/strings";
+import { AvatarSvg } from "./AvatarSvg";
 
 interface ItemGridProps {
-  items: Record<string, PartDefinition>;
-  backItems?: Record<string, PartDefinition>;
-  selectedIndex: string;
+  category: CategoryConfig;
+  state: AvatarState;
+  selectedId: string;
   onSelect: (itemId: string) => void;
-  allowNone?: boolean;
-  previewFill: string;
-  hairFill: string;
-  hatFill: string;
-  skinToneFill: string;
-  accessoryFill: string;
-  bodyFill: string;
-  accessoryColorId: string;
-  hatColorId: string;
-  bodyColorId: string;
-  categoryId: AvatarCategory;
-  headId: HeadId;
-  sortedKeys: string[];
 }
 
-interface ItemPreviewProps {
-  itemId: string;
+/** Items a category actually offers in the editor (preset-only parts are hidden). */
+export const getVisibleItemIds = (category: CategoryConfig) =>
+  category.sortedKeys.filter(
+    (itemId) => category.items[itemId] && !category.items[itemId].presetOnly
+  );
+
+/**
+ * Each tile is the user's own avatar with one item swapped in, drawn in the same frame and at the
+ * same scale as the main preview. Tiles render flat (no texture) except in the Texture category, and
+ * hair tiles drop the hat so the styles can be told apart.
+ */
+const previewState = (
+  state: AvatarState,
+  category: CategoryConfig,
+  itemId: string
+): AvatarState => ({
+  ...state,
+  ...(category.id === "hair" && { hat: "none" }),
+  [category.stateKey]: itemId,
+  texture: category.id === "texture" ? (itemId as AvatarState["texture"]) : "none",
+});
+
+interface ItemTileProps {
   label: string;
-  categoryId: AvatarCategory;
-  headId: HeadId;
-  ItemComponent: PartComponent;
-  BackComponent?: PartComponent;
+  itemId: string;
+  state: AvatarState;
   isSelected: boolean;
   onSelect: (itemId: string) => void;
-  showMannequin?: boolean;
-  skinToneFill: string;
-  hatFill: string;
-  hairFill: string;
-  accessoryFill: string;
-  bodyFill: string;
-  accessoryColorId: string;
-  hatColorId: string;
-  bodyColorId: string;
 }
 
-const TextureFilters = (): React.JSX.Element => (
-  <defs>
-    <filter id="grid-noise">
-      <feTurbulence baseFrequency="0.6" numOctaves="3" />
-      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 15 -7" />
-      <feComponentTransfer>
-        <feFuncA type="linear" slope="0.5" />
-      </feComponentTransfer>
-      <feBlend mode="overlay" in="SourceGraphic" />
-    </filter>
-    <filter id="grid-glitch">
-      <feColorMatrix type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" in="SourceGraphic" result="redChannel" />
-      <feOffset dx="2" in="redChannel" result="redShift" />
-      <feColorMatrix type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" in="SourceGraphic" result="cyanChannel" />
-      <feOffset dx="-2" in="cyanChannel" result="cyanShift" />
-      <feBlend mode="screen" in="redShift" in2="cyanShift" />
-    </filter>
-    <filter id="grid-halftone">
-      <feTurbulence baseFrequency="1.5" numOctaves="1" result="turbulenceResult" />
-      <feColorMatrix
-        type="matrix"
-        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 20 -10"
-        in="turbulenceResult"
-        result="stipplingResult"
-      />
-      <feComposite in="SourceGraphic" in2="stipplingResult" operator="in" />
-    </filter>
-  </defs>
-);
-
-const ItemPreview = React.memo<ItemPreviewProps>(({
-  itemId,
-  label,
-  categoryId,
-  headId,
-  ItemComponent,
-  BackComponent,
-  isSelected,
-  onSelect,
-  showMannequin,
-  skinToneFill,
-  hatFill,
-  hairFill,
-  accessoryFill,
-  bodyFill,
-  accessoryColorId,
-  hatColorId,
-  bodyColorId,
-}): React.JSX.Element => {
-  const HeadShape = (HeadShapes[headId] || HeadShapes["square"]).component;
-  const isHeadCategory = categoryId === "head";
-  const isHatCategory = categoryId === "hats";
-
-  return (
-    <button
-      type="button"
-      onClick={() => onSelect(itemId)}
-      title={label}
-      aria-label={label}
-      className={cn(
-        "group relative flex aspect-square w-full items-center justify-center rounded-xl p-1.5 transition-all duration-150 cursor-pointer select-none",
-        isSelected
-          ? "bg-white ring-2 ring-primary ring-offset-2 border border-primary/40 shadow-xs scale-[1.02]"
-          : "bg-white/90 border border-border/80 hover:border-foreground/30 hover:bg-white hover:shadow-xs hover:scale-[1.02] active:scale-[0.98]"
-      )}
-    >
-      <div className="relative h-full w-full pointer-events-none flex items-center justify-center">
-        <svg viewBox="-5 -5 110 110" className="w-full h-full">
-          {categoryId === "texture" ? (
-            <g>
-              <rect x="0" y="0" width="100" height="100" rx="8" fill="#f8fafc" />
-              <rect
-                x="15"
-                y="15"
-                width="70"
-                height="70"
-                rx="6"
-                fill="#d3d3d3"
-                filter={itemId ? `url(#grid-${itemId})` : undefined}
-                opacity={itemId === "none" ? 0.15 : 1}
-              />
-              <text
-                x="50"
-                y="94"
-                textAnchor="middle"
-                fontSize="9"
-                fontWeight="600"
-                fill="currentColor"
-                opacity="0.6"
-                className="font-sans capitalize tracking-normal"
-              >
-                {itemId}
-              </text>
-            </g>
-          ) : (
-            <>
-              {BackComponent && (
-                <g className="text-slate-900 fill-current">
-                  <BackComponent fill={hairFill} headId="square" />
-                </g>
-              )}
-              {showMannequin && (
-                <g className="pointer-events-none opacity-20">
-                  <HeadShape fill={skinToneFill} headId={headId} />
-                </g>
-              )}
-              {(() => {
-                let resolvedFill = isHeadCategory
-                  ? skinToneFill
-                  : isHatCategory
-                    ? hatFill
-                    : categoryId === "body"
-                      ? bodyFill
-                      : hairFill;
-                let resolvedSecondaryFill = accessoryFill;
-
-                const allowedColors = ItemComponent.colors;
-                if (allowedColors) {
-                  const currentSelectedId = isHatCategory
-                    ? hatColorId
-                    : categoryId === "body"
-                      ? bodyColorId
-                      : accessoryColorId;
-                  if (!allowedColors.includes(currentSelectedId)) {
-                    const palette =
-                      isHatCategory || categoryId === "body"
-                        ? HAIR_COLORS
-                        : ACCESSORY_ACCENT_COLORS;
-                    const fallbackColor = palette.find(
-                      (colorOption) => colorOption.id === allowedColors[0]
-                    )?.color;
-                    if (fallbackColor) {
-                      if (isHatCategory) resolvedFill = fallbackColor;
-                      else resolvedSecondaryFill = fallbackColor;
-                    }
-                  }
-                }
-
-                return (
-                  <g className="text-slate-900 fill-current">
-                    <ItemComponent
-                      fill={resolvedFill}
-                      secondaryFill={resolvedSecondaryFill}
-                      accessoryColorId={accessoryColorId}
-                      headId={headId}
-                    />
-                  </g>
-                );
-              })()}
-            </>
-          )}
-        </svg>
-      </div>
-
-      {isSelected && (
-        <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white shadow-xs">
-          <CheckIcon className="h-2.5 w-2.5" strokeWidth={3} />
-        </div>
-      )}
-    </button>
-  );
-});
-ItemPreview.displayName = "ItemPreview";
-
+const ItemTile = React.memo<ItemTileProps>(({ label, itemId, state, isSelected, onSelect }) => (
+  <Tooltip delayDuration={120}>
+    <TooltipTrigger asChild>
+      <button
+        type="button"
+        onClick={() => onSelect(itemId)}
+        aria-label={label}
+        aria-pressed={isSelected}
+        className={cn(
+          "group relative aspect-square w-full rounded-xl overflow-hidden transition-all duration-150 cursor-pointer select-none",
+          isSelected
+            ? "bg-white ring-2 ring-primary ring-offset-2 border border-primary/40 shadow-xs"
+            : "bg-white/90 border border-border/80 hover:border-foreground/30 hover:bg-white hover:shadow-xs active:scale-[0.98]"
+        )}
+      >
+        <AvatarSvg state={state} className="h-full w-full text-slate-900 pointer-events-none" />
+        {isSelected && (
+          <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white shadow-xs">
+            <CheckIcon className="h-2.5 w-2.5" strokeWidth={3} />
+          </span>
+        )}
+      </button>
+    </TooltipTrigger>
+    <TooltipContent side="top">{label}</TooltipContent>
+  </Tooltip>
+));
+ItemTile.displayName = "ItemTile";
 
 export const ItemGrid: React.FC<ItemGridProps> = ({
-  items,
-  backItems,
-  selectedIndex,
+  category,
+  state,
+  selectedId,
   onSelect,
-  hairFill,
-  hatFill,
-  skinToneFill,
-  accessoryFill,
-  bodyFill,
-  accessoryColorId,
-  hatColorId,
-  bodyColorId,
-  categoryId,
-  headId,
-  sortedKeys,
-}): React.JSX.Element => {
-  const showMannequin = ["hair", "eyes", "nose", "mouth", "eyebrows", "extras", "hats"].includes(categoryId);
-  return (
-    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5 p-1">
-      {categoryId === "texture" && (
-        <svg className="absolute w-0 h-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <TextureFilters />
-        </svg>
-      )}
-      {sortedKeys.map((itemId) => {
-        const itemDefinition = items[itemId];
-        if (!itemDefinition) return null;
-        if (itemDefinition.presetOnly) return null;
-
-        const ItemComponent = itemDefinition.component;
-        const BackComponent = backItems?.[itemId]?.component;
-
-        return (
-          <ItemPreview
-            key={`item-preview-${itemId}`}
-            itemId={itemId}
-            label={itemDefinition.label}
-            categoryId={categoryId}
-            headId={headId}
-            ItemComponent={ItemComponent}
-            BackComponent={BackComponent}
-            isSelected={selectedIndex === itemId}
-            showMannequin={showMannequin}
-            onSelect={onSelect}
-            skinToneFill={skinToneFill}
-            hatFill={hatFill}
-            hairFill={hairFill}
-            accessoryFill={accessoryFill}
-            bodyFill={bodyFill}
-            accessoryColorId={accessoryColorId}
-            hatColorId={hatColorId}
-            bodyColorId={bodyColorId}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
+}): React.JSX.Element => (
+  <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5 p-1">
+    {getVisibleItemIds(category).map((itemId) => (
+      <ItemTile
+        key={itemId}
+        itemId={itemId}
+        label={category.items[itemId].label}
+        state={previewState(state, category, itemId)}
+        isSelected={selectedId === itemId}
+        onSelect={onSelect}
+      />
+    ))}
+  </div>
+);

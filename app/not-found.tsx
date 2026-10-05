@@ -14,7 +14,6 @@ export default function NotFound(): React.JSX.Element {
             state={AVATAR_PRESETS.prvy as AvatarState}
             size="preview"
             showBackground={false}
-            centered={true}
             className="w-full h-full"
           />
         </div>

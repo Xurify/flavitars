@@ -29,8 +29,13 @@ export interface HairSpec {
   paint?: (hairColor: string) => React.ReactNode;
   /** Ornaments with their own colours (bows, clips, ties), drawn on top unclipped. */
   accents?: (hairColor: string) => React.ReactNode;
-  /** Highest point of the silhouette; small hats rest here. Defaults to the top of the head. */
+  /**
+   * Where things resting on the hair sit (crowns, halos, headphone bands): the top of the hair
+   * mass, ignoring spikes, buns and bows that poke above it. Defaults to the top of the cap.
+   */
   top?: number;
+  /** Highest point including spikes, buns and bows; floating items (halo) clear it. Defaults to `top`. */
+  peak?: number;
 }
 
 export const HAIR_OUTLINE = 2;
@@ -39,6 +44,9 @@ const CUT_STYLE = { fill: "none", stroke: "currentColor", strokeWidth: HAIR_OUTL
 const OUTSIDE = "M -100 -100 H 200 V 200 H -100 Z";
 
 const hairFill = (fill?: string) => fill || "var(--avatar-hair, #1a1a1a)";
+
+export const getHairPeak = (spec: HairSpec | undefined, headId: string | undefined) =>
+  Math.min(getHairTop(spec, headId), spec?.peak ?? Infinity);
 
 export const getHairTop = (spec: HairSpec | undefined, headId: string | undefined) => {
   const headTop = getHead(headId).top;

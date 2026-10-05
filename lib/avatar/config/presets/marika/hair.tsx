@@ -25,7 +25,8 @@ const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
     ),
     front: "M 15 32 C 13 4, 87 4, 85 32 Z M 30 6 C 30 -8, 70 -8, 70 6 Z",
     details: "M 25 25 Q 35 15, 50 20 M 75 25 Q 65 15, 50 20 M 38 -2 Q 50 -6, 62 -2",
-    top: -4.5,
+    top: 11,
+    peak: -7,
   },
   marika1: {
     cap: capAbove(
@@ -40,11 +41,12 @@ const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaAtelier: {
     cap: capAbove("M 12 60 L 21 60 L 21 40 Q 30 33, 40 36 Q 46 31, 50 35 Q 54 31, 60 36 Q 70 33, 79 40 L 79 60 L 88 60"),
     front:
-      "M 14 36 L 7 26 L 12 16 L 7 6 L 17 2 L 15 -8 L 26 -6 L 30 -16 L 40 -12 L 46 -22 L 55 -19 L 64 -25 L 72 -16 L 81 -21 L 86 -10 L 83 0 L 93 4 L 88 14 L 95 25 L 86 36 Z",
+      "M 14 36 L 7 26 L 12 16 L 7 6 L 17 3.5 L 15 -2.7 L 26 -1.4 L 30 -7.6 L 40 -5.2 L 46 -11.4 L 55 -9.5 L 64 -13.2 L 72 -7.6 L 81 -10.7 L 86 -3.9 L 83 2.3 L 93 4.8 L 88 14 L 95 25 L 86 36 Z",
     back: "M 10 30 C -5 60, -2 105, 15 115 L 35 110 L 50 115 L 65 110 L 85 115 C 102 105, 105 60, 90 30 Z",
-    details: "M 22 16 L 26 10 L 22 4 M 78 16 L 74 10 L 78 4 M 40 12 L 45 4 L 40 -4 M 60 12 L 55 4 L 60 -4",
+    details: "M 22 16 L 26 10 L 22 4.8 M 78 16 L 74 10 L 78 4.8 M 40 12 L 45 4.8 L 40 -0.2 M 60 12 L 55 4.8 L 60 -0.2",
     backDetails: "M 25 40 Q 15 65, 20 95 M 75 40 Q 85 65, 80 95",
-    top: -22,
+    top: 2,
+    peak: -13,
   },
 };
 
