@@ -3,10 +3,14 @@ import { PartRegistry, PartComponent } from "../../../parts/common";
 export const UrsulaEyesIds = ["ursulaEyes"] as const;
 export type UrsulaEyesId = (typeof UrsulaEyesIds)[number];
 
-/** Almond eye opening, inner corner at -x; the iris is clipped to it so the lid covers its top. */
-const OPENING = "M -7.4 0.4 C -4.7 -3.9, 4.3 -4.4, 7.8 -0.8 C 4.5 2.7, -4 3.3, -7.4 0.4 Z";
+/** Lower lid pushed up by the smile; the iris is clipped to stay above it. */
+const LOWER_LID = "M 5.8 2.6 Q 0 0.6, -5.8 2.6";
 
-/** Bright blue-grey almond eyes with a soft crease above and faint laugh lines at the outer corners. */
+/**
+ * Warm, smiling blue-grey eyes: a bold upper lid with a small flick, the lower lid lifted into the
+ * iris and a couple of laugh lines at the outer corner. Lids are drawn with +x pointing away from
+ * the nose; the iris and its highlight are not mirrored, so the gaze stays straight.
+ */
 const UrsulaEye = ({ x, uid }: { x: number; uid: string }) => {
   const outward = x < 50 ? "scale(-1, 1)" : undefined;
   const clipId = `${uid}-ursula-eye-${x}`;
@@ -14,20 +18,18 @@ const UrsulaEye = ({ x, uid }: { x: number; uid: string }) => {
     <g transform={`translate(${x}, 46)`}>
       <defs>
         <clipPath id={clipId}>
-          <path d={OPENING} transform={outward} />
+          <path d={`M -12 -12 L 12 -12 L 12 2.6 L ${LOWER_LID.slice(2)} L -12 2.6 Z`} />
         </clipPath>
       </defs>
-      <path d={OPENING} transform={outward} fill="white" />
       <g clipPath={`url(#${clipId})`}>
-        <circle cy="-0.3" r="3.9" fill="#7FA6C9" />
-        <circle cy="-0.3" r="1.85" fill="#1F2933" />
-        <circle cx="1.3" cy="-1.6" r="1.1" fill="white" />
+        <circle r="4.2" fill="#7FA6C9" stroke="currentColor" strokeWidth="1.1" />
+        <circle r="2" fill="#1F2933" />
+        <circle cx="1.4" cy="-1.5" r="1.2" fill="white" />
       </g>
-      <g transform={outward} fill="none" stroke="#3E3230" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M -7.4 0.4 C -4.7 -3.9, 4.3 -4.4, 7.8 -0.8 L 9.6 -2.1" strokeWidth="1.6" />
-        <path d="M 7.8 -0.8 C 4.5 2.7, -4 3.3, -7.4 0.4" strokeWidth="0.6" opacity="0.45" />
-        <path d="M -6.2 -3.9 C -3 -6.7, 3.6 -7, 7.4 -3.9" strokeWidth="0.7" opacity="0.35" />
-        <path d="M 9.6 0.2 L 11.6 -0.4 M 9.3 2 L 11.1 2.8" strokeWidth="0.5" opacity="0.3" />
+      <g transform={outward} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M -6.2 -0.8 Q -0.5 -6.8, 6.4 -1.6 L 8.4 -3" strokeWidth="2" />
+        <path d={LOWER_LID} strokeWidth="1.3" />
+        <path d="M 8.8 0.4 L 10.8 0 M 8.4 2.2 L 10.2 2.9" strokeWidth="0.7" strokeOpacity="0.4" />
       </g>
     </g>
   );
