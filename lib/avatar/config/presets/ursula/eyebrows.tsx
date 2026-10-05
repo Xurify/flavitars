@@ -4,13 +4,13 @@ import { mirrorPath } from "../../../anatomy";
 export const UrsulaEyebrowsIds = ["ursulaEyebrows"] as const;
 export type UrsulaEyebrowsId = (typeof UrsulaEyebrowsIds)[number];
 
-/** Tapered brow, fuller at the inner end, arching gently towards the outer end. */
+/** Tapered brow, fuller at the inner end, nearly straight with a slight dip at the outer end. */
 const leftBrow =
-  "M 44.6 37.2 C 41.4 34.6, 36.6 33.2, 32.4 33.8 C 29.8 34.2, 27.8 35.4, 26.6 37 C 28.8 36.2, 31 35.9, 33 36 C 37 36.2, 41 37.4, 44 38.8 C 44.8 38.6, 45 37.7, 44.6 37.2 Z";
+  "M 44.6 39 C 41 37.2, 36.4 36.4, 32.4 36.8 C 30 37, 28 37.8, 26.6 39.2 C 28.8 38.8, 31 38.8, 33 39 C 37 39.3, 41 39.9, 44 40.8 C 44.8 40.6, 45 39.6, 44.6 39 Z";
 
-/** Light brown, softly lifted brows: open and engaged rather than stern. */
+/** Medium-brown brows set close to the eyes. */
 const ursulaEyebrows: PartComponent = () => (
-  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#94704F" stroke="#94704F" strokeWidth="0.6" strokeLinejoin="round" />
+  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#8A6648" stroke="#8A6648" strokeWidth="0.6" strokeLinejoin="round" />
 );
 
 export const UrsulaEyebrows: PartRegistry<UrsulaEyebrowsId> = {

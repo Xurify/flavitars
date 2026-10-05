@@ -13,7 +13,7 @@ const CURL = "M 86.8 32.2 C 84 30.6, 81.8 27.8, 80.6 24";
 /** Split between the upper and lower lock on the part side. */
 const SPLIT = "M 9.4 33 C 12.5 33.5, 15.5 35.5, 18.5 39";
 
-const SHADE = "#7A4A10";
+const SHADE = "#8A4E08";
 
 /**
  * Her coiffure, drawn as locks rather than one mass: from a deep side part the crest lifts off a
