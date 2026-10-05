@@ -4,7 +4,6 @@
  */
 
 import { AvatarState, DEFAULT_AVATAR_STATE } from "@/lib/avatar/types";
-import { HatId, HAT_CLIP_ZONES } from "@/lib/avatar/parts/hats";
 
 export type PartCategory =
   | "hair"
@@ -18,20 +17,13 @@ export type PartCategory =
   | "accessories"
   | "extras";
 
-export type PartLayer = "front" | "back" | "highlight";
+/** Which rendered hair layer a click landed on. */
+export type PartLayer = "front" | "back";
 
 export interface SelectedPart {
   category: PartCategory;
   id: string;
   layer?: PartLayer;
-}
-
-export interface PartPathInfo {
-  pathData: string | null;
-  hasMultipleLayers: boolean;
-  availableLayers: PartLayer[];
-  isEditable: boolean;
-  exportName: string;
 }
 
 /**
@@ -85,95 +77,6 @@ export function avatarStateToSearchParams(state: AvatarState): URLSearchParams {
   p.set("body_color", state.bodyColor);
   if (state.containHair) p.set("contain_hair", "true");
   return p;
-}
-
-/**
- * Gets the clip path for a hat (used for hair clipping).
- */
-export function getHatClipPath(hatId: HatId): string | null {
-  if (!hatId || hatId === "none") return null;
-  const zone = HAT_CLIP_ZONES[hatId];
-  return zone?.clipPath || null;
-}
-
-/**
- * Determines if a part category supports multiple layers.
- */
-export function getPartLayers(category: PartCategory): PartLayer[] {
-  switch (category) {
-    case "hair":
-      return ["front", "back"];
-    default:
-      return [];
-  }
-}
-
-/**
- * Determines if a part is editable (has extractable path data).
- * Complex parts with multiple paths may be view-only.
- */
-export function isPartEditable(
-  category: PartCategory,
-  partId: string
-): boolean {
-  switch (category) {
-    case "hair":
-      return true;
-    case "hat":
-      return !!getHatClipPath(partId as HatId);
-    default:
-      return false;
-  }
-}
-
-/**
- * Generates the export name for a part.
- */
-export function getPartExportName(
-  category: PartCategory,
-  partId: string,
-  layer?: PartLayer
-): string {
-  const layerSuffix = layer
-    ? layer.charAt(0).toUpperCase() + layer.slice(1)
-    : "";
-
-  switch (category) {
-    case "hair":
-      return `${partId}${layerSuffix}`;
-    case "hat":
-      return `${partId}.clipPath`;
-    default:
-      return partId;
-  }
-}
-
-/**
- * Gets comprehensive path info for a selected part.
- */
-export function getPartPathInfo(
-  category: PartCategory,
-  partId: string,
-  layer?: PartLayer
-): PartPathInfo {
-  const availableLayers = getPartLayers(category);
-  const hasMultipleLayers = availableLayers.length > 1;
-  const isEditable = isPartEditable(category, partId);
-  const exportName = getPartExportName(category, partId, layer);
-
-  let pathData: string | null = null;
-
-  if (isEditable && category === "hat") {
-    pathData = getHatClipPath(partId as HatId);
-  }
-
-  return {
-    pathData,
-    hasMultipleLayers,
-    availableLayers,
-    isEditable,
-    exportName,
-  };
 }
 
 /**

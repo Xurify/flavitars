@@ -3,8 +3,8 @@
 import React from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors, resolveAvatarParts } from "@/lib/utils/avatar-resolver";
-import { getHeadFacialTransform, getHatClipZone } from "@/lib/avatar/parts";
-import { getHairPathData, getHairHighlightPath } from "@/lib/avatar/parts/hair-paths";
+import { getHeadFacialTransform } from "@/lib/avatar/parts";
+import { getHairPathData, HairLayer } from "@/lib/avatar/parts/hair-paths";
 import { HatId, Hats } from "@/lib/avatar/parts/hats";
 import { HeadId } from "@/lib/avatar/parts/head";
 
@@ -15,8 +15,8 @@ export interface GhostLayerSettings {
   oppositeHairOpacity: number;
   showHat: boolean;
   hatOpacity: number;
-  showHighlight: boolean;
-  highlightOpacity: number;
+  showCap: boolean;
+  capOpacity: number;
   showCenterLine: boolean;
   showGrid: boolean;
   snapStep: number;
@@ -29,8 +29,8 @@ export const DEFAULT_GHOST_SETTINGS: GhostLayerSettings = {
   oppositeHairOpacity: 0.45,
   showHat: true,
   hatOpacity: 0.4,
-  showHighlight: true,
-  highlightOpacity: 0.6,
+  showCap: true,
+  capOpacity: 0.6,
   showCenterLine: true,
   showGrid: true,
   snapStep: 1,
@@ -38,16 +38,14 @@ export const DEFAULT_GHOST_SETTINGS: GhostLayerSettings = {
 
 interface GhostLayersProps {
   avatarState: AvatarState;
-  currentLayer: "front" | "back" | "highlight";
+  currentLayer: HairLayer;
   settings: GhostLayerSettings;
-  useHatVariant?: boolean;
 }
 
 export function GhostLayers({
   avatarState,
   currentLayer,
   settings,
-  useHatVariant = false,
 }: GhostLayersProps): React.JSX.Element {
   const { skinTone, hairColor, hatColor, facialFeaturesColor } = resolveAvatarColors(avatarState);
   const {
@@ -58,15 +56,9 @@ export function GhostLayers({
     MouthSet,
   } = resolveAvatarParts(avatarState);
 
-  const oppositeLayer = currentLayer === "front" ? "back" : currentLayer === "back" ? "front" : "front";
-  const oppositeHairPath = getHairPathData(
-    avatarState.hair,
-    oppositeLayer,
-    useHatVariant ? "topHat" : "none"
-  );
-  const highlightPath = getHairHighlightPath(avatarState.hair);
+  const oppositeHairPath = getHairPathData(avatarState.hair, currentLayer === "back" ? "front" : "back");
+  const capPath = getHairPathData(avatarState.hair, "cap");
 
-  const clipZone = getHatClipZone(avatarState.hat);
   const HatComponent = Hats[avatarState.hat]?.component;
 
   return (
@@ -146,7 +138,7 @@ export function GhostLayers({
       )}
 
       {/* Ghost Opposite Hair Layer */}
-      {settings.showOppositeHair && oppositeHairPath && currentLayer !== "highlight" && (
+      {settings.showOppositeHair && oppositeHairPath && (
         <g opacity={settings.oppositeHairOpacity}>
           <path
             d={oppositeHairPath}
@@ -159,11 +151,11 @@ export function GhostLayers({
         </g>
       )}
 
-      {/* Ghost Highlight Layer */}
-      {settings.showHighlight && highlightPath && currentLayer !== "highlight" && (
-        <g opacity={settings.highlightOpacity}>
+      {/* Ghost Hairline (cap region) */}
+      {settings.showCap && capPath && currentLayer !== "cap" && (
+        <g opacity={settings.capOpacity}>
           <path
-            d={highlightPath}
+            d={capPath}
             fill="#fef08a"
             stroke="#ca8a04"
             strokeWidth="0.6"
@@ -180,14 +172,6 @@ export function GhostLayers({
               fill={hatColor}
               headId={avatarState.head as HeadId}
               hatId={avatarState.hat as HatId}
-            />
-          ) : clipZone.clipPath ? (
-            <path
-              d={clipZone.clipPath}
-              fill="#fbbf24"
-              stroke="#d97706"
-              strokeWidth="0.8"
-              strokeDasharray="2 2"
             />
           ) : null}
         </g>

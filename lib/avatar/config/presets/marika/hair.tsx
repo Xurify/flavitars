@@ -1,203 +1,63 @@
-import { PartRegistry, PartComponent } from "../../../parts/common";
-import { SMALL_HATS } from "../../../parts/hats";
+import { PartRegistry } from "../../../parts/common";
+import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
 
 export const MarikaHairIds = ["marikaCurlyBangs", "marikaBangsUpdo", "marika1", "marikaAtelier"] as const;
 
 export type MarikaHairId = (typeof MarikaHairIds)[number];
 
-// --- BACK COMPONENTS ---
+const LONG_SIDES =
+  "M 12 30 C 10 6, 90 6, 88 30 C 92 50, 94 80, 90 98 L 77 98 C 78 80, 76 60, 73 44 L 27 44 C 24 60, 22 80, 23 98 L 10 98 C 6 80, 8 50, 12 30 Z";
 
-const marikaCurlyBangsBack: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#F3DFA2";
-  return (
-    <g>
-      <path
-        d="M 15 30 C 5 45, 0 85, 20 100 C 35 105, 65 105, 80 100 C 100 85, 95 45, 85 30 L 70 20 Q 50 25, 30 20 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-      />
-      <g stroke="black" opacity="0.1" strokeWidth="2" fill="none" strokeLinecap="round">
-        <path d="M 25 50 Q 15 65, 25 85" />
-        <path d="M 75 50 Q 85 65, 75 85" />
-        <path d="M 40 45 Q 35 60, 42 80" />
-        <path d="M 60 45 Q 65 60, 58 80" />
-      </g>
-    </g>
-  );
-};
-
-const marikaBangsUpdoBack: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#E6BC7B";
-  return (
-    <g>
-      <circle cx="50" cy="25" r="28" fill={hairColor} stroke="black" strokeWidth="1.5" />
-      <path d="M 35 30 Q 50 50, 65 30" fill="none" stroke="black" opacity="0.1" strokeWidth="1.5" />
-      <path d="M 30 20 Q 50 5, 70 20" fill="none" stroke="black" opacity="0.1" strokeWidth="1.5" />
-    </g>
-  );
-};
-
-const marika1Back: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#F7E7CE";
-  return (
-    <g>
-      <path
-        d="M 15 25 C 5 45, 0 85, 20 95 L 80 95 C 100 85, 95 45, 85 25 L 75 15 Q 50 5, 25 15 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-      />
-      <path d="M 20 35 Q 15 55, 22 75" fill="none" stroke="black" opacity="0.1" strokeWidth="1.5" />
-      <path d="M 80 35 Q 85 55, 78 75" fill="none" stroke="black" opacity="0.1" strokeWidth="1.5" />
-    </g>
-  );
-};
-
-const marikaAtelierBack: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#E8E2BC";
-  return (
-    <g>
-      <path
-        d="M 12 35 L 5 25 L 10 15 L 5 5 L 15 0 L 12 -12 L 25 -10 L 28 -22 L 40 -18 L 45 -30 
-             L 55 -28 L 65 -35 L 75 -25 L 82 -32 L 88 -20 L 85 -8 L 95 0 L 90 12 L 98 25 L 88 35 
-             Q 50 25, 12 35 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-
-      <path
-        d="M 10 30 C -5 60, -2 105, 15 115 L 35 110 L 50 115 L 65 110 L 85 115 C 102 105, 105 60, 90 30"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-
-      <g fill="none" stroke="black" opacity="0.15" strokeWidth="3" strokeLinecap="round">
-        <path d="M 25 40 Q 15 65, 20 95" />
-        <path d="M 75 40 Q 85 65, 80 95" />
-        <path d="M 45 35 Q 55 70, 50 100" opacity="0.08" strokeWidth="1.5" />
-      </g>
-    </g>
-  );
-};
-
-// --- FRONT COMPONENTS ---
-
-const marikaCurlyBangsFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  if (isFullHat) return null;
-  const hairColor = fill || "#F3DFA2";
-  return (
-    <g>
-      <path
-        d="M 10 30 Q 15 10, 50 15 Q 85 10, 90 30 L 88 55 C 80 40, 60 35, 50 35 C 40 35, 20 40, 12 55 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <g stroke="black" opacity="0.15" strokeWidth="1.2" fill="none">
-        <path d="M 15 25 Q 18 35, 22 28" />
-        <path d="M 25 22 Q 30 35, 35 25" />
-        <path d="M 40 20 Q 45 32, 50 20" />
-        <path d="M 60 20 Q 55 32, 50 20" />
-        <path d="M 75 22 Q 70 35, 65 25" />
-        <path d="M 85 25 Q 82 35, 78 28" />
-      </g>
-    </g>
-  );
-};
-
-const marikaBangsUpdoFront: PartComponent = ({ fill, hatId }) => {
-  const isFullHat = hatId && hatId !== "none" && !SMALL_HATS.includes(hatId);
-  if (isFullHat) return null;
-  const hairColor = fill || "#E6BC7B";
-  return (
-    <g>
-      <path
-        d="M 12 30 C 15 5, 45 5, 50 10 C 55 5, 85 5, 88 30 L 85 45 Q 60 30, 50 30 Q 40 30, 15 45 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M 20 15 Q 50 -5, 80 15" stroke="black" strokeWidth="1.5" fill={hairColor} />
-      <path d="M 20 15 Q 50 -5, 80 15" fill={hairColor} stroke="none" />
-
-      <path d="M 25 25 Q 35 15, 50 20" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-      <path d="M 75 25 Q 65 15, 50 20" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-    </g>
-  );
-};
-
-const marika1Front: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#F7E7CE";
-  return (
-    <g>
-      <path
-        d="M 12 15 Q 50 5, 88 15 L 85 35 
-             Q 80 40, 75 28 L 68 25 Q 65 35, 60 28 
-             L 55 25 Q 50 38, 45 25 
-             L 40 25 Q 35 35, 30 28 
-             L 25 25 Q 20 40, 15 35 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M 30 18 Q 32 28, 30 28" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-      <path d="M 45 18 Q 48 30, 45 25" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-      <path d="M 60 18 Q 58 30, 60 28" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-      <path d="M 75 18 Q 72 28, 75 28" fill="none" stroke="black" opacity="0.1" strokeWidth="1" />
-
-      <path d="M 12 15 L 10 40 C 5 45, 10 50, 15 45 L 15 35" fill={hairColor} stroke="black" strokeWidth="1.5" />
-      <path d="M 88 15 L 90 40 C 95 45, 90 50, 85 45 L 85 35" fill={hairColor} stroke="black" strokeWidth="1.5" />
-    </g>
-  );
-};
-
-const marikaAtelierFront: PartComponent = ({ fill }) => {
-  const hairColor = fill || "#E3E0B5";
-  return (
-    <g>
-      <path
-        d="M 12 25 Q 10 5, 25 5 Q 40 10, 50 15 Q 60 10, 75 5 Q 90 5, 88 25 L 85 40 Q 70 30, 50 35 Q 30 30, 15 40 Z"
-        fill={hairColor}
-        stroke="black"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path d="M 20 5 L 15 2 M 30 5 L 28 0 M 70 5 L 72 0 M 80 5 L 85 2" stroke="black" opacity="0.1" strokeWidth="0.5" />
-
-      <g stroke="black" opacity="0.15" strokeWidth="1" fill="none">
-        <path d="M 20 20 L 25 15 L 20 10" />
-        <path d="M 80 20 L 75 15 L 80 10" />
-        <path d="M 40 25 L 45 20 L 40 15" />
-        <path d="M 60 25 L 55 20 L 60 15" />
-      </g>
-    </g>
-  );
-};
-
-export const MarikaHairBack: PartRegistry<MarikaHairId> = {
-  marikaCurlyBangs: { component: marikaCurlyBangsBack, label: "Marika Curly Bangs", presetOnly: true, isExclusive: true },
-  marikaBangsUpdo: { component: marikaBangsUpdoBack, label: "Marika Updo", presetOnly: true, isExclusive: true },
-  marika1: { component: marika1Back, label: "Marika Style 1", presetOnly: true, isExclusive: true },
-  marikaAtelier: { component: marikaAtelierBack, label: "Marika Atelier", presetOnly: true, isExclusive: true },
-};
-
-export const MarikaHairFront: PartRegistry<MarikaHairId> = {
+const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaCurlyBangs: {
-    component: marikaCurlyBangsFront,
-    label: "Marika Curly Bangs",
-    presetOnly: true,
-    isExclusive: true,
+    cap: capAbove(
+      "M 12 70 L 21 70 L 21 40 Q 23 34, 27 38 Q 31 32, 36 37 Q 41 31, 46 36 Q 50 31, 54 36 Q 59 31, 64 37 Q 69 32, 73 38 Q 77 34, 79 40 L 79 70 L 88 70",
+    ),
+    front: LONG_SIDES,
+    back: "M 15 30 C 5 45, 0 85, 20 100 C 35 105, 65 105, 80 100 C 100 85, 95 45, 85 30 L 70 20 Q 50 25, 30 20 Z",
+    details: "M 16 44 Q 12 62, 16 82 M 84 44 Q 88 62, 84 82 M 30 14 q 3 3 6 0 M 50 10 q 3 3 6 0 M 66 14 q 3 3 6 0",
+    backDetails: "M 25 50 Q 15 65, 25 85 M 75 50 Q 85 65, 75 85",
+    top: 11,
   },
-  marikaBangsUpdo: { component: marikaBangsUpdoFront, label: "Marika Updo", presetOnly: true, isExclusive: true },
-  marika1: { component: marika1Front, label: "Marika Style 1", presetOnly: true, isExclusive: true },
-  marikaAtelier: { component: marikaAtelierFront, label: "Marika Atelier", presetOnly: true, isExclusive: true },
+  marikaBangsUpdo: {
+    cap: capAbove(
+      "M 14 46 L 22 46 L 22 40 C 26 36, 36 33, 44 34 Q 49 35, 50 31 Q 51 35, 56 34 C 64 33, 74 36, 78 40 L 78 46 L 86 46",
+    ),
+    front: "M 15 32 C 13 4, 87 4, 85 32 Z M 30 6 C 30 -8, 70 -8, 70 6 Z",
+    details: "M 25 25 Q 35 15, 50 20 M 75 25 Q 65 15, 50 20 M 38 -2 Q 50 -6, 62 -2",
+    top: -4.5,
+  },
+  marika1: {
+    cap: capAbove(
+      "M 12 50 L 21 50 L 21 36 Q 23 40, 25 34 L 30 36 Q 34 42, 38 34 L 43 35 Q 47 42, 50 34 L 55 35 Q 59 42, 62 34 L 68 36 Q 72 40, 75 34 Q 77 40, 79 36 L 79 50 L 88 50",
+    ),
+    front: "M 13 32 C 11 5, 89 5, 87 32 L 90 44 C 94 50, 88 54, 84 48 L 78 40 L 22 40 L 16 48 C 12 54, 6 50, 10 44 Z",
+    back: "M 15 25 C 5 45, 0 85, 20 95 L 80 95 C 100 85, 95 45, 85 25 L 75 15 Q 50 5, 25 15 Z",
+    details: "M 30 18 Q 32 26, 30 30 M 45 18 Q 48 28, 46 32 M 60 18 Q 58 28, 60 30 M 75 18 Q 72 26, 74 30",
+    backDetails: "M 20 35 Q 15 55, 22 75 M 80 35 Q 85 55, 78 75",
+    top: 11,
+  },
+  marikaAtelier: {
+    cap: capAbove("M 12 60 L 21 60 L 21 40 Q 30 33, 40 36 Q 46 31, 50 35 Q 54 31, 60 36 Q 70 33, 79 40 L 79 60 L 88 60"),
+    front:
+      "M 14 36 L 7 26 L 12 16 L 7 6 L 17 2 L 15 -8 L 26 -6 L 30 -16 L 40 -12 L 46 -22 L 55 -19 L 64 -25 L 72 -16 L 81 -21 L 86 -10 L 83 0 L 93 4 L 88 14 L 95 25 L 86 36 Z",
+    back: "M 10 30 C -5 60, -2 105, 15 115 L 35 110 L 50 115 L 65 110 L 85 115 C 102 105, 105 60, 90 30 Z",
+    details: "M 22 16 L 26 10 L 22 4 M 78 16 L 74 10 L 78 4 M 40 12 L 45 4 L 40 -4 M 60 12 L 55 4 L 60 -4",
+    backDetails: "M 25 40 Q 15 65, 20 95 M 75 40 Q 85 65, 80 95",
+    top: -22,
+  },
 };
+
+const registries = createHairRegistries(
+  MARIKA_HAIR,
+  {
+    marikaCurlyBangs: "Marika Curly Bangs",
+    marikaBangsUpdo: "Marika Updo",
+    marika1: "Marika Style 1",
+    marikaAtelier: "Marika Atelier",
+  },
+  { presetOnly: true, isExclusive: true },
+);
+
+export const MarikaHairBack: PartRegistry<MarikaHairId> = registries.back;
+export const MarikaHairFront: PartRegistry<MarikaHairId> = registries.front;

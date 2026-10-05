@@ -14,7 +14,9 @@ import {
   AllAccessories,
   AllBodies,
 } from "../avatar/types";
-import { HeadShapes, Noses, Hats } from "../avatar/parts";
+import { HeadShapes, Noses, Hats, getHatFit, getHairSpec } from "../avatar/parts";
+import { getHairTop, HairSpec } from "../avatar/parts/hair-engine";
+import { getSeatKeepPath } from "../avatar/anatomy";
 import {
   DEFAULT_SKIN_TONE,
   DEFAULT_HAIR_COLOR,
@@ -114,7 +116,26 @@ export function resolveAvatarParts(state: AvatarState) {
   };
 }
 
-export function resolveAvatarLogic(state: AvatarState) {
-  const isSkiMask = state.hat === "skiMask";
-  return { isSkiMask };
+/**
+ * How hat, hair and head interact for this avatar: what gets clipped, what is hidden, and
+ * where hats that rest on the hair should sit.
+ */
+export function resolveAvatarFit(state: AvatarState, hairSpecOverride?: HairSpec) {
+  const fit = getHatFit(state.hat);
+  const hairSpec = hairSpecOverride ?? getHairSpec(state.hair);
+  const hairTop = getHairTop(hairSpec, state.head);
+  const isMask = fit.kind === "mask";
+
+  let keep: string | undefined;
+  if (fit.kind === "seat") keep = getSeatKeepPath(fit.seat);
+  if (fit.kind === "helmet") keep = fit.keep;
+
+  return {
+    keep,
+    clipHead: fit.kind === "seat",
+    showHair: !isMask,
+    showFace: !isMask,
+    showAccessories: !isMask || state.accessories === "headphones",
+    hairTop,
+  };
 }

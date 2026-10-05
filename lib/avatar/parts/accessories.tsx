@@ -1,4 +1,14 @@
-import { PartRegistry, PartComponent, AvatarItem, createAvatarItem, getHeadSideTransform, getHeadSideOffset } from "./common";
+import {
+  PartRegistry,
+  PartComponent,
+  AvatarItem,
+  createAvatarItem,
+  getHeadSideTransform,
+  getTemple,
+  getTempleArmsPath,
+  getEarLobe,
+  getFaceOffset,
+} from "./common";
 
 export const AccessoryId = [
   "none",
@@ -34,23 +44,21 @@ export type AccessoryId = (typeof AccessoryId)[number];
 
 const noneAccessory: PartComponent = () => null;
 
-const roundGlasses: PartComponent = () => (
+const roundGlasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 23, 44)} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <circle cx="35" cy="45" r="12" fill="none" stroke="currentColor" strokeWidth="2" />
     <circle cx="65" cy="45" r="12" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M47 45 H 53" stroke="currentColor" strokeWidth="2" />
-    <path d="M23 45 L 10 42" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M77 45 L 90 42" stroke="currentColor" strokeWidth="1.5" />
   </g>
 );
 
-const sunglasses: PartComponent = () => (
+const sunglasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 23, 41)} stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     <rect x="22" y="38" width="26" height="15" rx="3" fill="currentColor" />
     <rect x="52" y="38" width="26" height="15" rx="3" fill="currentColor" />
     <path d="M48 45 H 52" stroke="currentColor" strokeWidth="2" />
-    <path d="M22 42 L 10 38" stroke="currentColor" strokeWidth="2" />
-    <path d="M78 42 L 90 38" stroke="currentColor" strokeWidth="2" />
   </g>
 );
 
@@ -61,34 +69,34 @@ const monocle: PartComponent = () => (
   </g>
 );
 
-const headphones: PartComponent = ({ headId }) => {
-  const leftX = getHeadSideOffset(headId, true);
-  const rightX = getHeadSideOffset(headId, false);
+const headphones: PartComponent = ({ headId, hairTop }) => {
+  const left = getEarLobe(headId, true);
+  const right = getEarLobe(headId, false);
+  const apex = (hairTop ?? 15) - getFaceOffset(headId) - 1;
+  const cupY = 44;
   return (
     <g>
       <path
-        d={`M${10 + leftX} 45 Q ${10 + leftX} 5, 50 5 Q ${90 + rightX} 5, ${90 + rightX} 45`}
+        d={`M ${left.x - 2} ${cupY + 2} C ${left.x - 6} ${apex + 10}, ${left.x + 8} ${apex}, 50 ${apex} C ${right.x - 8} ${apex}, ${right.x + 6} ${apex + 10}, ${right.x + 2} ${cupY + 2}`}
         fill="none"
         stroke="currentColor"
         strokeWidth="4"
+        strokeLinecap="round"
       />
-      <g transform={`translate(${leftX}, 0)`}>
-        <rect x="5" y="40" width="12" height="20" rx="4" fill="currentColor" />
-      </g>
-      <g transform={`translate(${rightX}, 0)`}>
-        <rect x="83" y="40" width="12" height="20" rx="4" fill="currentColor" />
-      </g>
+      <rect x={left.x - 7} y={cupY} width="11" height="19" rx="4.5" fill="currentColor" />
+      <rect x={right.x - 4} y={cupY} width="11" height="19" rx="4.5" fill="currentColor" />
+      <rect x={left.x - 5} y={cupY + 4} width="2" height="11" rx="1" fill="white" opacity="0.15" />
+      <rect x={right.x + 3} y={cupY + 4} width="2" height="11" rx="1" fill="white" opacity="0.15" />
     </g>
   );
 };
 
-const aviators: PartComponent = () => (
+const aviators: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 21, 40)} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M20 38 L 46 38 L 44 55 Q 35 60, 22 55 Z" fill="currentColor" />
     <path d="M54 38 L 80 38 L 78 55 Q 65 60, 56 55 Z" fill="currentColor" />
     <path d="M46 42 H 54" stroke="currentColor" strokeWidth="2" />
-    <path d="M20 40 L 10 35" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M80 40 L 90 35" stroke="currentColor" strokeWidth="1.5" />
     <path d="M25 42 L 35 45" stroke="white" opacity="0.1" strokeWidth="2" />
   </g>
 );
@@ -103,27 +111,28 @@ const vrHeadset: PartComponent = () => (
 );
 
 const eyepatch: PartComponent = ({ headId }) => {
-  const leftX = getHeadSideOffset(headId, true) * 0.5;
-  const rightX = getHeadSideOffset(headId, false) * 0.5;
+  const left = getTemple(headId, true);
+  const right = getTemple(headId, false);
   return (
     <g>
-      <path d={`M${22 + leftX} 38 L ${78 + rightX} 42`} stroke="currentColor" strokeWidth="2" />
+      <path d={`M ${left.x} ${left.y - 4} L ${right.x} ${right.y}`} stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <rect x="25" y="35" width="20" height="20" rx="4" fill="currentColor" transform="rotate(-5, 35, 45)" />
     </g>
   );
 };
 
-const catEyeGlasses: PartComponent = () => (
+const catEyeGlasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 21, 39)} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M20 38 Q 35 35, 48 45 L 45 52 Q 35 55, 20 48 Z" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M80 38 Q 65 35, 52 45 L 55 52 Q 65 55, 80 48 Z" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M48 45 H 52" stroke="currentColor" strokeWidth="2" />
-    <path d="M20 38 L 10 32 M 80 38 L 90 32" stroke="currentColor" strokeWidth="1.5" />
   </g>
 );
 
-const retroGlasses: PartComponent = () => (
+const retroGlasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 21, 38)} stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     {/* Large 70s Aviator Frame - Tortoise Shell Color default if currentcolor used appropriately */}
     <path d="M20 35 L 45 35 L 42 55 Q 32 60, 20 52 Z" fill="white" fillOpacity="0.1" stroke="currentColor" strokeWidth="3.5" />
     <path d="M55 35 L 80 35 L 80 52 Q 68 60, 58 55 Z" fill="white" fillOpacity="0.1" stroke="currentColor" strokeWidth="3.5" />
@@ -131,38 +140,36 @@ const retroGlasses: PartComponent = () => (
     <path d="M45 38 H 55" stroke="currentColor" strokeWidth="2.5" />
     <path d="M45 42 H 55" stroke="currentColor" strokeWidth="2" />
 
-    {/* Arms */}
-    <path d="M20 38 L 8 40" stroke="currentColor" strokeWidth="2" />
-    <path d="M80 38 L 92 40" stroke="currentColor" strokeWidth="2" />
-
     {/* Reflections */}
     <path d="M22 38 L 40 38" stroke="white" opacity="0.3" strokeWidth="2" strokeLinecap="round" />
     <path d="M58 38 L 76 38" stroke="white" opacity="0.3" strokeWidth="2" strokeLinecap="round" />
   </g>
 );
 
-const squareGlasses: PartComponent = () => (
+const squareGlasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 23, 41)} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <rect x="22" y="38" width="24" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
     <rect x="54" y="38" width="24" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M46 47 H 54" stroke="currentColor" strokeWidth="2" />
   </g>
 );
 
-const smallSunglasses: PartComponent = () => (
+const smallSunglasses: PartComponent = ({ headId }) => (
   <g>
+    <path d={getTempleArmsPath(headId, 21, 45)} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <ellipse cx="32" cy="46" rx="12" ry="6" fill="currentColor" />
     <ellipse cx="68" cy="46" rx="12" ry="6" fill="currentColor" />
     <path d="M44 46 H 56" stroke="currentColor" strokeWidth="2" />
   </g>
 );
 
-const safetyGoggles: PartComponent = () => (
+const safetyGoggles: PartComponent = ({ headId }) => (
   <g>
     <rect x="18" y="38" width="64" height="20" rx="8" fill="none" stroke="currentColor" strokeWidth="2" />
     <path d="M18 48 H 82" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-    <rect x="15" y="42" width="5" height="12" rx="1" fill="currentColor" />
-    <rect x="80" y="42" width="5" height="12" rx="1" fill="currentColor" />
+    <rect x={getTemple(headId, true).x - 1} y="42" width={21 - getTemple(headId, true).x} height="12" rx="1" fill="currentColor" />
+    <rect x="79" y="42" width={getTemple(headId, false).x + 1 - 79} height="12" rx="1" fill="currentColor" />
   </g>
 );
 
@@ -203,7 +210,9 @@ const chunkyHoops: PartComponent = ({ headId }) => (
   </g>
 );
 
-const skiGoggles: PartComponent = ({ secondaryFill, accessoryColorId }) => {
+const skiGoggles: PartComponent = ({ headId, secondaryFill, accessoryColorId }) => {
+  const strapLeft = getTemple(headId, true).x - 1;
+  const strapRight = getTemple(headId, false).x + 1;
   const LENS_GRADIENTS: Record<string, { start: string; mid1: string; mid2: string; end: string }> = {
     fire: { start: "#F472B6", mid1: "#FB923C", mid2: "#FBBF24", end: "#C026D3" },
     electric: { start: "#6366F1", mid1: "#22D3EE", mid2: "#14B8A6", end: "#3B82F6" },
@@ -230,7 +239,7 @@ const skiGoggles: PartComponent = ({ secondaryFill, accessoryColorId }) => {
       </defs>
 
       {/* Thick strap */}
-      <rect x="0" y="40" width="100" height="12" fill={"#1A1A1A"} opacity="0.8" />
+      <rect x={strapLeft} y="40" width={strapRight - strapLeft} height="12" rx="2" fill="#1A1A1A" opacity="0.8" />
 
       {/* Premium Protective Frame */}
       <path

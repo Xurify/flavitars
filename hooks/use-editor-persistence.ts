@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { PathCommand } from "@/lib/svg-editor/path-parser";
 import { HairId } from "@/lib/avatar/parts/hair";
 import { HatId } from "@/lib/avatar/parts/hats";
+import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 
 export interface Project {
   id: string;
@@ -12,7 +13,7 @@ export interface Project {
   updatedAt: number;
   selectedHair: HairId;
   selectedHat: HatId;
-  layer: "front" | "back" | "highlight";
+  layer: HairLayer;
   commands: PathCommand[];
 }
 
@@ -57,7 +58,12 @@ export function useProjectsPersistence() {
       if (saved) {
         const parsed: ProjectsStore = JSON.parse(saved);
         if (parsed.version === 1 && Array.isArray(parsed.projects)) {
-          setStore(parsed);
+          // Projects saved before the hair model rewrite used a "highlight" layer; it became "cap".
+          const projects = parsed.projects.map((project) => ({
+            ...project,
+            layer: (project.layer as string) === "highlight" ? ("cap" as const) : project.layer,
+          }));
+          setStore({ ...parsed, projects });
         }
       }
     } catch (error) {
@@ -114,7 +120,7 @@ export function useProjectsPersistence() {
       name: string,
       selectedHair: HairId,
       selectedHat: HatId,
-      layer: "front" | "back" | "highlight",
+      layer: HairLayer,
       commands: PathCommand[]
     ): Project => {
       const newProject: Project = {
@@ -144,7 +150,7 @@ export function useProjectsPersistence() {
   );
 
   const updateActiveProject = useCallback(
-    (selectedHair: HairId, selectedHat: HatId, layer: "front" | "back" | "highlight", commands: PathCommand[]) => {
+    (selectedHair: HairId, selectedHat: HatId, layer: HairLayer, commands: PathCommand[]) => {
       const currentStore = storeRef.current;
       if (!currentStore.activeProjectId) return;
 

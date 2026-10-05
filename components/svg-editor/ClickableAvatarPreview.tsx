@@ -6,6 +6,7 @@ import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
 import { ClickableAvatarLayers } from "./ClickableAvatarLayers";
 import { SelectedPart } from "@/lib/svg-editor/part-data";
+import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 import { cn } from "@/lib/utils/strings";
 
 interface ClickableAvatarPreviewProps {
@@ -19,7 +20,7 @@ interface ClickableAvatarPreviewProps {
   previewMode?: "full" | "head-only";
   pathOverride?: {
     path: string;
-    layer: "front" | "back" | "highlight";
+    layer: HairLayer;
   };
 }
 

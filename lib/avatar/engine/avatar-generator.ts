@@ -1,5 +1,5 @@
 import { AvatarState, DEFAULT_AVATAR_STATE, SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS, CATEGORIES } from "../types";
-import { packState, unpackState } from "./packer";
+import { isPackedId, packState, PACKED_ID_PREFIX, unpackState } from "./packer";
 
 /**
  * Deterministic hash function (FNV-1a variant)
@@ -66,7 +66,7 @@ export function generateAvatarFromSeed(seed: string | number): AvatarState {
 }
 
 export function getAvatarStateFromId(id: string | number): AvatarState {
-  if (typeof id === "string" && id.startsWith("p_")) {
+  if (typeof id === "string" && isPackedId(id)) {
     const unpacked = unpackState(id);
     if (unpacked) {
       return { ...DEFAULT_AVATAR_STATE, ...unpacked };
@@ -75,5 +75,5 @@ export function getAvatarStateFromId(id: string | number): AvatarState {
   return generateAvatarFromSeed(id);
 }
 export function getAvatarIdFromState(state: AvatarState): string {
-  return "p_" + packState(state);
+  return PACKED_ID_PREFIX + packState(state);
 }

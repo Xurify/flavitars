@@ -25,7 +25,9 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
       <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
       <g>
         <rect x="0" y="0" width="100" height="100" fill="#1a1a1a" opacity="0.03" />
-        <AvatarLayers state={state} filterId={filterId} />
+        <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
+          <AvatarLayers state={state} filterId={filterId} />
+        </g>
       </g>
     </svg>
   );

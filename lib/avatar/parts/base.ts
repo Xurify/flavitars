@@ -13,6 +13,12 @@ export interface PartProps {
   hatId?: HatId;
   hairId?: HairId;
   skinTone?: string;
+  /** Unique per rendered avatar; prefixes ids a part defines (clip paths, gradients). */
+  uid?: string;
+  /** Top of the hair silhouette (or head when bald); used by hats that rest on the hair. */
+  hairTop?: number;
+  /** Region of head and hair left visible by a worn hat; parts outside it are cut away. */
+  keep?: string;
 }
 
 export interface PartComponent<P = object> extends React.FC<PartProps & P> {

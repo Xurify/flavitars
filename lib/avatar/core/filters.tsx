@@ -1,7 +1,6 @@
 import React from "react";
-import { getHeadHatTransform } from "../parts";
-import { HeadId, HEAD_PATHS } from "../parts/head";
-import { HatId } from "../parts/hats";
+import { HeadId, HEAD_PATHS } from "../anatomy";
+import type { HatId } from "../parts/hats";
 
 export const AVATAR_FILTER_PREFIX = "avatar-filter";
 
@@ -9,10 +8,10 @@ interface AvatarFiltersProps {
   filterId: string;
   clippingY?: number;
   headId: HeadId;
-  hatId: HatId;
+  hatId?: HatId;
 }
 
-export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId, hatId }) => {
+export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId }) => {
   return (
     <defs>
       {/* STYLE 1: CRUNCHY NOISE */}
@@ -75,13 +74,8 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
       </clipPath>
 
       <clipPath id={`${filterId}-head-shape`}>
-        <path d={HEAD_PATHS[headId] || HEAD_PATHS.angular} />
+        <path d={HEAD_PATHS[headId] || HEAD_PATHS.square} />
       </clipPath>
-
-      <mask id={`${filterId}-astronaut-glass-mask`} maskUnits="userSpaceOnUse">
-        <rect x="0" y="0" width="100" height="100" fill="black" />
-        <circle cx="50" cy="15" r="41" fill="white" transform={getHeadHatTransform(headId, hatId, 35, 1)} />
-      </mask>
     </defs>
   );
 };
