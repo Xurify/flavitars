@@ -5,7 +5,7 @@ export type UrsulaEyesId = (typeof UrsulaEyesIds)[number];
 
 /** Narrow, hooded blue-grey eyes: a heavy lid with the fold close above it, a soft line beneath and faint crow's feet. */
 const UrsulaEye = ({ x }: { x: number }) => {
-  const side = `translate(${x}, 46) scale(${x < 50 ? 1 : -1}, 1)`;
+  const side = `translate(${x}, 46) scale(${x < 50 ? -1 : 1}, 1)`;
   return (
     <g>
       <g transform={`translate(${x}, 46)`}>

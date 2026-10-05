@@ -13,9 +13,9 @@ interface GlamEyeStyle {
   smudge?: string;
 }
 
-/** One eye drawn for the left side and mirrored, so both wings point outwards. */
+/** Shadow, lid and lashes are drawn with +x pointing away from the nose (mirrored for the left eye), so the wings point outwards. */
 const GlamEye = ({ x, style }: { x: number; style: GlamEyeStyle }) => {
-  const side = `translate(${x}, 46) scale(${x < 50 ? 1 : -1}, 1)`;
+  const side = `translate(${x}, 46) scale(${x < 50 ? -1 : 1}, 1)`;
   return (
     <g>
       <path transform={side} d="M -9.5 -2.2 C -6 -9.2, 5 -9.8, 9.5 -3.6 C 4.5 -6.8, -4 -6.4, -9.5 -2.2 Z" fill={style.shadow} opacity="0.5" />
