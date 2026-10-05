@@ -19,3 +19,11 @@ export const arcPoints = (cx: number, cy: number, rx: number, ry: number, from: 
     const a = ((from + ((to - from) * i) / steps) * Math.PI) / 180;
     return [+(cx + rx * Math.cos(a)).toFixed(2), +(cy + ry * Math.sin(a)).toFixed(2)] as const;
   });
+
+/** Adds points along each edge of a closed polygon so `scallop` produces small, even bumps. */
+export const densify = (points: readonly Point[], step: number): Point[] =>
+  points.flatMap(([x, y], index) => {
+    const [nx, ny] = points[(index + 1) % points.length];
+    const count = Math.max(1, Math.round(Math.hypot(nx - x, ny - y) / step));
+    return Array.from({ length: count }, (_, i) => [x + ((nx - x) * i) / count, y + ((ny - y) * i) / count] as const);
+  });

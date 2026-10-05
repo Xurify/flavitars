@@ -14,7 +14,7 @@ export const URSULA_PRESETS: Record<
     mouth: "ursulaSmile",
     hair: "ursulaCoiffure",
     skinTone: "porcelain",
-    hairColor: "goldenBlonde",
+    hairColor: "#CFB58C",
     body: "ursulaRedBlazer",
     bodyColor: "red",
     extras: "ursulaCheeks",

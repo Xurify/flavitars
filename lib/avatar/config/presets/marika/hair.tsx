@@ -1,32 +1,98 @@
 import { PartRegistry } from "../../../parts/common";
 import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
+import { arcPoints, densify, scallop } from "../../../parts/shapes";
 
 export const MarikaHairIds = ["marikaCurlyBangs", "marikaBangsUpdo", "marika1", "marikaAtelier"] as const;
 
 export type MarikaHairId = (typeof MarikaHairIds)[number];
 
-const LONG_SIDES =
-  "M 12 30 C 10 6, 90 6, 88 30 C 92 50, 94 80, 90 98 L 77 98 C 78 80, 76 60, 73 44 L 27 44 C 24 60, 22 80, 23 98 L 10 98 C 6 80, 8 50, 12 30 Z";
+const curlyMane = scallop([...arcPoints(50, 50, 43, 50, 140, 400, 22), [70, 72], [30, 72]]);
+const curlyBack = scallop(
+  densify(
+    [
+      [16, 40],
+      [8, 62],
+      [8, 84],
+      [16, 98],
+      [50, 101],
+      [84, 98],
+      [92, 84],
+      [92, 62],
+      [84, 40],
+    ],
+    9,
+  ),
+);
+
+const atelierMane = scallop(
+  densify(
+    [
+      [12, 88],
+      [7, 70],
+      [5, 52],
+      [6, 36],
+      [10, 22],
+      [17, 11],
+      [27, 3],
+      [39, -3],
+      [53, -6],
+      [67, -7],
+      [80, -3],
+      [92, 5],
+      [100, 17],
+      [103, 32],
+      [101, 47],
+      [97, 62],
+      [93, 76],
+      [89, 90],
+      [76, 72],
+      [74, 46],
+      [26, 46],
+      [24, 72],
+    ],
+    5.5,
+  ),
+  { bulge: 0.6 },
+);
+const atelierBack = scallop(
+  densify(
+    [
+      [14, 40],
+      [7, 62],
+      [6, 82],
+      [11, 100],
+      [50, 102],
+      [89, 100],
+      [97, 82],
+      [96, 60],
+      [90, 40],
+    ],
+    6,
+  ),
+);
 
 const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaCurlyBangs: {
     cap: capAbove(
       "M 12 70 L 21 70 L 21 40 Q 23 34, 27 38 Q 31 32, 36 37 Q 41 31, 46 36 Q 50 31, 54 36 Q 59 31, 64 37 Q 69 32, 73 38 Q 77 34, 79 40 L 79 70 L 88 70",
     ),
-    front: LONG_SIDES,
-    back: "M 15 30 C 5 45, 0 85, 20 100 C 35 105, 65 105, 80 100 C 100 85, 95 45, 85 30 L 70 20 Q 50 25, 30 20 Z",
-    details: "M 16 44 Q 12 62, 16 82 M 84 44 Q 88 62, 84 82 M 30 14 q 3 3 6 0 M 50 10 q 3 3 6 0 M 66 14 q 3 3 6 0",
-    backDetails: "M 25 50 Q 15 65, 25 85 M 75 50 Q 85 65, 75 85",
-    top: 11,
+    front: curlyMane,
+    back: curlyBack,
+    details:
+      "M 14 50 q 3 3 0 6 M 86 50 q -3 3 0 6 M 12 66 q 3 3 0 6 M 88 66 q -3 3 0 6 M 26 12 q 3 3 6 0 M 46 6 q 3 3 6 0 M 64 10 q 3 3 6 0 M 18 30 q 3 3 0 6 M 82 30 q -3 3 0 6",
+    shine: "M 30 10 C 40 4, 56 3, 66 6 C 56 6, 42 8, 32 14 Z",
+    top: 4,
   },
   marikaBangsUpdo: {
     cap: capAbove(
-      "M 14 46 L 22 46 L 22 40 C 26 36, 36 33, 44 34 Q 49 35, 50 31 Q 51 35, 56 34 C 64 33, 74 36, 78 40 L 78 46 L 86 46",
+      "M 12 56 L 21 56 L 21 38 Q 28 36.5, 34 38 Q 40 36, 46 37.5 Q 52 36, 58 37.5 Q 64 36, 70 37.5 Q 76 36, 79 38 L 79 56 L 88 56",
     ),
-    front: "M 15 32 C 13 4, 87 4, 85 32 Z M 30 6 C 30 -8, 70 -8, 70 6 Z",
-    details: "M 25 25 Q 35 15, 50 20 M 75 25 Q 65 15, 50 20 M 38 -2 Q 50 -6, 62 -2",
-    top: 11,
-    peak: -7,
+    front:
+      "M 13 40 C 9 14, 30 3, 50 3 C 70 3, 91 14, 87 40 C 88 48, 87 54, 83 58 L 79 46 L 21 46 L 17 58 C 13 54, 12 48, 13 40 Z",
+    details:
+      "M 30 12 Q 28 22, 30 35 M 42 8 Q 41 22, 42 35 M 58 8 Q 59 22, 58 35 M 70 12 Q 72 22, 70 35 M 16 44 Q 15 50, 17 55 M 84 44 Q 85 50, 83 55",
+    shine: "M 28 13 C 36 7, 50 5.5, 60 6.5 C 50 8.5, 38 10.5, 30 16 Z",
+    top: 3,
   },
   marika1: {
     cap: capAbove(
@@ -39,14 +105,14 @@ const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
     top: 11,
   },
   marikaAtelier: {
-    cap: capAbove("M 12 60 L 21 60 L 21 40 Q 30 33, 40 36 Q 46 31, 50 35 Q 54 31, 60 36 Q 70 33, 79 40 L 79 60 L 88 60"),
-    front:
-      "M 14 36 L 7 26 L 12 16 L 7 6 L 17 3.5 L 15 -2.7 L 26 -1.4 L 30 -7.6 L 40 -5.2 L 46 -11.4 L 55 -9.5 L 64 -13.2 L 72 -7.6 L 81 -10.7 L 86 -3.9 L 83 2.3 L 93 4.8 L 88 14 L 95 25 L 86 36 Z",
-    back: "M 10 30 C -5 60, -2 105, 15 115 L 35 110 L 50 115 L 65 110 L 85 115 C 102 105, 105 60, 90 30 Z",
-    details: "M 22 16 L 26 10 L 22 4.8 M 78 16 L 74 10 L 78 4.8 M 40 12 L 45 4.8 L 40 -0.2 M 60 12 L 55 4.8 L 60 -0.2",
-    backDetails: "M 25 40 Q 15 65, 20 95 M 75 40 Q 85 65, 80 95",
-    top: 2,
-    peak: -13,
+    cap: capAbove("M 12 64 L 21 64 L 21 40 C 26 36, 32 33, 40 32 C 52 30, 66 31, 79 36 L 79 64 L 88 64"),
+    front: atelierMane,
+    back: atelierBack,
+    details:
+      "M 30 4 L 34 10 L 30 16 L 34 22 M 46 -1 L 50 5 L 46 11 L 50 17 M 62 -3 L 66 3 L 62 9 L 66 15 M 78 1 L 82 7 L 78 13 L 82 19 M 92 14 L 96 20 L 92 26 L 96 32 M 11 46 L 15 52 L 11 58 L 15 64 M 92 46 L 96 52 L 92 58 L 96 64 M 13 72 L 17 78 L 13 84 M 88 72 L 92 78 L 88 84",
+    shine: "M 40 2 C 54 -3, 72 -3, 84 4 C 72 2, 56 2, 44 6 Z",
+    top: 0,
+    peak: -6,
   },
 };
 
@@ -54,7 +120,7 @@ const registries = createHairRegistries(
   MARIKA_HAIR,
   {
     marikaCurlyBangs: "Marika Curly Bangs",
-    marikaBangsUpdo: "Marika Updo",
+    marikaBangsUpdo: "Marika Bangs",
     marika1: "Marika Style 1",
     marikaAtelier: "Marika Atelier",
   },

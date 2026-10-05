@@ -10,8 +10,9 @@ import {
   AllHairFront,
   AllAccessories,
   AllBodies,
+  AllNoses,
 } from "../avatar/types";
-import { HeadShapes, Noses, Hats, getHatFit, getHairSpec, EAR_ACCESSORIES } from "../avatar/parts";
+import { HeadShapes, Hats, getHatFit, getHairSpec, EAR_ACCESSORIES } from "../avatar/parts";
 import { getHairPeak, getHairTop, HairSpec } from "../avatar/parts/hair-engine";
 import { getSeatKeepPath } from "../avatar/anatomy";
 import { FABRIC_PALETTE, HAIR_PALETTE, LENS_PALETTE, SKIN_PALETTE, resolveColor } from "../avatar/colors";
@@ -82,7 +83,7 @@ export function resolveAvatarParts(state: AvatarState) {
     HeadShape: HeadShapes[state.head]?.component || Object.values(HeadShapes)[0].component,
     EyebrowSet: AllEyebrows[state.eyebrows as keyof typeof AllEyebrows]?.component || (() => null),
     EyeSet: AllEyes[state.eyes as keyof typeof AllEyes]?.component || Object.values(AllEyes)[0].component,
-    NoseSet: Noses[state.nose]?.component || (() => null),
+    NoseSet: AllNoses[state.nose as keyof typeof AllNoses]?.component || (() => null),
     MouthSet: AllMouths[state.mouth as keyof typeof AllMouths]?.component || Object.values(AllMouths)[0].component,
     ExtraSet: AllExtras[state.extras as keyof typeof AllExtras]?.component || (() => null),
     HairBackSet: AllHairBack[state.hair as keyof typeof AllHairBack]?.component || (() => null),

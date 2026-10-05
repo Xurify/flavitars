@@ -54,7 +54,7 @@ export default function PresetsPage(): React.JSX.Element {
                   </div>
 
                   <div className="space-y-1.5">
-                    <h2 className="text-base font-bold capitalize text-foreground group-hover:text-primary transition-colors truncate">
+                    <h2 className="text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                       {preset.name}
                     </h2>
                     <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">

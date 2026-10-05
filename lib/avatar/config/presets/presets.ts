@@ -1,24 +1,24 @@
-import { AvatarState, PresetAvatarState } from "../../types";
+import { PresetAvatarState } from "../../types";
 import { MARIKA_PRESETS } from "./marika";
 import { URSULA_PRESETS } from "./ursula";
 
-const BASE_PRESETS: Record<"prvy" | "drew", Partial<AvatarState> & { name: string; description?: string }> = {
+const BASE_PRESETS: Record<"prvy" | "drew", Partial<PresetAvatarState> & { name: string; description?: string }> = {
   prvy: {
     name: "Prvy",
     description: "Born for something",
     head: "rounded",
     hair: "aviatorFlaps",
     body: "pajamas",
-    eyes: "wingedLashes",
+    eyes: "prvyEyes",
     hairColor: "blue",
-    skinTone: "tan",
+    skinTone: "silver",
     texture: "halftone",
-    mouth: "oMouth",
-    hat: "skiMask",
+    mouth: "prvyMouth",
+    hat: "none",
     hatColor: "white",
-    eyebrows: "angry",
-    nose: "lShape",
-    extras: "none",
+    eyebrows: "none",
+    nose: "prvyNoNose",
+    extras: "prvyKnit",
     accessories: "none",
     accessoryColor: "fire",
     bodyColor: "black",
