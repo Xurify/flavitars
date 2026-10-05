@@ -1,13 +1,16 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
+import { mirrorPath } from "../../../anatomy";
 
 export const UrsulaExtrasIds = ["ursulaCheeks"] as const;
 export type UrsulaExtrasId = (typeof UrsulaExtrasIds)[number];
 
-/** A soft peach flush high on the cheeks. */
+const leftFold = "M 43.5 56 C 42.4 60, 41.4 63.5, 39.6 67";
+
+/** Faint lines that age the face: two across the forehead and the folds from nose to mouth. */
 const ursulaCheeks: PartComponent = () => (
-  <g opacity="0.22" fill="#EF9A86" filter="blur(2px)">
-    <circle cx="32" cy="57" r="6.5" />
-    <circle cx="68" cy="57" r="6.5" />
+  <g fill="none" stroke="#8A6E66" strokeLinecap="round">
+    <path d="M 38 32.5 Q 50 31.2, 62 32.5 M 40 35.2 Q 50 34.2, 60 35.2" strokeWidth="0.5" opacity="0.16" />
+    <path d={`${leftFold} ${mirrorPath(leftFold)}`} strokeWidth="0.6" opacity="0.22" />
   </g>
 );
 

@@ -89,16 +89,19 @@ const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
     top: 6,
   },
   marikaBangsUpdo: {
-    // Wispy fringe: uneven strands ending in soft points, with shallow rounded gaps between them.
+    // Short crop: a wispy fringe (uneven strands ending in soft points), volume on top, and the
+    // sides tucked behind the ears as back hair.
     cap: capAbove(
-      "M 12 70 L 21 70 L 21 39.5 C 23 36.5, 24 36.5, 26 40.5 C 28.5 36.6, 30.5 36.6, 33 39.8 C 35 36.2, 37 36.2, 39 41 C 41.5 36.4, 43.5 36.4, 46 40.2 C 48 36, 50 36, 52 40.8 C 54.5 36.3, 56.5 36.3, 59 39.9 C 61.5 36.2, 63.5 36.2, 66 40.6 C 68.5 36.5, 70.5 36.5, 73 40 C 75 36.6, 77 36.6, 79 39.5 L 79 70 L 88 70",
+      "M 12 50 L 21 50 L 21 39.5 C 23 36.5, 24 36.5, 26 40.5 C 28.5 36.6, 30.5 36.6, 33 39.8 C 35 36.2, 37 36.2, 39 41 C 41.5 36.4, 43.5 36.4, 46 40.2 C 48 36, 50 36, 52 40.8 C 54.5 36.3, 56.5 36.3, 59 39.9 C 61.5 36.2, 63.5 36.2, 66 40.6 C 68.5 36.5, 70.5 36.5, 73 40 C 75 36.6, 77 36.6, 79 39.5 L 79 50 L 88 50",
     ),
     front:
-      "M 13 78 C 7.5 72, 6 58, 7.5 44 C 9 26, 18 8, 36 4.5 C 46 2, 62 2.5, 72 6.5 C 86 12, 92 26, 92.5 44 C 94 58, 92.5 72, 87 78 C 85 80.5, 81 80, 80 77 L 79 44 L 21 44 L 20 77 C 19 80, 15 80.5, 13 78 Z",
+      "M 13 45 C 8.5 40, 7.5 30, 10 20 C 14 8, 30 1.5, 50 1.5 C 70 1.5, 86 8, 90 20 C 92.5 30, 91.5 40, 87 45 L 79 44 L 21 44 Z",
+    back: "M 18 30 C 12 37, 9.5 48, 13 60 C 20 63, 30 61, 36 59 L 64 59 C 70 61, 80 63, 87 60 C 90.5 48, 88 37, 82 30 Z",
     details:
-      "M 26 40 C 26.5 34, 28 28, 30.5 22 M 39 40.5 C 39 34, 40 28, 42 21 M 52 40 C 52 33, 52.5 27, 53.5 20 M 66 40 C 66 34, 65 28, 63 21 M 73 39.5 C 72.5 34, 71 28, 68.5 22 M 14 50 C 12 60, 12.5 70, 15.5 77 M 86 50 C 88 60, 87.5 70, 84.5 77 M 22 16 C 17.5 24, 15 34, 14.5 44 M 78 16 C 82.5 24, 85 34, 85.5 44",
-    shine: "M 27 14 C 36 7, 50 5, 61 6.5 C 49.5 9, 38.5 13, 31 19.5 Z",
-    top: 4,
+      "M 26 40 C 26.5 34, 28 28, 30.5 22 M 39 40.5 C 39 34, 40 28, 42 21 M 52 40 C 52 33, 52.5 27, 53.5 20 M 66 40 C 66 34, 65 28, 63 21 M 73 39.5 C 72.5 34, 71 28, 68.5 22 M 32 8 C 24 12, 18 20, 15 30 M 68 8 C 76 12, 82 20, 85 30 M 22 14 C 16 22, 13 32, 13 43 M 78 14 C 84 22, 87 32, 87 43",
+    backDetails: "M 13 44 C 11.5 50, 12 55, 14 59 M 87 44 C 88.5 50, 88 55, 86 59",
+    shine: "M 28 12 C 37 5.5, 50 3.5, 62 5 C 50 7.5, 39 11, 32 17 Z",
+    top: 2,
   },
   marika1: {
     cap: capAbove(
@@ -126,7 +129,7 @@ const registries = createHairRegistries(
   MARIKA_HAIR,
   {
     marikaCurlyBangs: "Marika Curls",
-    marikaBangsUpdo: "Marika Fringe Bob",
+    marikaBangsUpdo: "Marika Wispy Crop",
     marika1: "Marika Style 1",
     marikaAtelier: "Marika Atelier",
   },
