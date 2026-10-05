@@ -1,31 +1,14 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
+import { mirrorPath } from "../../../anatomy";
 
 export const UrsulaEyebrowsIds = ["ursulaEyebrows"] as const;
 export type UrsulaEyebrowsId = (typeof UrsulaEyebrowsIds)[number];
 
+/** Light, softly arched brows with the peak towards the outer end; tapered, never stern. */
+const leftBrow = "M 44.2 39.4 C 41 37.6, 36.5 36.2, 32.6 36.6 C 30.2 36.9, 28.3 37.6, 27 38.6 C 29.2 38.2, 31.4 38.2, 33.6 38.4 C 37.2 38.7, 40.8 39.4, 43.6 40.4 C 44.2 40.4, 44.4 39.8, 44.2 39.4 Z";
+
 const ursulaEyebrows: PartComponent = () => (
-  <g opacity="0.85">
-    <path
-      d="M 44 40.0
-         C 39 39.4, 32 39.0, 27 38.0
-         C 31 36.9, 38 36.7, 43 38.0
-         C 43.6 38.4, 44 39.2, 44 40.0 Z"
-      fill="#8A6347"
-      stroke="#6A4A33"
-      strokeWidth="0.3"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M 56 40.0
-         C 61 39.4, 68 39.0, 73 38.0
-         C 69 36.9, 62 36.7, 57 38.0
-         C 56.4 38.4, 56 39.2, 56 40.0 Z"
-      fill="#8A6347"
-      stroke="#6A4A33"
-      strokeWidth="0.3"
-      strokeLinejoin="round"
-    />
-  </g>
+  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#A47C58" stroke="#8A6546" strokeWidth="0.3" strokeLinejoin="round" opacity="0.9" />
 );
 
 export const UrsulaEyebrows: PartRegistry<UrsulaEyebrowsId> = {

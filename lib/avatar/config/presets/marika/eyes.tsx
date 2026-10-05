@@ -1,51 +1,55 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
 
-export const MarikaEyesIds = ["marikaProfoundBlue", "marikaAtelier"] as const;
+export const MarikaEyesIds = ["marikaSoftBlue", "marikaProfoundBlue", "marikaAtelier"] as const;
 
 export type MarikaEyesId = (typeof MarikaEyesIds)[number];
 
-const marikaProfoundBlue: PartComponent = () => (
-  <g>
-    <path d="M 20 44 Q 35 30, 50 44" fill="#111" opacity="0.1" filter="blur(2px)" />
-    <path d="M 50 44 Q 65 30, 80 44" fill="#111" opacity="0.1" filter="blur(2px)" />
+interface GlamEyeStyle {
+  shadow: string;
+  iris: string;
+  /** Upper lid line weight; heavier reads as liner. */
+  lid: number;
+  /** Soft smudge under the eye (smoky looks). */
+  smudge?: string;
+}
 
-    <g transform="translate(35, 45)">
-      <circle r="4.8" fill="#8B9DB3" />
-      <circle r="3" fill="#6B7D91" />
-      <circle r="2" fill="black" />
-      <circle cx="1.5" cy="-2" r="1.5" fill="white" />
-      <circle cx="-1.5" cy="1.5" r="0.8" fill="white" opacity="0.5" />
-
-      <path d="M -10 -2 Q -12 -8, 2 -5" fill="none" stroke="black" strokeWidth="2.8" strokeLinecap="round" />
-      <path d="M -9 2 Q 0 5, 9 2" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
-
-      <g stroke="black" strokeWidth="1.2" strokeLinecap="round">
-        <path d="M -9 -3 L -12 -7" />
-        <path d="M -5 -5 L -6 -10" />
-        <path d="M -1 -5 L 0 -11" />
-        <path d="M 3 -4 L 5 -9" />
+/** One eye drawn for the left side and mirrored, so both wings point outwards. */
+const GlamEye = ({ x, style }: { x: number; style: GlamEyeStyle }) => {
+  const side = `translate(${x}, 46) scale(${x < 50 ? 1 : -1}, 1)`;
+  return (
+    <g>
+      <path transform={side} d="M -9.5 -2.2 C -6 -9.2, 5 -9.8, 9.5 -3.6 C 4.5 -6.8, -4 -6.4, -9.5 -2.2 Z" fill={style.shadow} opacity="0.5" />
+      <g transform={`translate(${x}, 46)`}>
+        <circle r="4.3" fill={style.iris} />
+        <circle r="1.9" fill="#1F2933" />
+        <circle cx="1.5" cy="-1.6" r="1.3" fill="white" />
+      </g>
+      <g transform={side} fill="none" stroke="#3A2E2A" strokeLinecap="round">
+        <path d="M -7.2 -1.6 C -4.6 -5.6, 3.8 -6, 7.4 -2.6" strokeWidth={style.lid} />
+        <path d="M 7.4 -2.6 L 9.8 -4.3" strokeWidth={style.lid * 0.75} />
+        <path d="M 4.8 -4.4 L 5.8 -6.3 M 2 -5.3 L 2.4 -7.2" strokeWidth="0.6" />
+        {style.smudge && <path d="M -5.2 3.2 Q 0.5 5, 6.2 2.8" stroke={style.smudge} strokeWidth="0.9" opacity="0.55" />}
+        {!style.smudge && <path d="M -4.8 3.1 Q 0 4.6, 4.8 3.1" strokeWidth="0.5" opacity="0.3" />}
       </g>
     </g>
+  );
+};
 
-    <g transform="translate(65, 45)">
-      <circle r="4.8" fill="#8B9DB3" />
-      <circle r="3" fill="#6B7D91" />
-      <circle r="2" fill="black" />
-      <circle cx="1.5" cy="-2" r="1.5" fill="white" />
-      <circle cx="-1.5" cy="1.5" r="0.8" fill="white" opacity="0.5" />
-
-      <path d="M 10 -2 Q 12 -8, -2 -5" fill="none" stroke="black" strokeWidth="2.8" strokeLinecap="round" />
-      <path d="M 9 2 Q 0 5, -9 2" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
-
-      <g stroke="black" strokeWidth="1.2" strokeLinecap="round">
-        <path d="M 9 -3 L 12 -7" />
-        <path d="M 5 -5 L 6 -10" />
-        <path d="M 1 -5 L 0 -11" />
-        <path d="M -3 -4 L -5 -9" />
-      </g>
+const glamEyes = (style: GlamEyeStyle): PartComponent => {
+  const Eyes: PartComponent = () => (
+    <g>
+      <GlamEye x={35} style={style} />
+      <GlamEye x={65} style={style} />
     </g>
-  </g>
-);
+  );
+  return Eyes;
+};
+
+/** Soft lavender lids over blue-grey eyes. */
+const marikaSoftBlue = glamEyes({ shadow: "#C9B8EC", iris: "#8EA7C2", lid: 1.3 });
+
+/** Smoky taupe lids with liner, blue-grey eyes. */
+const marikaProfoundBlue = glamEyes({ shadow: "#B99CA6", iris: "#7A9BBA", lid: 1.6, smudge: "#6B5560" });
 
 const marikaAtelier: PartComponent = () => (
   <g>
@@ -76,12 +80,10 @@ const marikaAtelier: PartComponent = () => (
   </g>
 );
 
+const preset = { presetOnly: true, isExclusive: true };
+
 export const MarikaEyes: PartRegistry<MarikaEyesId> = {
-  marikaProfoundBlue: {
-    component: marikaProfoundBlue,
-    label: "Marika Profound Blue",
-    presetOnly: true,
-    isExclusive: true,
-  },
-  marikaAtelier: { component: marikaAtelier, label: "Marika Atelier", presetOnly: true, isExclusive: true },
+  marikaSoftBlue: { component: marikaSoftBlue, label: "Marika Soft Blue", ...preset },
+  marikaProfoundBlue: { component: marikaProfoundBlue, label: "Marika Profound Blue", ...preset },
+  marikaAtelier: { component: marikaAtelier, label: "Marika Atelier", ...preset },
 };
