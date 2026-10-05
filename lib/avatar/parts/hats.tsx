@@ -165,69 +165,47 @@ export const FlagsLogo = ({ uid }: { uid: string }) => (
   </g>
 );
 
+/** The logo as a patch sewn on the front panel; also drawn over the texture filter for glitch avatars. */
 export const FlagsCapBadge = ({ uid = "fv" }: { uid?: string }) => (
-  <g transform="translate(50, 14.2)">
-    <rect x="-8.6" y="-6.9" width="17.2" height="15" rx="3.6" fill="black" opacity="0.45" />
-    <rect x="-8.2" y="-7.6" width="16.4" height="14.4" rx="3.4" fill="#F8F8F6" stroke="#C9CBD1" strokeWidth="0.6" />
-    <rect
-      x="-7.3"
-      y="-6.7"
-      width="14.6"
-      height="12.6"
-      rx="2.8"
-      fill="none"
-      stroke="#9EA2AA"
-      strokeWidth="0.35"
-      strokeDasharray="0.8 0.6"
-    />
-    <g transform="translate(-6, -6) scale(0.012)">
+  <g transform="translate(43, 7.6)">
+    <g transform="scale(0.014)">
       <FlagsLogo uid={uid} />
     </g>
+    <rect x="0" y="0" width="14" height="14" rx="2.4" fill="none" {...ink} strokeWidth={1.3} />
   </g>
 );
 
 const FLAGS_CAP_CROWN = "M 15.5 29.5 C 14 -3.5, 86 -3.5, 84.5 29.5 Z";
+/** Bill seen from the front: its front edge dips towards the viewer in the middle. */
+const FLAGS_CAP_VISOR = "M 14 28.5 Q 50 22.5, 86 28.5 C 89 30, 89.5 33.5, 86 35.5 Q 50 42, 14 35.5 C 10.5 33.5, 11 30, 14 28.5 Z";
+/** Lower edge of the tricolour band, along the seam where the crown meets the visor. */
+const FLAGS_CAP_BAND = "M 12 30.5 Q 50 24, 88 30.5 L 88 23.5 Q 50 17, 12 23.5 Z";
 
 const FlagsCap: PartComponent = ({ uid = "fv", texture }) => {
-  const sheen = `${uid}-flagscap-sheen`;
   const crownClip = `${uid}-flagscap-crown`;
   const isGlitch = texture === "glitch";
   return (
     <g>
       <defs>
-        <radialGradient id={sheen} cx="36%" cy="18%" r="80%">
-          <stop offset="0%" stopColor="#50535E" />
-          <stop offset="50%" stopColor="#1D1E23" />
-          <stop offset="100%" stopColor="#0D0D10" />
-        </radialGradient>
         <clipPath id={crownClip}>
           <path d={FLAGS_CAP_CROWN} />
         </clipPath>
       </defs>
-      <path d={FLAGS_CAP_CROWN} fill={`url(#${sheen})`} {...ink} />
-      <g clipPath={`url(#${crownClip})`} fill="none" strokeLinecap="round">
-        <path d="M 50 4.5 Q 36 9, 30.5 30 M 50 4.5 Q 64 9, 69.5 30" stroke="#07070A" strokeWidth="1" />
-        <path
-          d="M 49 5.5 Q 35.2 10, 29.4 30 M 51 5.5 Q 64.8 10, 70.6 30"
-          stroke="#62666F"
-          strokeWidth="0.6"
-          strokeDasharray="1.2 1"
-        />
-        <path d="M 50 4.5 Q 26 6, 17 26 M 50 4.5 Q 74 6, 83 26" stroke="#07070A" strokeWidth="0.9" />
-        <circle cx="24" cy="15" r="0.9" fill="#0B0B0D" stroke="#62666F" strokeWidth="0.5" />
-        <circle cx="76" cy="15" r="0.9" fill="#0B0B0D" stroke="#62666F" strokeWidth="0.5" />
-        <path d="M 22 13 Q 33 5, 46 4.5" stroke="white" strokeOpacity="0.2" strokeWidth="1.8" />
+      <path d={FLAGS_CAP_CROWN} fill="#24262D" {...ink} />
+      <g clipPath={`url(#${crownClip})`}>
+        <path d="M 66 2 Q 76 10, 78 30 L 90 30 L 90 0 Z" {...shade} />
+        <path d="M 36 4 Q 31 12, 30 30 M 64 4 Q 69 12, 70 30" fill="none" stroke="black" strokeOpacity="0.45" strokeWidth="1.2" />
+        <path d="M 23 16 Q 30 7, 40 4.5" {...shine} />
+        <path d={FLAGS_CAP_BAND} fill="white" />
+        <path d="M 12 24.6 Q 50 18.1, 88 24.6" fill="none" stroke="#ED1C24" strokeWidth="2.2" />
+        <path d="M 12 29.4 Q 50 22.9, 88 29.4" fill="none" stroke="#005BAC" strokeWidth="2.2" />
       </g>
-      <path d="M 16.4 25.6 Q 50 21, 83.6 25.6" fill="none" stroke="#ED1C24" strokeWidth="1.25" />
-      <path d="M 16.2 27 Q 50 22.4, 83.8 27" fill="none" stroke="white" strokeWidth="1.05" />
-      <path d="M 16 28.4 Q 50 23.8, 84 28.4" fill="none" stroke="#005BAC" strokeWidth="1.25" />
+      <path d={FLAGS_CAP_CROWN} fill="none" {...ink} />
       {!isGlitch && <FlagsCapBadge uid={uid} />}
-      <circle cx="50" cy="4.3" r="2.2" fill="#1C1D22" {...ink} strokeWidth={1.3} />
-      <circle cx="49.4" cy="3.7" r="0.65" fill="white" opacity="0.5" />
-      <path d={capVisor} fill="#121215" {...ink} />
-      <path d="M 15 30.6 Q 50 25, 85 30.6" fill="none" stroke="white" strokeOpacity="0.16" strokeWidth="1" />
-      <path d="M 16.5 32.6 Q 50 27.2, 83.5 32.6" fill="none" stroke="#62666F" strokeWidth="0.55" strokeDasharray="1.2 0.9" />
-      <path d="M 18 34.6 Q 50 29.4, 82 34.6" fill="none" stroke="#62666F" strokeWidth="0.55" strokeDasharray="1.2 0.9" />
+      <path d="M 46.6 4.6 Q 50 0.6, 53.4 4.6 Z" fill="#24262D" {...ink} strokeWidth={1.4} />
+      <path d={FLAGS_CAP_VISOR} fill="#24262D" {...ink} />
+      <path d="M 16 30.6 Q 50 25.2, 84 30.6 Q 50 30, 16 30.6 Z" {...shade} />
+      <path d="M 22 34.5 Q 50 39, 78 34.5" fill="none" stroke="white" strokeOpacity="0.2" strokeWidth="1.4" strokeLinecap="round" />
     </g>
   );
 };
