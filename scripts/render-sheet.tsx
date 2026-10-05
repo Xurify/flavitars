@@ -10,7 +10,7 @@ import { writeFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AvatarState, DEFAULT_AVATAR_STATE } from "../lib/avatar/types";
 import { AvatarFilters, AVATAR_FILTER_PREFIX } from "../lib/avatar/core/filters";
-import { AvatarLayers } from "../lib/avatar/core/layers";
+import { AvatarLayers, AvatarOverlays } from "../lib/avatar/core/layers";
 import { AVATAR_FRAME } from "../lib/avatar/anatomy";
 
 type Cell = { label: string; state: AvatarState };
@@ -36,6 +36,7 @@ function svgFor(state: AvatarState) {
       <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
         <AvatarLayers state={state} filterId={filterId} />
       </g>
+      <AvatarOverlays state={state} filterId={filterId} />
     </svg>,
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AvatarState } from "@/lib/avatar/types";
-import { AvatarLayers, LayerSlot } from "@/lib/avatar/core/layers";
+import { AvatarLayers, AvatarOverlays, LayerSlot } from "@/lib/avatar/core/layers";
 import { getHairSpec } from "@/lib/avatar/parts/hair";
 import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 import { PartCategory, SelectedPart, PartLayer } from "@/lib/svg-editor/part-data";
@@ -104,6 +104,40 @@ export const ClickableAvatarLayers: React.FC<ClickableAvatarLayersProps> = ({
   return (
     <g filter={`url(#${filterId}-wobble)`}>
       <AvatarLayers state={state} filterId={filterId} wrap={wrap} hairSpec={hairSpec} />
+    </g>
+  );
+};
+
+export const ClickableAvatarOverlays: React.FC<ClickableAvatarLayersProps> = ({
+  state,
+  filterId,
+  selectedPart,
+  onPartSelect,
+  showHoverEffects = true,
+}) => {
+  const isPartSelected = (category: PartCategory, layer?: PartLayer) => {
+    if (!selectedPart) return false;
+    if (selectedPart.category !== category) return false;
+    if (layer && selectedPart.layer !== layer) return false;
+    return true;
+  };
+
+  const wrap = (slot: LayerSlot, node: React.ReactNode) => (
+    <ClickableLayer
+      category={slot.category}
+      partId={slot.partId}
+      layer={slot.layer}
+      isSelected={isPartSelected(slot.category, slot.layer)}
+      onSelect={onPartSelect}
+      showHoverEffects={showHoverEffects}
+    >
+      {node}
+    </ClickableLayer>
+  );
+
+  return (
+    <g filter={`url(#${filterId}-wobble)`}>
+      <AvatarOverlays state={state} filterId={filterId} wrap={wrap} />
     </g>
   );
 };

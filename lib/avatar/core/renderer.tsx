@@ -1,7 +1,7 @@
 import { AvatarState } from "../types";
 import { resolveAvatarColors } from "../../utils/avatar-resolver";
 import { AvatarFilters } from "./filters";
-import { AvatarLayers } from "./layers";
+import { AvatarLayers, AvatarOverlays } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
 import { AVATAR_FRAME, AVATAR_VIEWBOX } from "../anatomy";
 
@@ -36,6 +36,7 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
         <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
           <AvatarLayers state={state} filterId={filterId} />
         </g>
+        <AvatarOverlays state={state} filterId={filterId} />
       </g>
     </svg>
   );
