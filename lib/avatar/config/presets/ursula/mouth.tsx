@@ -3,19 +3,19 @@ import { PartRegistry, PartComponent } from "../../../parts/common";
 export const UrsulaMouthIds = ["ursulaSmile"] as const;
 export type UrsulaMouthId = (typeof UrsulaMouthIds)[number];
 
-/** Closed-lip smile: thin pink-red lips, corners turned up. */
+/** Her broad closed smile: an ink smile line with thin rose lips around it, the corners lifted. */
 const ursulaSmile: PartComponent = () => (
   <g transform="translate(50, 77)">
     <path
-      d="M -10.5 -1.6 Q -5.5 -3.6, 0 -2.4 Q 5.5 -3.6, 10.5 -1.6 Q 5.8 3, 0 3.3 Q -5.8 3, -10.5 -1.6 Z"
-      fill="#D4607A"
-      stroke="#A84460"
-      strokeWidth="0.7"
-      strokeLinejoin="round"
+      d="M -11.5 -3.4 Q -6 -4.6, -1.6 -3.8 Q 0 -3.2, 1.6 -3.8 Q 6 -4.6, 11.5 -3.4 Q 6.5 3.2, 0 3.4 Q -6.5 3.2, -11.5 -3.4 Z"
+      fill="#D4637C"
     />
-    <path d="M -10.5 -1.6 Q 0 0.6, 10.5 -1.6" fill="none" stroke="#8C3550" strokeWidth="0.7" strokeLinecap="round" />
-    <path d="M -10.5 -1.6 q -1 -0.7 -1.3 -1.9 M 10.5 -1.6 q 1 -0.7 1.3 -1.9" fill="none" stroke="#A84460" strokeWidth="0.55" strokeLinecap="round" opacity="0.7" />
-    <path d="M -3.5 1.8 Q 0 2.5, 3.5 1.8" fill="none" stroke="white" strokeWidth="0.9" strokeLinecap="round" opacity="0.3" />
+    <g fill="none" stroke="currentColor" strokeLinecap="round">
+      <path d="M -12.2 -3.8 Q 0 1.4, 12.2 -3.8" strokeWidth="1.5" />
+      <path d="M -12.2 -3.8 q -0.9 -0.4 -1.4 -1.3 M 12.2 -3.8 q 0.9 -0.4 1.4 -1.3" strokeWidth="0.9" strokeOpacity="0.5" />
+      <path d="M -5.5 3.1 Q 0 4.3, 5.5 3.1" strokeWidth="0.9" strokeOpacity="0.3" />
+    </g>
+    <path d="M -3 2 Q 0 2.6, 3 2" fill="none" stroke="white" strokeWidth="0.9" strokeLinecap="round" opacity="0.35" />
   </g>
 );
 

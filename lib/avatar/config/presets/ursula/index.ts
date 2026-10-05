@@ -2,6 +2,7 @@ export * from "./hair";
 export * from "./eyes";
 export * from "./eyebrows";
 export * from "./mouth";
+export * from "./nose";
 export * from "./body";
 export * from "./accessories";
 export * from "./extras";
@@ -11,6 +12,7 @@ import { UrsulaHairBack, UrsulaHairFront, UrsulaHairIds } from "./hair";
 import { UrsulaEyes, UrsulaEyesIds } from "./eyes";
 import { UrsulaEyebrows, UrsulaEyebrowsIds } from "./eyebrows";
 import { UrsulaMouths, UrsulaMouthIds } from "./mouth";
+import { UrsulaNoses, UrsulaNoseIds } from "./nose";
 import { UrsulaBodies, UrsulaBodyIds } from "./body";
 import { UrsulaAccessories, UrsulaAccessoryIds } from "./accessories";
 import { UrsulaExtras, UrsulaExtrasIds } from "./extras";
@@ -22,6 +24,7 @@ export const UrsulaPartsRegistry = {
   eyes: UrsulaEyes,
   eyebrows: UrsulaEyebrows,
   mouths: UrsulaMouths,
+  noses: UrsulaNoses,
   bodies: UrsulaBodies,
   accessories: UrsulaAccessories,
   extras: UrsulaExtras,
@@ -32,6 +35,7 @@ export const UrsulaIdsRegistry = {
   eyes: UrsulaEyesIds,
   eyebrows: UrsulaEyebrowsIds,
   mouths: UrsulaMouthIds,
+  noses: UrsulaNoseIds,
   bodies: UrsulaBodyIds,
   accessories: UrsulaAccessoryIds,
   extras: UrsulaExtrasIds,

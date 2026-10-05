@@ -4,38 +4,43 @@ import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
 export const UrsulaHairIds = ["ursulaCoiffure"] as const;
 export type UrsulaHairId = (typeof UrsulaHairIds)[number];
 
-/** Where the swept lock lifts off the side part: up from the left of the forehead into the crest. */
-const LIFT = "M 29 27 C 25 16, 29.5 3, 43 -2.5";
+/** Where the crest lifts off the side part and rolls up and over. */
+const LIFT = "M 36.5 26.5 C 31 18, 32 5, 41.5 -4";
 
-/** Inner edge of the roll as it comes down the far side into the flick. */
-const ROLL = "M 62 3 C 73 5.5, 81.5 12, 85.5 21 C 88 28, 88.8 35, 90.5 42";
+/** Underside of the curl the sweep ends in, over the far temple. */
+const CURL = "M 91 37.5 C 87.5 36.5, 84.5 33.5, 82.5 29.5";
+
+/** The diagonal hairline: high at the part, the sweep lying over the far temple. */
+const HAIRLINE = "C 21.5 40, 24 33, 29 29.5 C 32 27.5, 35 26.5, 38 26.3 C 48 26.6, 59 29.6, 67 34 C 72.5 37.5, 76 42, 78.5 47.5";
 
 /**
- * Her swept-up cut: from a side part on her right, the hair lifts into a tall crest and rolls over
- * to the other side, so the whole forehead shows. The top and temples sit in front of the head;
- * the puffy sides sit behind the ears (so the ears and pearls show) and end just below the
- * earlobes, with a flick on the far side.
+ * Her coiffure: a deep side part on her right, from which the hair lifts into a crest and sweeps
+ * across, so the hairline runs diagonally (temple bare on the part side, the sweep falling over
+ * the other temple and ending in a curl). The sides fall to the jaw over the ears, leaving the
+ * lobes and pearls showing.
  */
 const URSULA_HAIR: Record<UrsulaHairId, HairSpec> = {
   ursulaCoiffure: {
-    cap: capAbove(
-      "M 12 50 L 21 50 L 21 44 C 22 36, 25 30, 29 27 C 35 23.5, 44 22.5, 52 22.5 C 62 23, 71 26, 76 31 C 78 34, 79 38, 79 44 L 79 50 L 88 50",
-    ),
+    cap: capAbove(`M 12 60 L 21 60 L 21 47 ${HAIRLINE} L 79 60 L 88 60`),
     front:
-      "M 14 49 C 10.5 46, 9.5 38, 10 31 C 10.5 20, 15 10, 23 3.5 C 29 -1.5, 36 -6, 44 -6 C 52 -6, 58 -2.5, 65 0 C 73 2.5, 80 6.5, 85 12.5 C 89.5 18.5, 90.8 26, 91 33 C 91.3 38, 92 42, 94.5 46.5 C 91 47.5, 87.5 47, 85 45.5 C 83 47, 80.5 48, 79 47.5 L 79 40 L 21 40 L 21 47 C 19 49, 16.5 49.8, 14 49 Z",
-    back: "M 17 30 C 8 36, 5 47, 6 57 C 7 64, 11 69, 17 69.5 C 20.5 69.8, 23.5 68, 24.5 65 L 75.5 65 C 76.5 68, 79.5 69.8, 83 69.5 C 89 69, 93 64, 94 57 C 95 47, 92 36, 83 30 Z",
+      "M 21.5 57 C 18 59.5, 13.5 59, 12 55 C 9.5 49, 8 41, 9 33 C 9.8 25, 13 19, 18 15.5 C 20.5 13.5, 22.5 11.5, 23.5 8 C 25.5 1, 31 -6, 39.5 -9 C 49.5 -12, 63.5 -8.5, 73.5 -1 C 81.5 5, 87.5 13, 90 21.5 C 91.5 27, 92 32.5, 91 37.5 C 93 41, 93.3 45, 92.8 49 C 92.3 53, 91.8 56, 93.5 59.5 C 89.5 60.5, 85.5 59.5, 83.5 57 C 81.5 58.5, 80 58, 78.5 56.5 L 79 40 L 21 40 Z",
+    back: "M 15 40 C 11 48, 11 58, 14 63 C 16.5 66.5, 20.5 67.5, 24.5 64.5 L 75.5 64.5 C 79.5 67.5, 84 66.5, 86.5 63 C 89.5 58, 89.5 48, 85 40 Z",
     paint: () => (
       <g>
-        <path d={`${LIFT} L 43 -12 L -10 -12 L -10 50 L 22 50 Z`} fill="black" fillOpacity="0.1" />
-        <path d={LIFT} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.8" />
-        <path d={ROLL} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeOpacity="0.45" />
+        <path d={`${LIFT} L 41.5 -14 L -10 -14 L -10 60 L 22 60 Z`} fill="#7A4A10" fillOpacity="0.22" />
+        <path d={`${CURL} L 79 34 L 79 62 L 96 62 L 96 37.5 Z`} fill="#7A4A10" fillOpacity="0.2" />
+        <path d={`M 38 26.3 ${HAIRLINE.replace(/^C 21.5 40, 24 33, 29 29.5 C 32 27.5, 35 26.5, 38 26.3 /, "")} L 82 45 C 78.5 38, 73 32.5, 66 28.5 C 58 24.5, 48 22, 39.5 22.5 Z`} fill="#7A4A10" fillOpacity="0.16" />
+        <g fill="none" stroke="currentColor" strokeLinecap="round">
+          <path d={LIFT} strokeWidth="1.8" strokeOpacity="0.85" />
+          <path d={CURL} strokeWidth="1.5" strokeOpacity="0.7" />
+        </g>
       </g>
     ),
     details:
-      "M 37 8 C 48 1.5, 62 2.5, 74 9 M 35 17 C 47 13, 62 14, 74 21 C 79 25, 82 30, 83 37 M 13.5 34 C 12.5 40, 13 44, 15.5 47.5",
-    backDetails: "M 9.5 51 C 9 57, 10.5 63, 14 67 M 90.5 51 C 91 57, 89.5 63, 86 67",
-    shine: "M 38 1.5 C 47 -3, 58 -2.5, 68 1 C 58 0.5, 48 1, 41 5 Z M 14.5 26 C 16 20, 19 15.5, 23 12.5 C 20.5 16.5, 18.5 21, 17.5 27 Z",
-    top: -5,
+      "M 41 20 C 53 13, 68 14.5, 80 23 M 41 9 C 53 2.5, 67 3.5, 78 11 M 14 30 C 12.5 38, 13 46, 15.5 54 M 88 42 C 89 47, 88.8 52, 87.5 56",
+    shine: "M 39 1 C 48 -5, 60 -5.5, 70 -1.5 C 60 -1.5, 50 -0.5, 42.5 4.5 Z M 46 14 C 56 9, 68 10, 78 16 C 68 13.5, 57 13.5, 48 17.5 Z M 14.5 28 C 16 22, 18.5 17.5, 22.5 14 C 20.5 18.5, 18.5 23, 18 29 Z",
+    top: -6,
+    peak: -9.5,
   },
 };
 

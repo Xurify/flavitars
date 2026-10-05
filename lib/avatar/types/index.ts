@@ -71,6 +71,8 @@ import {
   UrsulaEyes,
   UrsulaEyebrows,
   UrsulaMouths,
+  UrsulaNoses,
+  UrsulaNoseIds,
   UrsulaBodies,
   UrsulaAccessories,
   UrsulaExtras,
@@ -110,7 +112,7 @@ import {
   PrvyNoseIds,
 } from "../config/presets/prvy";
 
-export const AllNoses = { ...Noses, ...PrvyNoses };
+export const AllNoses = { ...Noses, ...PrvyNoses, ...UrsulaNoses };
 export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront, ...DrewHairFront };
 export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack, ...DrewHairBack };
 export const AllEyes = { ...Eyes, ...MarikaEyes, ...UrsulaEyes, ...PrvyEyes, ...DrewEyes };
@@ -166,7 +168,7 @@ export type AllExtrasId =
   | (typeof UrsulaExtrasIds)[number]
   | (typeof PrvyExtrasIds)[number]
   | (typeof DrewExtrasIds)[number];
-export type AllNoseId = NoseId | (typeof PrvyNoseIds)[number];
+export type AllNoseId = NoseId | (typeof PrvyNoseIds)[number] | (typeof UrsulaNoseIds)[number];
 
 export interface PresetAvatarState {
   head: HeadId;

@@ -4,13 +4,13 @@ import { mirrorPath } from "../../../anatomy";
 export const UrsulaExtrasIds = ["ursulaCheeks"] as const;
 export type UrsulaExtrasId = (typeof UrsulaExtrasIds)[number];
 
-const leftFold = "M 43.5 56 C 42.4 60, 41.4 63.5, 39.6 67";
+const leftFold = "M 43 58.5 C 40 60.5, 38.2 64, 37.8 68.5";
 
-/** Faint lines that age the face: two across the forehead and the folds from nose to mouth. */
+/** Smile lines framing the mouth and two faint lines across the forehead. */
 const ursulaCheeks: PartComponent = () => (
-  <g fill="none" stroke="#8A6E66" strokeLinecap="round">
-    <path d="M 38 32.5 Q 50 31.2, 62 32.5 M 40 35.2 Q 50 34.2, 60 35.2" strokeWidth="0.5" opacity="0.16" />
-    <path d={`${leftFold} ${mirrorPath(leftFold)}`} strokeWidth="0.65" opacity="0.26" />
+  <g fill="none" stroke="#7A5C54" strokeLinecap="round">
+    <path d="M 40 31 Q 50 29.8, 60 31 M 42 33.8 Q 50 32.9, 58 33.8" strokeWidth="0.5" opacity="0.18" />
+    <path d={`${leftFold} ${mirrorPath(leftFold)}`} strokeWidth="0.9" opacity="0.35" />
   </g>
 );
 

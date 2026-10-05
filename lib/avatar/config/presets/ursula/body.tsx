@@ -14,13 +14,17 @@ const ursulaRedBlazer: PartComponent = ({ skinTone }) => (
 
     {/* Simple Pearl Necklace lying on the neck skin */}
     <g fill="#FAFAFA" stroke="#D1D5DB" strokeWidth="0.5">
-      <circle cx="-13" cy="1.2" r="2" />
-      <circle cx="-9" cy="3.5" r="2.1" />
-      <circle cx="-4.5" cy="5" r="2.2" />
-      <circle cx="0" cy="5.5" r="2.2" />
-      <circle cx="4.5" cy="5" r="2.2" />
-      <circle cx="9" cy="3.5" r="2.1" />
-      <circle cx="13" cy="1.2" r="2" />
+      <circle cx="-12.5" cy="0.6" r="1.25" />
+      <circle cx="-10.2" cy="2.4" r="1.25" />
+      <circle cx="-7.6" cy="3.8" r="1.25" />
+      <circle cx="-4.9" cy="4.8" r="1.25" />
+      <circle cx="-2.1" cy="5.3" r="1.25" />
+      <circle cx="0.7" cy="5.4" r="1.25" />
+      <circle cx="3.5" cy="5.1" r="1.25" />
+      <circle cx="6.3" cy="4.4" r="1.25" />
+      <circle cx="8.9" cy="3.2" r="1.25" />
+      <circle cx="11.3" cy="1.6" r="1.25" />
+      <circle cx="13.3" cy="-0.2" r="1.25" />
     </g>
 
     {/* Shirt Placket & Buttons visible in the V-neck chest area */}
@@ -73,13 +77,17 @@ const ursulaPinkBlazer: PartComponent = ({ skinTone }) => (
 
     {/* Simple Pearl Necklace lying on the neck skin */}
     <g fill="#FFFFFF" stroke="#E5E7EB" strokeWidth="0.5">
-      <circle cx="-13" cy="1.2" r="2" />
-      <circle cx="-9" cy="3.5" r="2.1" />
-      <circle cx="-4.5" cy="5" r="2.2" />
-      <circle cx="0" cy="5.5" r="2.2" />
-      <circle cx="4.5" cy="5" r="2.2" />
-      <circle cx="9" cy="3.5" r="2.1" />
-      <circle cx="13" cy="1.2" r="2" />
+      <circle cx="-12.5" cy="0.6" r="1.25" />
+      <circle cx="-10.2" cy="2.4" r="1.25" />
+      <circle cx="-7.6" cy="3.8" r="1.25" />
+      <circle cx="-4.9" cy="4.8" r="1.25" />
+      <circle cx="-2.1" cy="5.3" r="1.25" />
+      <circle cx="0.7" cy="5.4" r="1.25" />
+      <circle cx="3.5" cy="5.1" r="1.25" />
+      <circle cx="6.3" cy="4.4" r="1.25" />
+      <circle cx="8.9" cy="3.2" r="1.25" />
+      <circle cx="11.3" cy="1.6" r="1.25" />
+      <circle cx="13.3" cy="-0.2" r="1.25" />
     </g>
 
     {/* Pink Blazer Main Body with wide V-Neck Cutout */}

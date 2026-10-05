@@ -6,7 +6,8 @@ import { AvatarSvg } from "./AvatarSvg";
 
 interface AvatarPreviewProps {
   state: AvatarState;
-  size?: "sm" | "md" | "lg" | "xl" | "preview";
+  /** `fill` takes the size of the container, for grids whose tiles set the size. */
+  size?: "sm" | "md" | "lg" | "xl" | "preview" | "fill";
   className?: string;
   showBackground?: boolean;
 }
@@ -17,6 +18,7 @@ const sizeClasses = {
   lg: "w-32 h-32 rounded-2xl",
   xl: "w-48 h-48 rounded-2xl",
   preview: "w-64 h-64 sm:w-72 sm:h-72 rounded-2xl",
+  fill: "w-full h-full",
 };
 
 export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
