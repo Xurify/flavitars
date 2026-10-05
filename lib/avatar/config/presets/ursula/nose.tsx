@@ -3,12 +3,16 @@ import { PartRegistry, PartComponent } from "../../../parts/common";
 export const UrsulaNoseIds = ["ursulaNose"] as const;
 export type UrsulaNoseId = (typeof UrsulaNoseIds)[number];
 
-/** Long, straight nose: a soft line down the bridge that hooks into a rounded tip. */
+/** A neat straight nose: a short line down one side into a rounded tip. */
 const ursulaNose: PartComponent = () => (
-  <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M 47.6 47 C 47.2 51, 46.6 54.5, 46.4 56.5" strokeWidth="1.2" strokeOpacity="0.4" />
-    <path d="M 46.4 56.5 C 46 59.4, 48.6 60.8, 51.4 60.2 C 52.8 59.9, 53.8 59.2, 54.2 58.2" strokeWidth="1.5" />
-  </g>
+  <path
+    d="M 48.3 52.5 C 47.4 55, 46.7 56.8, 47.1 58.3 C 47.8 60.2, 52 60.4, 53.3 58.4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
 );
 
 export const UrsulaNoses: PartRegistry<UrsulaNoseId> = {
