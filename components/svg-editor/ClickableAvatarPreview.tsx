@@ -4,7 +4,7 @@ import React, { useId } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
-import { ClickableAvatarLayers } from "./ClickableAvatarLayers";
+import { ClickableAvatarLayers, ClickableAvatarOverlays } from "./ClickableAvatarLayers";
 import { SelectedPart } from "@/lib/svg-editor/part-data";
 import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 import { cn } from "@/lib/utils/strings";
@@ -89,6 +89,14 @@ export const ClickableAvatarPreview: React.FC<ClickableAvatarPreviewProps> = ({
             pathOverride={pathOverride}
           />
         </g>
+
+        <ClickableAvatarOverlays
+          state={state}
+          filterId={filterId}
+          selectedPart={selectedPart}
+          onPartSelect={onPartSelect}
+          showHoverEffects={showHoverEffects}
+        />
       </svg>
     </div>
   );

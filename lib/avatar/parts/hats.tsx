@@ -143,7 +143,7 @@ const BaseballCap: PartComponent = ({ fill = "#334155" }) => (
 );
 
 /** flags.games badge, drawn in a 0–1000 box and placed by the caller. */
-const FlagsLogo = ({ uid }: { uid: string }) => (
+export const FlagsLogo = ({ uid }: { uid: string }) => (
   <g>
     <defs>
       <clipPath id={`${uid}-flags-logo`}>
@@ -165,11 +165,33 @@ const FlagsLogo = ({ uid }: { uid: string }) => (
   </g>
 );
 
+export const FlagsCapBadge = ({ uid = "fv" }: { uid?: string }) => (
+  <g transform="translate(50, 14.2)">
+    <rect x="-8.6" y="-6.9" width="17.2" height="15" rx="3.6" fill="black" opacity="0.45" />
+    <rect x="-8.2" y="-7.6" width="16.4" height="14.4" rx="3.4" fill="#F8F8F6" stroke="#C9CBD1" strokeWidth="0.6" />
+    <rect
+      x="-7.3"
+      y="-6.7"
+      width="14.6"
+      height="12.6"
+      rx="2.8"
+      fill="none"
+      stroke="#9EA2AA"
+      strokeWidth="0.35"
+      strokeDasharray="0.8 0.6"
+    />
+    <g transform="translate(-6, -6) scale(0.012)">
+      <FlagsLogo uid={uid} />
+    </g>
+  </g>
+);
+
 const FLAGS_CAP_CROWN = "M 15.5 29.5 C 14 -3.5, 86 -3.5, 84.5 29.5 Z";
 
-const FlagsCap: PartComponent = ({ uid = "fv" }) => {
+const FlagsCap: PartComponent = ({ uid = "fv", texture }) => {
   const sheen = `${uid}-flagscap-sheen`;
   const crownClip = `${uid}-flagscap-crown`;
+  const isGlitch = texture === "glitch";
   return (
     <g>
       <defs>
@@ -199,24 +221,7 @@ const FlagsCap: PartComponent = ({ uid = "fv" }) => {
       <path d="M 16.4 25.6 Q 50 21, 83.6 25.6" fill="none" stroke="#ED1C24" strokeWidth="1.25" />
       <path d="M 16.2 27 Q 50 22.4, 83.8 27" fill="none" stroke="white" strokeWidth="1.05" />
       <path d="M 16 28.4 Q 50 23.8, 84 28.4" fill="none" stroke="#005BAC" strokeWidth="1.25" />
-      <g transform="translate(50, 14.2)">
-        <rect x="-8.6" y="-6.9" width="17.2" height="15" rx="3.6" fill="black" opacity="0.45" />
-        <rect x="-8.2" y="-7.6" width="16.4" height="14.4" rx="3.4" fill="#F8F8F6" stroke="#C9CBD1" strokeWidth="0.6" />
-        <rect
-          x="-7.3"
-          y="-6.7"
-          width="14.6"
-          height="12.6"
-          rx="2.8"
-          fill="none"
-          stroke="#9EA2AA"
-          strokeWidth="0.35"
-          strokeDasharray="0.8 0.6"
-        />
-        <g transform="translate(-6, -6) scale(0.012)">
-          <FlagsLogo uid={uid} />
-        </g>
-      </g>
+      {!isGlitch && <FlagsCapBadge uid={uid} />}
       <circle cx="50" cy="4.3" r="2.2" fill="#1C1D22" {...ink} strokeWidth={1.3} />
       <circle cx="49.4" cy="3.7" r="0.65" fill="white" opacity="0.5" />
       <path d={capVisor} fill="#121215" {...ink} />

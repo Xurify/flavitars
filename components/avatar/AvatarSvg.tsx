@@ -1,7 +1,7 @@
 import React, { useId } from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { AvatarFilters } from "@/lib/avatar/core/filters";
-import { AvatarLayers } from "@/lib/avatar/core/layers";
+import { AvatarLayers, AvatarOverlays } from "@/lib/avatar/core/layers";
 import { AVATAR_FRAME, AVATAR_VIEWBOX } from "@/lib/avatar/anatomy";
 import { cn } from "@/lib/utils/strings";
 
@@ -38,6 +38,7 @@ export const AvatarSvg: React.FC<AvatarSvgProps> = ({ state, className }) => {
         )}
         <AvatarLayers state={state} filterId={filterId} />
       </g>
+      <AvatarOverlays state={state} filterId={filterId} />
     </svg>
   );
 };

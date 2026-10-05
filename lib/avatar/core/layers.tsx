@@ -4,6 +4,7 @@ import { resolveAvatarColors, resolveAvatarParts, resolveAvatarFit } from "../..
 import { getHeadFacialTransform } from "../anatomy";
 import { Ears, Neck } from "../parts/head";
 import { HairBackView, HairFrontView, HairSpec } from "../parts/hair-engine";
+import { FlagsCapBadge } from "../parts/hats";
 
 export type LayerCategory = "hair" | "body" | "head" | "extras" | "eyebrows" | "eyes" | "nose" | "mouth" | "accessories" | "hat";
 
@@ -39,7 +40,7 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
   const keepId = `${uid}-hat-keep`;
   const outlineId = `${uid}-body-outline`;
   const headClip = fit.keep && fit.clipHead ? `url(#${keepId})` : undefined;
-  const common = { headId: state.head, hatId: state.hat, hairId: state.hair, uid } as const;
+  const common = { headId: state.head, hatId: state.hat, hairId: state.hair, texture: state.texture, uid } as const;
   const hairProps = { fill: hairColor, keep: fit.keep, ...common };
 
   const accessories =
@@ -129,4 +130,27 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
       {fit.accessoriesOverHat && accessories}
     </g>
   );
+};
+
+export interface AvatarOverlaysProps {
+  state: AvatarState;
+  filterId: string;
+  wrap?: (slot: LayerSlot, node: React.ReactNode) => React.ReactNode;
+}
+
+export const AvatarOverlays: React.FC<AvatarOverlaysProps> = ({ state, filterId, wrap = passThrough }) => {
+  if (state.texture !== "glitch") return null;
+
+  if (state.hat === "flagsCap") {
+    return (
+      <g className="avatar-overlays">
+        {wrap(
+          { category: "hat", partId: state.hat },
+          <FlagsCapBadge uid={filterId} />
+        )}
+      </g>
+    );
+  }
+
+  return null;
 };
