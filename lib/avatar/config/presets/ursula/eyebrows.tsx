@@ -4,11 +4,11 @@ import { mirrorPath } from "../../../anatomy";
 export const UrsulaEyebrowsIds = ["ursulaEyebrows"] as const;
 export type UrsulaEyebrowsId = (typeof UrsulaEyebrowsIds)[number];
 
-/** Light, softly arched brows with the peak towards the outer end; tapered, never stern. */
-const leftBrow = "M 44.2 39.4 C 41 37.6, 36.5 36.2, 32.6 36.6 C 30.2 36.9, 28.3 37.6, 27 38.6 C 29.2 38.2, 31.4 38.2, 33.6 38.4 C 37.2 38.7, 40.8 39.4, 43.6 40.4 C 44.2 40.4, 44.4 39.8, 44.2 39.4 Z";
+/** Fairly straight brown brows, set close to the eyes, with a slight arch towards the outer end. */
+const leftBrow = "M 44.5 39.2 C 41 37.8, 36.5 36.8, 32.5 37 C 30 37.2, 28 37.8, 26.8 38.8 C 29 38.6, 31.5 38.7, 34 38.9 C 37.5 39.2, 41 39.8, 43.8 40.4 C 44.4 40.4, 44.6 39.6, 44.5 39.2 Z";
 
 const ursulaEyebrows: PartComponent = () => (
-  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#A47C58" stroke="#8A6546" strokeWidth="0.3" strokeLinejoin="round" opacity="0.9" />
+  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#8B6A4A" stroke="#6F5239" strokeWidth="0.3" strokeLinejoin="round" opacity="0.9" />
 );
 
 export const UrsulaEyebrows: PartRegistry<UrsulaEyebrowsId> = {

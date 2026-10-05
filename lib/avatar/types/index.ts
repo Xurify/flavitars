@@ -90,6 +90,8 @@ import {
   DrewEyebrowsIds,
   DrewEyes,
   DrewEyesIds,
+  DrewExtras,
+  DrewExtrasIds,
   DrewHairBack,
   DrewHairFront,
   DrewHairIds,
@@ -116,7 +118,7 @@ export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows, 
 export const AllMouths = { ...Mouths, ...MarikaMouths, ...UrsulaMouths, ...PrvyMouths, ...DrewMouths };
 export const AllBodies = { ...Bodies, ...MarikaBodies, ...UrsulaBodies, ...DrewBodies };
 export const AllAccessories = { ...Accessories, ...MarikaAccessories, ...UrsulaAccessories };
-export const AllExtras = { ...Extras, ...MarikaExtras, ...UrsulaExtras, ...PrvyExtras };
+export const AllExtras = { ...Extras, ...MarikaExtras, ...UrsulaExtras, ...PrvyExtras, ...DrewExtras };
 
 export interface AvatarState {
   head: HeadId;
@@ -162,7 +164,8 @@ export type AllExtrasId =
   | ExtrasId
   | (typeof MarikaExtrasIds)[number]
   | (typeof UrsulaExtrasIds)[number]
-  | (typeof PrvyExtrasIds)[number];
+  | (typeof PrvyExtrasIds)[number]
+  | (typeof DrewExtrasIds)[number];
 export type AllNoseId = NoseId | (typeof PrvyNoseIds)[number];
 
 export interface PresetAvatarState {

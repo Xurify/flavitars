@@ -28,7 +28,7 @@ export interface HairSpec {
   /** Colour work inside the hair (streaks, dyed tips), clipped to the front silhouette. */
   paint?: (hairColor: string) => React.ReactNode;
   /** Ornaments with their own colours (bows, clips, ties), drawn on top unclipped. */
-  accents?: (hairColor: string) => React.ReactNode;
+  accents?: (hairColor: string, props: PartProps) => React.ReactNode;
   /**
    * Where things resting on the hair sit (crowns, halos, headphone bands): the top of the hair
    * mass, ignoring spikes, buns and bows that poke above it. Defaults to the top of the cap.
@@ -105,7 +105,8 @@ const hairIds = (uid: string): HairIds => ({
 
 type HairViewProps = PartProps & { spec: HairSpec };
 
-export const HairFrontView: React.FC<HairViewProps> = ({ spec, fill, headId, uid = "fv", keep }) => {
+export const HairFrontView: React.FC<HairViewProps> = ({ spec, ...props }) => {
+  const { fill, headId, uid = "fv", keep } = props;
   if (!spec.cap && !spec.front && !spec.stubble && !spec.accents) return null;
   const headPath = getHead(headId).path;
   const ids = hairIds(uid);
@@ -159,7 +160,7 @@ export const HairFrontView: React.FC<HairViewProps> = ({ spec, fill, headId, uid
         )}
         {spec.cap && <path d={cap} {...CUT_STYLE} clipPath={`url(#${ids.head})`} />}
         {spec.front && <path d={headPath} {...CUT_STYLE} clipPath={`url(#${ids.notCap})`} />}
-        {spec.accents?.(color)}
+        {spec.accents?.(color, props)}
       </g>
       {keep && (spec.cap || spec.front) && (
         <InsideHair ids={ids}>
