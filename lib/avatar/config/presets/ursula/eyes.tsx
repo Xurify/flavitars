@@ -15,7 +15,7 @@ const UrsulaEye = ({ x, uid }: { x: number; uid: string }) => {
   const outward = x < 50 ? "scale(-1, 1)" : undefined;
   const clipId = `${uid}-ursula-eye-${x}`;
   return (
-    <g transform={`translate(${x}, 46)`}>
+    <g transform={`translate(${x}, 48.5)`}>
       <defs>
         <clipPath id={clipId}>
           <path d={OPENING} transform={outward} />

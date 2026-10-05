@@ -5,7 +5,7 @@ export type UrsulaMouthId = (typeof UrsulaMouthIds)[number];
 
 /** Her calm closed smile: thin, muted rose lips with the corners gently lifted. */
 const ursulaSmile: PartComponent = () => (
-  <g transform="translate(50, 76)">
+  <g transform="translate(50, 77)">
     <path
       d="M -10 -1.6 Q -5 -3.2, -1.4 -2.4 Q 0 -2, 1.4 -2.4 Q 5 -3.2, 10 -1.6 Q 5.6 3.6, 0 3.8 Q -5.6 3.6, -10 -1.6 Z"
       fill="#C98089"
