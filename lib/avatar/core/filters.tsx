@@ -1,5 +1,5 @@
 import React from "react";
-import { AVATAR_FRAME, HeadId, HEAD_PATHS } from "../anatomy";
+import { AVATAR_FRAME, HeadId, getHead } from "../anatomy";
 import type { HatId } from "../parts/hats";
 
 export const AVATAR_FILTER_PREFIX = "avatar-filter";
@@ -82,7 +82,7 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
       </clipPath>
 
       <clipPath id={`${filterId}-head-shape`}>
-        <path d={HEAD_PATHS[headId] || HEAD_PATHS.square} />
+        <path d={getHead(headId).path} />
       </clipPath>
     </defs>
   );

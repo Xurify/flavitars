@@ -1,17 +1,12 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
-import { mirrorPath } from "../../../anatomy";
 
 export const UrsulaEyebrowsIds = ["ursulaEyebrows"] as const;
 export type UrsulaEyebrowsId = (typeof UrsulaEyebrowsIds)[number];
 
-/** Tapered brow, fuller at the inner end, with a soft arch over the outer half. */
-const leftBrow =
-  "M 44.6 42.6 C 41.4 40.6, 37 39.6, 33 40 C 30.4 40.3, 28.2 41.4, 26.8 43 C 29 42.4, 31.2 42.3, 33.4 42.4 C 37.2 42.6, 41 43.4, 44 44.4 C 44.8 44.2, 45 43.2, 44.6 42.6 Z";
+/** Full, softly arched brows in a warm taupe, square at the inner end and tapering to the tail. */
+const BROWS = "M 45.3 43.1 C 45.2 42.3, 44.7 41.6, 44 40.9 C 42.4 39.7, 39.6 39.4, 37 38.95 C 34 38.6, 31.4 38.9, 29.7 40 C 28.6 40.8, 27.8 42, 27.2 43.5 C 28 42.9, 29 42, 30.4 41.2 C 32 40.5, 34 40.5, 36.2 41 C 39 41.6, 42 42.2, 45.3 43.1 Z M 55.3 43.1 C 55.4 42.3, 55.9 41.6, 56.6 40.9 C 58.2 39.7, 61 39.4, 63.6 38.95 C 66.6 38.6, 69.2 38.9, 70.9 40 C 72 40.8, 72.8 42, 73.4 43.5 C 72.6 42.9, 71.6 42, 70.2 41.2 C 68.6 40.5, 66.6 40.5, 64.4 41 C 61.6 41.6, 58.6 42.2, 55.3 43.1 Z";
 
-/** Taupe brows, lower and straighter than a glamour arch. */
-const ursulaEyebrows: PartComponent = () => (
-  <path d={`${leftBrow} ${mirrorPath(leftBrow)}`} fill="#8A6A52" stroke="#8A6A52" strokeWidth="0.6" strokeLinejoin="round" />
-);
+const ursulaEyebrows: PartComponent = () => <path d={BROWS} fill="#805F47" />;
 
 export const UrsulaEyebrows: PartRegistry<UrsulaEyebrowsId> = {
   ursulaEyebrows: {

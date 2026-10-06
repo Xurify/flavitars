@@ -66,6 +66,8 @@ import {
 } from "../config/presets/marika";
 
 import {
+  UrsulaHeads,
+  UrsulaHeadIds,
   UrsulaHairBack,
   UrsulaHairFront,
   UrsulaEyes,
@@ -112,6 +114,7 @@ import {
   PrvyNoseIds,
 } from "../config/presets/prvy";
 
+export const AllHeadShapes = { ...HeadShapes, ...UrsulaHeads };
 export const AllNoses = { ...Noses, ...PrvyNoses, ...UrsulaNoses };
 export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront, ...DrewHairFront };
 export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack, ...DrewHairBack };
@@ -168,10 +171,11 @@ export type AllExtrasId =
   | (typeof UrsulaExtrasIds)[number]
   | (typeof PrvyExtrasIds)[number]
   | (typeof DrewExtrasIds)[number];
+export type AllHeadId = HeadId | (typeof UrsulaHeadIds)[number];
 export type AllNoseId = NoseId | (typeof PrvyNoseIds)[number] | (typeof UrsulaNoseIds)[number];
 
 export interface PresetAvatarState {
-  head: HeadId;
+  head: AllHeadId;
   eyebrows: AllEyebrowsId;
   eyes: AllEyesId;
   nose: AllNoseId;
@@ -275,7 +279,7 @@ export const CATEGORIES: CategoryConfig[] = [
     icon: "👤",
     stateKey: "head",
     allowNone: false,
-    items: HeadShapes,
+    items: AllHeadShapes,
     sortedKeys: [...HeadIds],
   },
   {

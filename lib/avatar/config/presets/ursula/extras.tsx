@@ -1,16 +1,29 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
-import { mirrorPath } from "../../../anatomy";
 
 export const UrsulaExtrasIds = ["ursulaCheeks"] as const;
 export type UrsulaExtrasId = (typeof UrsulaExtrasIds)[number];
 
-const leftFold = "M 44.4 64 C 41.4 66, 39.4 69.4, 38.6 73.6";
+const FOREHEAD = "M 55.2 27.4 C 58.4 26.8, 62.2 27.2, 65 28.6 M 36.9 32.4 C 40.6 31.2, 44.6 31, 47.6 31.6 C 50 32.1, 52.4 32, 54.6 31.5 C 56.2 31.2, 57.6 31, 59 31";
+/** Smile folds from the nose wings around the corners of the mouth. */
+const FOLDS = "M 43.7 59.6 C 41.4 62, 38.3 65.8, 36.4 69 C 35.6 70.6, 35.6 72.6, 36.3 73.9 M 57.3 59.4 C 59.6 61.8, 62.7 65.6, 64.4 68.6 C 65.3 70.2, 65.3 72.2, 64.7 73.9";
 
-/** The lines of the reference: across the forehead, under the eyes and from nose to mouth. */
-const ursulaCheeks: PartComponent = () => (
-  <g fill="none" stroke="#9C7466" strokeLinecap="round">
-    <path d="M 38 28.4 Q 46 26.8, 56 27.6 M 41 31.4 Q 49 30.4, 58 31.2" strokeWidth="0.7" opacity="0.35" />
-    <path d={`${leftFold} ${mirrorPath(leftFold)}`} strokeWidth="0.9" opacity="0.4" />
+/** The lines of the reference (two across the forehead, the smile folds) and warm, lifted cheeks. */
+const ursulaCheeks: PartComponent = ({ uid = "fv" }) => (
+  <g>
+    <defs>
+      <radialGradient id={`${uid}-ursula-blush`}>
+        <stop offset="0" stopColor="#EE8E80" stopOpacity="0.34" />
+        <stop offset="1" stopColor="#EE8E80" stopOpacity="0" />
+      </radialGradient>
+    </defs>
+    <g fill={`url(#${uid}-ursula-blush)`}>
+      <ellipse cx="32.4" cy="59.4" rx="5.6" ry="3.6" />
+      <ellipse cx="68.4" cy="59.4" rx="5.6" ry="3.6" />
+    </g>
+    <g fill="none" stroke="#C4947C" strokeLinecap="round">
+      <path d={FOREHEAD} strokeWidth="0.8" strokeOpacity="0.5" />
+      <path d={FOLDS} strokeWidth="0.95" strokeOpacity="0.55" />
+    </g>
   </g>
 );
 

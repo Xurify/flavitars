@@ -3,6 +3,7 @@ import {
   type HeadId,
   HEADS,
   HEAD_PATHS,
+  getHead,
   getEarPath,
   getEarDetailPath,
   getHeadFacialTransform,
@@ -51,7 +52,7 @@ export const Neck: PartComponent = ({ headId, fill, uid = "fv" }) => (
     </defs>
     <path d={NECK_PATH} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
     <path
-      d={HEADS[headId]?.path ?? HEADS.square.path}
+      d={getHead(headId).path}
       transform="translate(0, 5)"
       fill="black"
       opacity="0.12"

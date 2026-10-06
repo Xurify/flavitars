@@ -25,8 +25,8 @@ export interface HairSpec {
   backDetails?: string;
   /** Short-cropped areas: the head inside this region is tinted with the hair colour, no volume. */
   stubble?: string;
-  /** Colour work inside the hair (streaks, dyed tips), clipped to the front silhouette. */
-  paint?: (hairColor: string) => React.ReactNode;
+  /** Colour work inside the hair (streaks, dyed tips, skin peeking through), clipped to the front silhouette. */
+  paint?: (hairColor: string, props: PartProps) => React.ReactNode;
   /** Ornaments with their own colours (bows, clips, ties), drawn on top unclipped. */
   accents?: (hairColor: string, props: PartProps) => React.ReactNode;
   /**
@@ -153,7 +153,7 @@ export const HairFrontView: React.FC<HairViewProps> = ({ spec, ...props }) => {
         <SilhouettePass headPath={headPath} spec={spec} ids={ids} outline={false} fill={color} />
         {(spec.details || spec.shine || spec.paint) && (
           <InsideHair ids={ids}>
-            {spec.paint?.(color)}
+            {spec.paint?.(color, props)}
             {spec.shine && <path d={spec.shine} fill="white" fillOpacity="0.2" />}
             {spec.details && <path d={spec.details} {...DETAIL_STYLE} />}
           </InsideHair>

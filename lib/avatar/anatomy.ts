@@ -61,7 +61,14 @@ export const HEADS: Record<HeadId, HeadAnatomy> = {
 
 export const HEAD_PATHS: Record<string, string> = Object.fromEntries(HeadIds.map((id) => [id, HEADS[id].path]));
 
-export const getHead = (headId: string | undefined): HeadAnatomy => HEADS[(headId as HeadId) ?? "square"] ?? HEADS.square;
+/** Heads drawn for one preset (traced from a likeness); they are not offered in the editor. */
+const PRESET_HEADS: Record<string, HeadAnatomy> = {};
+export const registerPresetHead = (id: string, head: HeadAnatomy) => {
+  PRESET_HEADS[id] = head;
+};
+
+export const getHead = (headId: string | undefined): HeadAnatomy =>
+  HEADS[(headId as HeadId) ?? "square"] ?? PRESET_HEADS[headId ?? ""] ?? HEADS.square;
 
 export const getFaceOffset = (headId: string | undefined) => getHead(headId).faceOffset;
 

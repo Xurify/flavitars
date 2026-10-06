@@ -11,6 +11,7 @@ import {
   AllAccessories,
   AllBodies,
   AllNoses,
+  AllHeadShapes,
 } from "../avatar/types";
 import { HeadShapes, Hats, getHatFit, getHairSpec, EAR_ACCESSORIES } from "../avatar/parts";
 import { getHairPeak, getHairTop, HairSpec } from "../avatar/parts/hair-engine";
@@ -80,7 +81,7 @@ export function resolveAvatarColors(state: AvatarState) {
 
 export function resolveAvatarParts(state: AvatarState) {
   return {
-    HeadShape: HeadShapes[state.head]?.component || Object.values(HeadShapes)[0].component,
+    HeadShape: AllHeadShapes[state.head as keyof typeof AllHeadShapes]?.component || Object.values(HeadShapes)[0].component,
     EyebrowSet: AllEyebrows[state.eyebrows as keyof typeof AllEyebrows]?.component || (() => null),
     EyeSet: AllEyes[state.eyes as keyof typeof AllEyes]?.component || Object.values(AllEyes)[0].component,
     NoseSet: AllNoses[state.nose as keyof typeof AllNoses]?.component || (() => null),

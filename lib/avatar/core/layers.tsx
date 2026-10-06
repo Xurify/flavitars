@@ -41,7 +41,7 @@ export const AvatarLayers: React.FC<AvatarLayersProps> = ({ state, filterId, wra
   const outlineId = `${uid}-body-outline`;
   const headClip = fit.keep && fit.clipHead ? `url(#${keepId})` : undefined;
   const common = { headId: state.head, hatId: state.hat, hairId: state.hair, texture: state.texture, uid } as const;
-  const hairProps = { fill: hairColor, keep: fit.keep, ...common };
+  const hairProps = { fill: hairColor, keep: fit.keep, skinTone, ...common };
 
   const accessories =
     fit.showAccessories &&

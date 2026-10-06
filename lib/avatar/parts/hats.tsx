@@ -1,6 +1,6 @@
 import React from "react";
 import { PartRegistry, PartComponent } from "./common";
-import { HEADS, HatSeat, getHead, mirrorPath } from "../anatomy";
+import { HatSeat, getHead, mirrorPath } from "../anatomy";
 import { Point, scallop } from "./shapes";
 
 export const HatIds = [
@@ -598,7 +598,7 @@ const skiMaskHoles = (faceOffset: number) => {
 };
 
 const SkiMask: PartComponent = ({ fill = "#D33C3C", headId, uid = "fv" }) => {
-  const head = HEADS[headId] ?? HEADS.square;
+  const head = getHead(headId);
   const clip = `${uid}-skimask`;
   const scale = "translate(50, 52) scale(1.05) translate(-50, -52)";
   const holes = skiMaskHoles(head.faceOffset);
