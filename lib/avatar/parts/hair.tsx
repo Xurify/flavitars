@@ -346,16 +346,18 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
   },
 
   aviatorFlaps: {
-    cap: capAbove(HAIRLINE.natural),
-    front: `${DOME.medium} ${both("M 13 36 Q 8 50, 12 64 Q 18 69, 25 64 L 25 36 Z")}`,
-    details: both("M 15 46 Q 14 54, 16 62"),
+    front: "M 26 73 Q 13 83, 4 74 Q 0 40, 15 25 L 15 15 Q 50 0, 85 15 L 85 25 Q 100 40, 96 74 Q 87 83, 74 73 L 74 35 L 26 35 Z",
+    details: both("M 9 44 Q 7 58, 10 70"),
     accents: () => (
-      <g fill="#ff6b6b" stroke="currentColor" strokeWidth="1.5">
-        <rect x="12" y="37" width="11" height="4" rx="2" />
-        <rect x="77" y="37" width="11" height="4" rx="2" />
+      <g>
+        <path d={both("M 15 25 L 15 35 L 21 35")} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        <g fill="#ff6b6b" stroke="currentColor" strokeWidth="1.5">
+          <rect x="11" y="22" width="11" height="4" rx="2" />
+          <rect x="78" y="22" width="11" height="4" rx="2" />
+        </g>
       </g>
     ),
-    top: 11,
+    top: 7.5,
   },
 
   texturedPompadour: {
