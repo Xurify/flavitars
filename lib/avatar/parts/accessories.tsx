@@ -342,10 +342,10 @@ const pearlNecklace: PartComponent = () => (
   <g transform="translate(50, 95)">
     {/* Necklace Curve */}
     <path d="M-22 -10 Q 0 10, 22 -10" fill="none" stroke="none" id="necklacePath" />
-    <g fill="#FDFCF8" stroke="#E5E5E5" strokeWidth="0.3">
-      {/* Many small pearls */}
+    <g fill="#FDFCF8" stroke="#C9C4B8" strokeWidth="0.45">
+      {/* Many small pearls, hanging lowest at the front like the curve above */}
       {[-22, -19, -16, -13, -10, -7, -4, -1.5, 1.5, 4, 7, 10, 13, 16, 19, 22].map((x) => {
-        const y = Math.pow(x / 7, 2) - 8; // Curved parabola for pearls
+        const y = -10 * Math.pow(x / 22, 2);
         return <circle key={x} cx={x} cy={y} r="1.6" />;
       })}
     </g>
@@ -390,7 +390,7 @@ const layeredSilverChains: PartComponent = () => (
     <path d="M -22 -6 Q 0 12, 22 -6" fill="none" stroke="none" id="tennisPath" />
     <g fill="white" stroke="#CBD5E1" strokeWidth="0.3">
       {[-22, -18, -14, -10, -6, -2, 2, 6, 10, 14, 18, 22].map((x) => {
-        const y = Math.pow(x / 6, 2) - 6;
+        const y = 3 - 9 * Math.pow(x / 22, 2);
         return (
           <g key={x}>
             <rect x={x - 1} y={y - 1} width="2" height="2" rx="0.5" />
