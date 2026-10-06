@@ -343,7 +343,6 @@ const pearlNecklace: PartComponent = () => (
     {/* Necklace Curve */}
     <path d="M-22 -10 Q 0 10, 22 -10" fill="none" stroke="none" id="necklacePath" />
     <g fill="#FDFCF8" stroke="#C9C4B8" strokeWidth="0.45">
-      {/* Many small pearls, hanging lowest at the front like the curve above */}
       {[-22, -19, -16, -13, -10, -7, -4, -1.5, 1.5, 4, 7, 10, 13, 16, 19, 22].map((x) => {
         const y = -10 * Math.pow(x / 22, 2);
         return <circle key={x} cx={x} cy={y} r="1.6" />;

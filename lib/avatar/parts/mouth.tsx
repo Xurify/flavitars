@@ -32,16 +32,15 @@ const LINE = { ...INK, fill: "none" } as const;
  */
 interface LipStyle {
   color: string;
-  /** Half the mouth width. */
-  width: number;
+  halfWidth: number;
   /** How far the corners sit above the centre line. */
   smile?: number;
-  /** Bottom lip depth as a fraction of the width. */
+  /** Bottom lip depth as a fraction of `halfWidth`. */
   fullness?: number;
   teeth?: boolean;
 }
 
-const lips = ({ color, width: w, smile: s = 1.2, fullness = 0.5, teeth }: LipStyle): PartComponent => {
+const lips = ({ color, halfWidth: w, smile: s = 1.2, fullness = 0.5, teeth }: LipStyle): PartComponent => {
   const h = w * fullness;
   const Lips: PartComponent = () => (
     <g transform="translate(50, 78)">
@@ -109,8 +108,7 @@ const smirkRed: PartComponent = () => (
   </g>
 );
 
-/** Small pursed kiss. */
-const pout = lips({ color: "#D98A8A", width: 4.5, smile: 0, fullness: 0.75 });
+const pout = lips({ color: "#D98A8A", halfWidth: 4.5, smile: 0, fullness: 0.75 });
 
 const oMouth: PartComponent = () => (
   <g transform="translate(50, 78)">
@@ -122,18 +120,18 @@ export const Mouths: PartRegistry<MouthId> = {
   neutral: { component: neutral, label: "Neutral" },
   smile: { component: smile, label: "Smile" },
   smileDimples: { component: smileDimples, label: "Smile with Dimples" },
-  softTeethSmile: { component: lips({ color: "#D9A3A3", width: 13, smile: 2, teeth: true }), label: "Soft Teeth Smile" },
+  softTeethSmile: { component: lips({ color: "#D9A3A3", halfWidth: 13, smile: 2, teeth: true }), label: "Soft Teeth Smile" },
   brightGrin: { component: openMouth({ width: 17, depth: 11 }), label: "Bright Grin" },
   laughing: { component: openMouth({ width: 15, depth: 13, tongue: true }), label: "Laughing" },
-  neutralFullLips: { component: lips({ color: "#A46F62", width: 12.5, smile: 0.8, fullness: 0.62 }), label: "Neutral Full Lips" },
-  naturalNude: { component: lips({ color: "#E8A8A9", width: 10.5, smile: 1 }), label: "Natural Nude" },
-  naturalPinkSmile: { component: lips({ color: "#F472B6", width: 12.5, smile: 2, teeth: true }), label: "Natural Pink Smile" },
-  lipstickMouth: { component: lips({ color: "#E07A7A", width: 12 }), label: "Lipstick" },
-  softMatte: { component: lips({ color: "#C27B7C", width: 11.5, smile: 0.8 }), label: "Soft Matte" },
-  softMatteSmile: { component: lips({ color: "#C27B7C", width: 12.5, smile: 1.5, teeth: true }), label: "Soft Matte Smile" },
-  glossyMauveLips: { component: lips({ color: "#B18485", width: 12.5, fullness: 0.58 }), label: "Glossy Mauve" },
-  vibrantRedFull: { component: lips({ color: "#DC2626", width: 13.5, smile: 0.8, fullness: 0.62 }), label: "Vibrant Red Full" },
-  vibrantRedSmall: { component: lips({ color: "#DC2626", width: 9.5, smile: 0.8 }), label: "Vibrant Red Small" },
+  neutralFullLips: { component: lips({ color: "#A46F62", halfWidth: 12.5, smile: 0.8, fullness: 0.62 }), label: "Neutral Full Lips" },
+  naturalNude: { component: lips({ color: "#E8A8A9", halfWidth: 10.5, smile: 1 }), label: "Natural Nude" },
+  naturalPinkSmile: { component: lips({ color: "#F472B6", halfWidth: 12.5, smile: 2, teeth: true }), label: "Natural Pink Smile" },
+  lipstickMouth: { component: lips({ color: "#E07A7A", halfWidth: 12 }), label: "Lipstick" },
+  softMatte: { component: lips({ color: "#C27B7C", halfWidth: 11.5, smile: 0.8 }), label: "Soft Matte" },
+  softMatteSmile: { component: lips({ color: "#C27B7C", halfWidth: 12.5, smile: 1.5, teeth: true }), label: "Soft Matte Smile" },
+  glossyMauveLips: { component: lips({ color: "#B18485", halfWidth: 12.5, fullness: 0.58 }), label: "Glossy Mauve" },
+  vibrantRedFull: { component: lips({ color: "#DC2626", halfWidth: 13.5, smile: 0.8, fullness: 0.62 }), label: "Vibrant Red Full" },
+  vibrantRedSmall: { component: lips({ color: "#DC2626", halfWidth: 9.5, smile: 0.8 }), label: "Vibrant Red Small" },
   smirk: { component: smirk, label: "Smirk" },
   smirkRed: { component: smirkRed, label: "Smirk Red" },
   pout: { component: pout, label: "Pout" },

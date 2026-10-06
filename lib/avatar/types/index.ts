@@ -378,6 +378,5 @@ export const CATEGORIES: CategoryConfig[] = [
 
 export const SKIN_TONES: SkinTone[] = paletteSwatches(SKIN_PALETTE);
 export const HAIR_COLORS: HairColor[] = paletteSwatches(HAIR_PALETTE);
-/** Hat colours (fabric names). */
 export const FABRIC_COLORS: HairColor[] = paletteSwatches(FABRIC_PALETTE);
 export const ACCESSORY_ACCENT_COLORS: HairColor[] = paletteSwatches(LENS_PALETTE);

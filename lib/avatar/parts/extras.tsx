@@ -5,8 +5,7 @@ export type ExtrasId = (typeof ExtrasId)[number];
 
 const noneExtra: PartComponent = () => null;
 
-// [x, y, r] on the left cheek and across the nose bridge; the right cheek mirrors the cheek ones.
-const CHEEK_FRECKLES = [
+const LEFT_CHEEK_FRECKLES = [
   [29.5, 56.6, 0.75],
   [32.6, 55.4, 0.6],
   [35.4, 57.2, 0.8],
@@ -15,7 +14,7 @@ const CHEEK_FRECKLES = [
   [37.9, 55.6, 0.5],
   [38.4, 59.3, 0.6],
 ] as const;
-const NOSE_FRECKLES = [
+const NOSE_BRIDGE_FRECKLES = [
   [46.2, 55.1, 0.45],
   [50.3, 54.2, 0.4],
   [53.9, 55.3, 0.45],
@@ -23,11 +22,11 @@ const NOSE_FRECKLES = [
 
 const frecklesExtra: PartComponent = () => (
   <g fill="#7A3E1D" opacity="0.55">
-    {CHEEK_FRECKLES.flatMap(([x, y, r]) => [
+    {LEFT_CHEEK_FRECKLES.flatMap(([x, y, r]) => [
       <circle key={`l${x}`} cx={x} cy={y} r={r} />,
-      <circle key={`r${x}`} cx={100 - x} cy={y + (x % 2 ? 0.3 : -0.2)} r={r} />,
+      <circle key={`r${x}`} cx={100 - x} cy={y} r={r} />,
     ])}
-    {NOSE_FRECKLES.map(([x, y, r]) => (
+    {NOSE_BRIDGE_FRECKLES.map(([x, y, r]) => (
       <circle key={`n${x}`} cx={x} cy={y} r={r} />
     ))}
   </g>
