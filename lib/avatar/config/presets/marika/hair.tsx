@@ -9,6 +9,173 @@ export type MarikaHairId = (typeof MarikaHairIds)[number];
 /** A hairline run whose bumps hang towards the face (curly bangs). */
 const curlyRun = (points: Point[]) => scallop(points, { closed: false, inward: true }).replace(/^M/, "L");
 
+/** Deterministic pseudo-random numbers, so the frizz comes out the same on every render. */
+const seeded = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+const pt = ([x, y]: Point) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+
+/** Clockwise on screen, like every other part of the mass: subpaths wound the other way cancel out. */
+const clockwise = (points: Point[]) => {
+  let area = 0;
+  points.forEach(([x, y], i) => {
+    const [nx, ny] = points[(i + 1) % points.length];
+    area += x * ny - nx * y;
+  });
+  return area < 0 ? [...points].reverse() : points;
+};
+
+/** Smooth closed outline through the points (Catmull-Rom, as cubic Béziers). */
+const smoothLoop = (points: Point[]) => {
+  const at = (i: number) => points[(i + points.length) % points.length];
+  let d = `M ${pt(points[0])}`;
+  points.forEach((_, i) => {
+    const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
+    d += ` C ${pt([p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6])} ${pt([p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6])} ${pt(p2)}`;
+  });
+  return `${d} Z`;
+};
+
+interface Flick {
+  base: Point;
+  /** Direction it springs out in, radians (0 = right, π/2 = down). */
+  heading: number;
+  length: number;
+  width: number;
+  /** How far it hooks round by the tip, radians; the sign picks the way. */
+  curl: number;
+}
+
+/** A curl springing out of the mass: tapering from its base to a point that hooks round. */
+const flickPoints = ({ base, heading, length, width, curl }: Flick): Point[] => {
+  const steps = 9;
+  const left: Point[] = [];
+  const right: Point[] = [];
+  let [x, y] = base;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const a = heading + curl * t * t;
+    const w = (width / 2) * Math.pow(1 - t, 0.8);
+    left.push([x - Math.sin(a) * w, y + Math.cos(a) * w]);
+    right.push([x + Math.sin(a) * w, y - Math.cos(a) * w]);
+    x += (Math.cos(a) * length) / steps;
+    y += (Math.sin(a) * length) / steps;
+  }
+  return [...left, ...right.reverse().slice(1)];
+};
+
+const flick = (f: Flick) => `M ${clockwise(flickPoints(f)).map(pt).join(" ")} Z`;
+
+/**
+ * The big 90s perm, exaggerated: a lifted cloud, widest by the cheeks, whose edge is all curls
+ * springing out and hooking down. Points run clockwise from the ends on her right shoulder.
+ */
+const PERM_CORE: Point[] = [
+  [9, 96],
+  [3, 88],
+  [0, 77.5],
+  [-1, 66],
+  [-0.5, 54.5],
+  [1.5, 43.5],
+  [5, 33],
+  [10, 23.5],
+  [16.5, 13.5],
+  [25.5, 6.5],
+  [36, 2],
+  [46.5, 0.5],
+  [57, 1],
+  [67.5, 4],
+  [76.5, 10],
+  [84, 19],
+  [89.5, 30],
+  [93.5, 41],
+  [95.5, 52.5],
+  [96.5, 64.5],
+  [96, 76.5],
+  [93, 87.5],
+  [87, 95.5],
+  [77, 94.5],
+  [71.5, 86],
+  [67, 75],
+  [33, 75],
+  [28.5, 86],
+  [23, 94.5],
+];
+/** The outer stretch of the core, where curls spring out: shoulder end to shoulder end. */
+const PERM_EDGE = PERM_CORE.slice(0, 23);
+
+const angleTo = (from: number, to: number) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
+
+/** Even-odd point-in-polygon test. */
+const inside = ([x, y]: Point, polygon: Point[]) => {
+  let hit = false;
+  polygon.forEach(([x0, y0], i) => {
+    const [x1, y1] = polygon[(i + 1) % polygon.length];
+    if (y0 > y !== y1 > y && x < x0 + ((y - y0) * (x1 - x0)) / (y1 - y0)) hit = !hit;
+  });
+  return hit;
+};
+
+/** Which way a curl at `heading` hooks: down, or outwards if it already hangs down. */
+const hookWay = (heading: number, x: number) => {
+  const turn = angleTo(heading, Math.PI / 2);
+  return Math.sign(Math.abs(turn) < 0.6 ? angleTo(heading, x < 50 ? Math.PI : 0) : turn);
+};
+
+/** Curls springing out round the edge, and curls scattered through the mass for texture (`inner`). */
+const permCurls = () => {
+  const rand = seeded(7);
+  const edge: Flick[] = [];
+  let carry = 0;
+  for (let i = 0; i < PERM_EDGE.length - 1; i++) {
+    const [x0, y0] = PERM_EDGE[i];
+    const [x1, y1] = PERM_EDGE[i + 1];
+    const seg = Math.hypot(x1 - x0, y1 - y0);
+    const [tx, ty] = [(x1 - x0) / seg, (y1 - y0) / seg];
+    const [ox, oy] = [ty, -tx];
+    let s = carry;
+    for (; s < seg; s += 8 + rand() * 3) {
+      const [x, y] = [x0 + tx * s, y0 + ty * s];
+      const low = Math.min(1, Math.max(0, (y - 15) / 75));
+      const heading = Math.atan2(oy + 0.1 + 0.9 * low, ox) + (rand() - 0.5) * 0.5;
+      edge.push({
+        base: [x - ox * 3, y - oy * 3],
+        heading,
+        length: 7 + rand() * 3 + low * 3,
+        width: 7.5 + rand() * 2.5,
+        curl: (rand() < 0.15 ? -1 : 1) * hookWay(heading, x) * (2.3 + rand() * 0.7),
+      });
+    }
+    carry = s - seg;
+  }
+
+  const inner: Flick[] = [];
+  for (let gy = 0; gy < 100; gy += 7) {
+    for (let gx = -4; gx < 104; gx += 7.5) {
+      const p: Point = [gx + rand() * 6, gy + rand() * 6];
+      // Skip the face: nothing drawn there would show.
+      if (!inside(p, PERM_CORE) || ((p[0] - 50) / 29) ** 2 + ((p[1] - 60) / 37) ** 2 < 1) continue;
+      const [dx, dy] = [p[0] - 50, p[1] - 45];
+      const low = Math.min(1, Math.max(0, (p[1] - 15) / 75));
+      const heading = Math.atan2(dy / Math.hypot(dx, dy) + 0.4 + low, dx / Math.hypot(dx, dy)) + (rand() - 0.5) * 0.8;
+      inner.push({
+        base: p,
+        heading,
+        length: 6 + rand() * 3,
+        width: 2.4 + rand() * 0.9,
+        curl: hookWay(heading, p[0]) * (2.3 + rand() * 0.8),
+      });
+    }
+  }
+  return { edge, inner };
+};
+
+const { edge: edgeCurls, inner: innerCurls } = permCurls();
+
 /** Hairline: lifted off the forehead in the middle, curling down over the temples to the cheeks. */
 const curlyHairline: Point[] = [
   [22, 70],
@@ -35,181 +202,34 @@ const curlyHairline: Point[] = [
 
 const curlyFringe = curlyRun(curlyHairline);
 
-/** Catmull-Rom spline through the points, `steps` samples per span. */
-const spline = (points: Point[], steps = 24): Point[] => {
-  const out: Point[] = [];
-  for (let i = 0; i < points.length - 1; i++) {
-    const [p0, p1, p2, p3] = [points[i - 1] ?? points[i], points[i], points[i + 1], points[i + 2] ?? points[i + 1]];
-    for (let step = 0; step < steps; step++) {
-      const t = step / steps;
-      const at = (k: 0 | 1) =>
-        0.5 *
-        (2 * p1[k] +
-          (p2[k] - p0[k]) * t +
-          (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t +
-          (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * t * t * t);
-      out.push([at(0), at(1)]);
-    }
-  }
-  return [...out, points[points.length - 1]];
-};
-
-interface Lock {
-  spine: Point[];
-  root: number;
-  tip: number;
-  /** Behind the others: tinted darker. */
-  deep?: boolean;
-  /** How far down the lock (0–1) the coils begin; perms stay looser at the root. */
-  coilFrom?: number;
-}
-
-/**
- * A spiral ringlet hanging along `spine`, tapering from `root` to `tip` wide. Its sides wave a
- * half turn out of step with each other, the way a coiled lock looks; `coils` are the turns
- * crossing it. Both are built from as few curve commands as possible: there are 18 locks, and
- * the hair engine repeats the silhouette several times.
- */
-const ringlet = ({ spine, root, tip, coilFrom = 0 }: Lock, phase = 0, pitch = 7, ripple = 0.16) => {
-  const line = spline(spine);
-  const along = [0];
-  for (let i = 1; i < line.length; i++) along.push(along[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]));
-  const total = along[along.length - 1];
-
-  const frame = (s: number) => {
-    let i = 1;
-    while (i < line.length - 1 && along[i] < s) i++;
-    const [x0, y0] = line[i - 1];
-    const [x1, y1] = line[i];
-    const seg = along[i] - along[i - 1] || 1;
-    const k = Math.min(1, Math.max(0, (s - along[i - 1]) / seg));
-    const [tx, ty] = [(x1 - x0) / seg, (y1 - y0) / seg];
-    const half = (root + (tip - root) * (s / total)) / 2;
-    return { x: x0 + (x1 - x0) * k, y: y0 + (y1 - y0) * k, tx, ty, nx: -ty, ny: tx, half };
-  };
-  const pt = (x: number, y: number) => `${x.toFixed(1)} ${y.toFixed(1)}`;
-  const side = (s: number, dir: 1 | -1, width = 1) => {
-    const { x, y, nx, ny, half } = frame(s);
-    return pt(x + dir * nx * half * width, y + dir * ny * half * width);
-  };
-  /**
-   * One side as a wave of half turns (`dir` +1 = left of the direction of travel), bulging out on
-   * the half turns from `shift` and in on the others; `from` > `to` runs it back up the lock.
-   * Full half turns after the second are `T`s: each mirrors the one before, at half the size.
-   */
-  const wave = (dir: 1 | -1, shift: number, from: number, to: number) => {
-    const half = pitch / 2;
-    const up = from > to;
-    const cuts = [from];
-    const first = (Math.floor((Math.min(from, to) / pitch - shift) * 2) + 1) / 2;
-    for (let k = first; (k + shift) * pitch < Math.max(from, to); k += 0.5) cuts.push((k + shift) * pitch);
-    if (up) cuts.splice(1, cuts.length - 1, ...cuts.slice(1).reverse());
-    cuts.push(to);
-    return cuts
-      .slice(1)
-      .map((end, i) => {
-        const begin = cuts[i];
-        const mid = (begin + end) / 2;
-        const outward = Math.round((mid / pitch - shift) * 2 - 0.5) % 2 === 0;
-        const full = Math.abs(end - begin) > half - 0.01;
-        if (full && i > 1 && i < cuts.length - 2) return ` T ${side(end, dir)}`;
-        return ` Q ${side(mid, dir, outward ? 1 + 2 * ripple : 1 - 2 * ripple)} ${side(end, dir)}`;
-      })
-      .join("");
-  };
-
-  const r = (tip / 2).toFixed(1);
-  // Clockwise, like the crown: overlapping subpaths wound the other way would cancel out.
-  const edge = `M ${side(0, -1)}${wave(-1, phase + 0.5, 0, total)} A ${r} ${r} 0 0 1 ${side(total, 1)}${wave(1, phase, total, 0)}`;
-
-  const coils: string[] = [];
-  for (let s0 = ((((phase + 0.75) % 1) + 1) % 1) * pitch; s0 < total - pitch / 2; s0 += pitch) {
-    if (s0 < coilFrom * total) continue;
-    const mid = frame(s0 + pitch / 4);
-    const bow = pitch * 0.36;
-    coils.push(`M ${side(s0, 1, 0.8)} Q ${pt(mid.x + mid.tx * bow, mid.y + mid.ty * bow)} ${side(s0 + pitch / 2, -1, 0.8)}`);
-  }
-  // The root end is buried in the mass, so only the sides and tip get a shade line.
-  return { outline: `${edge} Z`, edge, coils: coils.join(" ") };
-};
-
-/** Left side, back to front: the deep locks by the neck, the long outer ones, then the crown falling over them. */
-const LOCKS: Lock[] = [
-  { spine: [[24, 54], [24, 68], [26, 82], [29, 95]], root: 9, tip: 4.5, deep: true },
-  { spine: [[15, 46], [11, 62], [9, 78], [10, 98]], root: 13, tip: 5, deep: true },
-  { spine: [[10, 36], [3, 52], [-1, 68], [-2.5, 86]], root: 12, tip: 5 },
-  { spine: [[19, 48], [17, 64], [18, 80], [21, 99]], root: 11, tip: 4.5 },
-  { spine: [[16, 26], [8, 40], [3.5, 56], [0.5, 72], [0, 92]], root: 11, tip: 5 },
-  { spine: [[23, 26], [17, 40], [13.5, 56], [11.5, 72], [12.5, 89]], root: 10, tip: 4.5 },
-  { spine: [[54, 8.5], [42, 8.5], [29.5, 12.5], [19.5, 20.5], [12, 32.5]], root: 11, tip: 7, coilFrom: 0.3 },
-  { spine: [[53, 13.5], [42, 14.5], [31.5, 19], [23.5, 27.5], [18.5, 38]], root: 10, tip: 6.5, coilFrom: 0.3 },
-  { spine: [[52, 18.5], [43, 19.5], [35.5, 23], [29.5, 29.5]], root: 8, tip: 6, coilFrom: 0.25 },
-];
-
-const lockPaths = LOCKS.flatMap((lock, i) => [
-  { ...lock, ...ringlet(lock, (i * 0.37) % 1) },
-  { ...lock, ...ringlet({ ...lock, spine: lock.spine.map(([x, y]) => [100 - x, y] as const) }, (i * 0.37 + 0.45) % 1) },
-]);
-
-/** Crown and core the locks hang from; only its top edge shows. */
-const curlyCrown = scallop([
-  [10, 88],
-  [4, 76],
-  [2.5, 62],
-  [4, 48],
-  [7, 37],
-  [10.5, 28],
-  [15, 20.5],
-  [20, 14.5],
-  [25.5, 10],
-  [31.5, 7],
-  [37.5, 5.2],
-  [43.5, 4.3],
-  [49.5, 4],
-  [55.5, 4.4],
-  [61.5, 5.4],
-  [67.5, 7.4],
-  [73.5, 10.6],
-  [79, 15],
-  [84, 21],
-  [88.5, 29],
-  [92, 38],
-  [95, 48.5],
-  [96.5, 62],
-  [96, 76],
-  [90, 88],
-  [73, 91],
-  [69.5, 83],
-  [66, 74],
-  [34, 74],
-  [30.5, 83],
-  [27, 91],
-], { bulge: 0.55 });
-
-const curlyMass = [curlyCrown, ...lockPaths.map((lock) => lock.outline)].join(" ");
+const permMass = [smoothLoop(PERM_CORE), ...edgeCurls.map(flick)].join(" ");
+const innerShade = innerCurls.map(flick).join(" ");
+const innerLight = innerCurls.map((c) => flick({ ...c, base: [c.base[0] + 0.9, c.base[1] - 1.2], width: c.width * 0.6 })).join(" ");
 const curlShade = "#7A4A12";
 
 const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaCurlyBangs: {
     cap: capAbove(`M 12 70 L 22 70 ${curlyFringe} L 88 70`),
-    front: curlyMass,
-    paint: (color) => (
-      <g strokeLinecap="round" strokeLinejoin="round">
-        <path d={curlyCrown} fill={curlShade} fillOpacity="0.12" />
-        {lockPaths.map((lock, i) => (
-          <g key={i}>
-            <path d={lock.outline} fill={color} />
-            <path d={lock.edge} fill="none" stroke={curlShade} strokeOpacity="0.4" strokeWidth="0.8" />
-            {lock.deep && <path d={lock.outline} fill={curlShade} fillOpacity="0.16" />}
-            <path d={lock.coils} fill="none" stroke="white" strokeOpacity="0.35" strokeWidth="0.9" transform="translate(0.5, -0.7)" />
-            <path d={lock.coils} fill="none" stroke={curlShade} strokeOpacity="0.28" strokeWidth="0.8" />
-          </g>
-        ))}
-        <path d={`M 22 70 ${curlyFringe}`} fill="none" stroke={curlShade} strokeOpacity="0.2" strokeWidth="6" />
+    front: permMass,
+    // Darker underneath and round the face, lighter on top; curls inside carry the texture.
+    paint: (_color, { uid = "fv" }) => (
+      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <linearGradient id={`${uid}-perm-depth`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="white" stopOpacity="0.28" />
+            <stop offset="0.45" stopColor="white" stopOpacity="0" />
+            <stop offset="1" stopColor={curlShade} stopOpacity="0.3" />
+          </linearGradient>
+        </defs>
+        <rect x="-10" y="-5" width="120" height="107" fill={`url(#${uid}-perm-depth)`} />
+        <path d={`M 22 70 ${curlyFringe}`} stroke={curlShade} strokeOpacity="0.22" strokeWidth="7" />
+        <path d={innerShade} fill={curlShade} fillOpacity="0.32" />
+        <path d={innerLight} fill="white" fillOpacity="0.45" />
       </g>
     ),
-    shine: "M 30 11 C 40 6, 58 5.5, 70 10 C 58 9.5, 44 10.5, 34 15 Z",
-    top: 3,
+    shine: "M 26 12 C 36 5.5, 56 4.5, 70 9.5 C 58 9, 42 10, 31 16 Z",
+    top: 1,
+    peak: -3,
   },
   marikaBangsUpdo: {
     // Short crop: a wispy fringe (uneven strands ending in soft points), volume on top, and the
