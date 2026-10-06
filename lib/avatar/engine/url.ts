@@ -39,7 +39,7 @@ export function generateShareableURL(state: Partial<AvatarState>, preset?: strin
 
   // The preset has to travel with the link: its own parts are only accepted while it is loaded.
   const params: Partial<AvatarStateParams> = {
-    preset: preset || null,
+    preset: preset || undefined,
     head: state.head,
     eyebrows: state.eyebrows,
     eyes: state.eyes,
