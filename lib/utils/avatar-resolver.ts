@@ -24,11 +24,9 @@ import { getAvatarStateFromId } from "../avatar/engine/avatar-generator";
 export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>): AvatarState {
   let state: AvatarState = { ...DEFAULT_AVATAR_STATE };
 
-  if (params.preset) {
-    const presetData = AVATAR_PRESETS[params.preset as keyof typeof AVATAR_PRESETS];
-    if (presetData) {
-      state = { ...state, ...(presetData as Partial<AvatarState>) };
-    }
+  const presetData = params.preset ? AVATAR_PRESETS[params.preset as keyof typeof AVATAR_PRESETS] : undefined;
+  if (presetData) {
+    state = { ...state, ...(presetData as Partial<AvatarState>) };
   }
 
   if (params.id) {
@@ -37,13 +35,14 @@ export function resolveAvatarStateFromParams(params: Partial<AvatarStateParams>)
 
   const overrides: Partial<AvatarState> = {};
 
-  const categoryKeys: (keyof AvatarState)[] = CATEGORIES.map((category) => category.stateKey);
-
-  categoryKeys.forEach((key) => {
-    const paramValue = params[key as keyof AvatarStateParams];
-    if (typeof paramValue === "string") {
-      (overrides as Record<string, AvatarState[keyof AvatarState]>)[key] = paramValue;
-    }
+  CATEGORIES.forEach(({ stateKey, sortedKeys }) => {
+    const paramValue = params[stateKey as keyof AvatarStateParams];
+    if (typeof paramValue !== "string") return;
+    // Preset-only parts stay with their preset: a param can pick any part the editor offers, but a
+    // preset's own part only while that preset is loaded.
+    const presetValue = presetData?.[stateKey as keyof typeof presetData];
+    if (!sortedKeys.includes(paramValue) && presetValue !== paramValue) return;
+    (overrides as Record<string, AvatarState[keyof AvatarState]>)[stateKey] = paramValue;
   });
 
   if (params.texture) overrides.texture = params.texture as AvatarState["texture"];

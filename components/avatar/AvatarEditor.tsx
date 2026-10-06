@@ -126,7 +126,7 @@ const AvatarEditor: React.FC<AvatarEditorProps> = ({ initialState }): React.JSX.
   }, [setParams]);
 
   const handleCopyLink = (): void => {
-    navigator.clipboard.writeText(generateShareableURL(avatarState));
+    navigator.clipboard.writeText(generateShareableURL(avatarState, params.preset));
     toast.success("Share link copied to clipboard");
   };
 
