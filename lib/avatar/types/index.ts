@@ -104,6 +104,8 @@ import {
 } from "../config/presets/drew";
 
 import {
+  PrvyEyebrows,
+  PrvyEyebrowsIds,
   PrvyEyes,
   PrvyEyesIds,
   PrvyExtras,
@@ -119,7 +121,7 @@ export const AllNoses = { ...Noses, ...PrvyNoses, ...UrsulaNoses };
 export const AllHairFront = { ...HairFront, ...MarikaHairFront, ...UrsulaHairFront, ...DrewHairFront };
 export const AllHairBack = { ...HairBack, ...MarikaHairBack, ...UrsulaHairBack, ...DrewHairBack };
 export const AllEyes = { ...Eyes, ...MarikaEyes, ...UrsulaEyes, ...PrvyEyes, ...DrewEyes };
-export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows, ...DrewEyebrows };
+export const AllEyebrows = { ...Eyebrows, ...MarikaEyebrows, ...UrsulaEyebrows, ...PrvyEyebrows, ...DrewEyebrows };
 export const AllMouths = { ...Mouths, ...MarikaMouths, ...UrsulaMouths, ...PrvyMouths, ...DrewMouths };
 export const AllBodies = { ...Bodies, ...MarikaBodies, ...UrsulaBodies, ...DrewBodies };
 export const AllAccessories = { ...Accessories, ...MarikaAccessories, ...UrsulaAccessories };
@@ -156,6 +158,7 @@ export type AllEyebrowsId =
   | EyebrowsId
   | (typeof MarikaEyebrowsIds)[number]
   | (typeof UrsulaEyebrowsIds)[number]
+  | (typeof PrvyEyebrowsIds)[number]
   | (typeof DrewEyebrowsIds)[number];
 export type AllMouthId =
   | MouthId
