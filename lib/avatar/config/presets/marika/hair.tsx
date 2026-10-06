@@ -7,86 +7,166 @@ export const MarikaHairIds = ["marikaCurlyBangs", "marikaBangsUpdo", "marika1", 
 
 export type MarikaHairId = (typeof MarikaHairIds)[number];
 
-const both = (leftSide: string) => `${leftSide} ${mirrorPath(leftSide)}`;
-
 /** A hairline run whose bumps hang towards the face (curly bangs). */
 const curlyRun = (points: Point[]) => scallop(points, { closed: false, inward: true }).replace(/^M/, "L");
 
 /**
- * Loose 80s curls: close to the skull on top, widening past the jaw, with the lengths falling
- * in front of the shoulders. Uneven spacing keeps the ringlets from reading as a wig.
+ * Loose 80s perm: rounded but close on top, flaring out past the jaw into an A-line, with the
+ * lengths resting on the shoulders. Uneven spacing keeps the ringlets from reading as a wig.
  */
 const curlyMane = scallop([
-  [8, 97],
-  [3, 89],
-  [1, 80],
-  [2.5, 71],
-  [3, 62],
-  [5, 52],
-  [6.5, 43],
-  [9, 35],
-  [13, 27],
-  [18, 20],
-  [24.5, 14],
-  [32, 9.5],
-  [40, 7],
-  [47, 6],
-  [54, 6],
-  [61, 7.5],
-  [68.5, 10],
-  [75.5, 14.5],
-  [81.5, 20.5],
-  [86.5, 28],
-  [90, 36],
-  [92.5, 44],
-  [94, 53],
-  [95.5, 62],
-  [97, 71],
-  [98.5, 80],
-  [97, 89],
-  [92, 97],
-  [84, 99.5],
-  [76, 97],
-  [70, 90],
-  [67, 82],
-  [64, 72],
-  [36, 72],
-  [33, 82],
-  [30, 90],
-  [24, 97],
-  [16, 99.5],
+  [7, 100],
+  [1, 94.5],
+  [-2, 87],
+  [-2.5, 78.5],
+  [-1, 70],
+  [1, 61.5],
+  [3.5, 53],
+  [6, 45],
+  [9, 37],
+  [12.5, 29.5],
+  [16.5, 22.5],
+  [21.5, 16],
+  [27.5, 11],
+  [34, 7.5],
+  [41, 5.5],
+  [48, 4.5],
+  [55, 5],
+  [62, 6.5],
+  [68.5, 9.5],
+  [74.5, 14],
+  [79.5, 20],
+  [84, 27],
+  [87.5, 35],
+  [90.5, 43],
+  [93, 51.5],
+  [95.5, 60],
+  [98, 68.5],
+  [100, 77],
+  [100.5, 85.5],
+  [98.5, 93.5],
+  [93, 100],
+  [85.5, 101],
+  [78.5, 97.5],
+  [73, 91],
+  [69.5, 83],
+  [66, 74],
+  [34, 74],
+  [30.5, 83],
+  [27, 91],
+  [21.5, 97.5],
+  [14.5, 101],
 ]);
+
+/** Hairline: lifted off the forehead in the middle, curling down over the temples to the cheeks. */
+const curlyHairline: Point[] = [
+  [22, 70],
+  [22, 62.5],
+  [22.5, 55],
+  [23, 48],
+  [24, 41],
+  [26, 34.5],
+  [29.5, 29],
+  [34.5, 25.5],
+  [40.5, 23.5],
+  [47, 22.5],
+  [53.5, 22.5],
+  [60, 23.5],
+  [65.5, 25.5],
+  [70.5, 29],
+  [74, 34.5],
+  [76, 41],
+  [77, 48],
+  [77.5, 55],
+  [78, 62.5],
+  [78, 70],
+];
+
+const curlyFringe = curlyRun(curlyHairline);
+
+/** Where the ringlets run on the left side: from the crown, down and out with the flare. */
+const curlyFlow: Point[][] = [
+  [[45, 6], [33, 9], [22.5, 17], [15, 28], [10, 41], [6, 55], [3.5, 69], [3, 82], [6, 95]],
+  [[47.5, 11.5], [38.5, 14], [29.5, 20], [22.5, 29.5], [17.5, 41.5], [14, 55], [12, 69], [12, 83], [14.5, 96]],
+  [[49, 17.5], [42, 19], [35, 22], [30, 26.5]],
+  [[20.5, 62], [20.5, 74], [22, 85], [24.5, 95]],
+];
+
+/** Catmull-Rom spline through the points, sampled ten times per span. */
+const spline = (points: Point[]): Point[] => {
+  const out: Point[] = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const [p0, p1, p2, p3] = [points[i - 1] ?? points[i], points[i], points[i + 1], points[i + 2] ?? points[i + 1]];
+    for (let step = 0; step < 10; step++) {
+      const t = step / 10;
+      const at = (k: 0 | 1) =>
+        0.5 *
+        (2 * p1[k] +
+          (p2[k] - p0[k]) * t +
+          (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t +
+          (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * t * t * t);
+      out.push([at(0), at(1)]);
+    }
+  }
+  return [...out, points[points.length - 1]];
+};
+
+/**
+ * A strand coiling along `points` (one curl of radius `r` every `pitch`), drawn in `on`-long runs
+ * with `off` gaps: unbroken, neighbouring strands read as braids instead of separate ringlets.
+ */
+const ringlets = (points: Point[], { r = 1.3, pitch = 7, on = 13, off = 5, offset = 0, lift = 0 } = {}) => {
+  const line = spline(points);
+  let travelled = offset;
+  let d = "";
+  let drawing = false;
+  for (let i = 0; i < line.length - 1; i++) {
+    const [x0, y0] = line[i];
+    const [x1, y1] = line[i + 1];
+    const length = Math.hypot(x1 - x0, y1 - y0);
+    const [tx, ty] = [(x1 - x0) / length, (y1 - y0) / length];
+    for (let s = 0; s < length; s += 0.5) {
+      const at = travelled + s;
+      if (at % (on + off) >= on) {
+        drawing = false;
+        continue;
+      }
+      const a = (at / pitch) * 2 * Math.PI;
+      const x = x0 + tx * s + r * (Math.sin(a) * tx - Math.cos(a) * ty) + lift;
+      const y = y0 + ty * s + r * (Math.sin(a) * ty + Math.cos(a) * tx) - lift;
+      d += `${drawing ? " " : " M "}${x.toFixed(1)} ${y.toFixed(1)}`;
+      drawing = true;
+    }
+    travelled += length;
+  }
+  return d.trim();
+};
+
+/** Both sides, the right one phase-shifted so the curls don't mirror one for one. */
+const curlStrands = (lift = 0) => {
+  const side = (shift: number) => curlyFlow.map((flow, i) => ringlets(flow, { offset: shift + i * 7, lift })).join(" ");
+  return `${side(0)} ${mirrorPath(side(9))}`;
+};
+
+const curls = curlStrands();
+const curlLights = curlStrands(0.8);
+const curlShade = "#7A4A12";
 
 const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaCurlyBangs: {
-    cap: capAbove(
-      `M 12 68 L 22 68 ${curlyRun([
-        [22, 68],
-        [22.5, 60],
-        [23, 52],
-        [24.5, 44.5],
-        [28.5, 38],
-        [34, 34],
-        [40.5, 32.5],
-        [47, 31.5],
-        [53, 31.5],
-        [59.5, 32.5],
-        [66, 34],
-        [71.5, 38],
-        [75.5, 44.5],
-        [77, 52],
-        [77.5, 60],
-        [78, 68],
-      ])} L 88 68`,
-    ),
+    cap: capAbove(`M 12 70 L 22 70 ${curlyFringe} L 88 70`),
     front: curlyMane,
-    details: [
-      "M 29 22 q 3 -3 6 0 M 42 15 q 3 -3 6 0 M 56 15 q 3 -3 6 0 M 68 21 q 3 -3 6 0",
-      "M 35 27 q 2.5 2.5 5 0 M 48 24 q 2.5 2.5 5 0 M 62 26 q 2.5 2.5 5 0",
-      both("M 9 38 q 3 3 0 6 q -3 3 0 6 M 6 58 q 3 3 0 6 q -3 3 0 6 M 12 72 q 3 3 0 6 q -3 3 0 6 M 6 84 q 3 3 0 6 M 18 86 q 3 3 0 6 M 16 26 q 3 0 4 3"),
-    ].join(" "),
-    shine: "M 32 12 C 42 7, 58 6.5, 68 10 C 58 10.5, 44 11.5, 35 16 Z",
-    top: 6,
+    // Shade round the rim and along the fringe gives the mass depth; the ringlets carry the flow.
+    paint: () => (
+      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <path d={curlyMane} stroke={curlShade} strokeOpacity="0.14" strokeWidth="7" />
+        <path d={`M 22 70 ${curlyFringe}`} stroke={curlShade} strokeOpacity="0.2" strokeWidth="7" />
+        <path d={curlLights} stroke="white" strokeOpacity="0.45" strokeWidth="0.9" />
+        <path d={curls} stroke={curlShade} strokeOpacity="0.4" strokeWidth="1.2" />
+      </g>
+    ),
+    shine: "M 30 11 C 40 6, 58 5.5, 70 10 C 58 9.5, 44 10.5, 34 15 Z",
+    top: 4.5,
   },
   marikaBangsUpdo: {
     // Short crop: a wispy fringe (uneven strands ending in soft points), volume on top, and the
