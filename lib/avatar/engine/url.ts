@@ -34,10 +34,12 @@ export function buildAvatarSvgApiUrl(
 /**
  * Generates a shareable URL with the current avatar state encoded as query parameters.
  */
-export function generateShareableURL(state: Partial<AvatarState>): string {
+export function generateShareableURL(state: Partial<AvatarState>, preset?: string | null): string {
   const url = new URL(typeof window !== "undefined" ? window.location.origin : "");
 
+  // The preset has to travel with the link: its own parts are only accepted while it is loaded.
   const params: Partial<AvatarStateParams> = {
+    preset: preset || null,
     head: state.head,
     eyebrows: state.eyebrows,
     eyes: state.eyes,
