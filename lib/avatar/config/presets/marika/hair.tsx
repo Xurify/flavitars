@@ -1,7 +1,6 @@
 import { PartRegistry } from "../../../parts/common";
 import { capAbove, createHairRegistries, HairSpec } from "../../../parts/hair";
 import { scallop, type Point } from "../../../parts/shapes";
-import { mirrorPath } from "../../../anatomy";
 
 export const MarikaHairIds = ["marikaCurlyBangs", "marikaBangsUpdo", "marika1", "marikaAtelier"] as const;
 
@@ -9,54 +8,6 @@ export type MarikaHairId = (typeof MarikaHairIds)[number];
 
 /** A hairline run whose bumps hang towards the face (curly bangs). */
 const curlyRun = (points: Point[]) => scallop(points, { closed: false, inward: true }).replace(/^M/, "L");
-
-/**
- * Loose 80s perm: rounded but close on top, flaring out past the jaw into an A-line, with the
- * lengths resting on the shoulders. Uneven spacing keeps the ringlets from reading as a wig.
- */
-const curlyMane = scallop([
-  [7, 100],
-  [1, 94.5],
-  [-2, 87],
-  [-2.5, 78.5],
-  [-1, 70],
-  [1, 61.5],
-  [3.5, 53],
-  [6, 45],
-  [9, 37],
-  [12.5, 29.5],
-  [16.5, 22.5],
-  [21.5, 16],
-  [27.5, 11],
-  [34, 7.5],
-  [41, 5.5],
-  [48, 4.5],
-  [55, 5],
-  [62, 6.5],
-  [68.5, 9.5],
-  [74.5, 14],
-  [79.5, 20],
-  [84, 27],
-  [87.5, 35],
-  [90.5, 43],
-  [93, 51.5],
-  [95.5, 60],
-  [98, 68.5],
-  [100, 77],
-  [100.5, 85.5],
-  [98.5, 93.5],
-  [93, 100],
-  [85.5, 101],
-  [78.5, 97.5],
-  [73, 91],
-  [69.5, 83],
-  [66, 74],
-  [34, 74],
-  [30.5, 83],
-  [27, 91],
-  [21.5, 97.5],
-  [14.5, 101],
-]);
 
 /** Hairline: lifted off the forehead in the middle, curling down over the temples to the cheeks. */
 const curlyHairline: Point[] = [
@@ -84,21 +35,13 @@ const curlyHairline: Point[] = [
 
 const curlyFringe = curlyRun(curlyHairline);
 
-/** Where the ringlets run on the left side: from the crown, down and out with the flare. */
-const curlyFlow: Point[][] = [
-  [[45, 6], [33, 9], [22.5, 17], [15, 28], [10, 41], [6, 55], [3.5, 69], [3, 82], [6, 95]],
-  [[47.5, 11.5], [38.5, 14], [29.5, 20], [22.5, 29.5], [17.5, 41.5], [14, 55], [12, 69], [12, 83], [14.5, 96]],
-  [[49, 17.5], [42, 19], [35, 22], [30, 26.5]],
-  [[20.5, 62], [20.5, 74], [22, 85], [24.5, 95]],
-];
-
-/** Catmull-Rom spline through the points, sampled ten times per span. */
-const spline = (points: Point[]): Point[] => {
+/** Catmull-Rom spline through the points, `steps` samples per span. */
+const spline = (points: Point[], steps = 24): Point[] => {
   const out: Point[] = [];
   for (let i = 0; i < points.length - 1; i++) {
     const [p0, p1, p2, p3] = [points[i - 1] ?? points[i], points[i], points[i + 1], points[i + 2] ?? points[i + 1]];
-    for (let step = 0; step < 10; step++) {
-      const t = step / 10;
+    for (let step = 0; step < steps; step++) {
+      const t = step / steps;
       const at = (k: 0 | 1) =>
         0.5 *
         (2 * p1[k] +
@@ -111,62 +54,162 @@ const spline = (points: Point[]): Point[] => {
   return [...out, points[points.length - 1]];
 };
 
+interface Lock {
+  spine: Point[];
+  root: number;
+  tip: number;
+  /** Behind the others: tinted darker. */
+  deep?: boolean;
+  /** How far down the lock (0–1) the coils begin; perms stay looser at the root. */
+  coilFrom?: number;
+}
+
 /**
- * A strand coiling along `points` (one curl of radius `r` every `pitch`), drawn in `on`-long runs
- * with `off` gaps: unbroken, neighbouring strands read as braids instead of separate ringlets.
+ * A spiral ringlet hanging along `spine`, tapering from `root` to `tip` wide. Its sides wave a
+ * half turn out of step with each other, the way a coiled lock looks; `coils` are the turns
+ * crossing it. Both are built from as few curve commands as possible: there are 18 locks, and
+ * the hair engine repeats the silhouette several times.
  */
-const ringlets = (points: Point[], { r = 1.3, pitch = 7, on = 13, off = 5, offset = 0, lift = 0 } = {}) => {
-  const line = spline(points);
-  let travelled = offset;
-  let d = "";
-  let drawing = false;
-  for (let i = 0; i < line.length - 1; i++) {
-    const [x0, y0] = line[i];
-    const [x1, y1] = line[i + 1];
-    const length = Math.hypot(x1 - x0, y1 - y0);
-    const [tx, ty] = [(x1 - x0) / length, (y1 - y0) / length];
-    for (let s = 0; s < length; s += 0.5) {
-      const at = travelled + s;
-      if (at % (on + off) >= on) {
-        drawing = false;
-        continue;
-      }
-      const a = (at / pitch) * 2 * Math.PI;
-      const x = x0 + tx * s + r * (Math.sin(a) * tx - Math.cos(a) * ty) + lift;
-      const y = y0 + ty * s + r * (Math.sin(a) * ty + Math.cos(a) * tx) - lift;
-      d += `${drawing ? " " : " M "}${x.toFixed(1)} ${y.toFixed(1)}`;
-      drawing = true;
-    }
-    travelled += length;
+const ringlet = ({ spine, root, tip, coilFrom = 0 }: Lock, phase = 0, pitch = 7, ripple = 0.16) => {
+  const line = spline(spine);
+  const along = [0];
+  for (let i = 1; i < line.length; i++) along.push(along[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]));
+  const total = along[along.length - 1];
+
+  const frame = (s: number) => {
+    let i = 1;
+    while (i < line.length - 1 && along[i] < s) i++;
+    const [x0, y0] = line[i - 1];
+    const [x1, y1] = line[i];
+    const seg = along[i] - along[i - 1] || 1;
+    const k = Math.min(1, Math.max(0, (s - along[i - 1]) / seg));
+    const [tx, ty] = [(x1 - x0) / seg, (y1 - y0) / seg];
+    const half = (root + (tip - root) * (s / total)) / 2;
+    return { x: x0 + (x1 - x0) * k, y: y0 + (y1 - y0) * k, tx, ty, nx: -ty, ny: tx, half };
+  };
+  const pt = (x: number, y: number) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+  const side = (s: number, dir: 1 | -1, width = 1) => {
+    const { x, y, nx, ny, half } = frame(s);
+    return pt(x + dir * nx * half * width, y + dir * ny * half * width);
+  };
+  /**
+   * One side as a wave of half turns (`dir` +1 = left of the direction of travel), bulging out on
+   * the half turns from `shift` and in on the others; `from` > `to` runs it back up the lock.
+   * Full half turns after the second are `T`s: each mirrors the one before, at half the size.
+   */
+  const wave = (dir: 1 | -1, shift: number, from: number, to: number) => {
+    const half = pitch / 2;
+    const up = from > to;
+    const cuts = [from];
+    const first = (Math.floor((Math.min(from, to) / pitch - shift) * 2) + 1) / 2;
+    for (let k = first; (k + shift) * pitch < Math.max(from, to); k += 0.5) cuts.push((k + shift) * pitch);
+    if (up) cuts.splice(1, cuts.length - 1, ...cuts.slice(1).reverse());
+    cuts.push(to);
+    return cuts
+      .slice(1)
+      .map((end, i) => {
+        const begin = cuts[i];
+        const mid = (begin + end) / 2;
+        const outward = Math.round((mid / pitch - shift) * 2 - 0.5) % 2 === 0;
+        const full = Math.abs(end - begin) > half - 0.01;
+        if (full && i > 1 && i < cuts.length - 2) return ` T ${side(end, dir)}`;
+        return ` Q ${side(mid, dir, outward ? 1 + 2 * ripple : 1 - 2 * ripple)} ${side(end, dir)}`;
+      })
+      .join("");
+  };
+
+  const r = (tip / 2).toFixed(1);
+  // Clockwise, like the crown: overlapping subpaths wound the other way would cancel out.
+  const edge = `M ${side(0, -1)}${wave(-1, phase + 0.5, 0, total)} A ${r} ${r} 0 0 1 ${side(total, 1)}${wave(1, phase, total, 0)}`;
+
+  const coils: string[] = [];
+  for (let s0 = ((((phase + 0.75) % 1) + 1) % 1) * pitch; s0 < total - pitch / 2; s0 += pitch) {
+    if (s0 < coilFrom * total) continue;
+    const mid = frame(s0 + pitch / 4);
+    const bow = pitch * 0.36;
+    coils.push(`M ${side(s0, 1, 0.8)} Q ${pt(mid.x + mid.tx * bow, mid.y + mid.ty * bow)} ${side(s0 + pitch / 2, -1, 0.8)}`);
   }
-  return d.trim();
+  // The root end is buried in the mass, so only the sides and tip get a shade line.
+  return { outline: `${edge} Z`, edge, coils: coils.join(" ") };
 };
 
-/** Both sides, the right one phase-shifted so the curls don't mirror one for one. */
-const curlStrands = (lift = 0) => {
-  const side = (shift: number) => curlyFlow.map((flow, i) => ringlets(flow, { offset: shift + i * 7, lift })).join(" ");
-  return `${side(0)} ${mirrorPath(side(9))}`;
-};
+/** Left side, back to front: the deep locks by the neck, the long outer ones, then the crown falling over them. */
+const LOCKS: Lock[] = [
+  { spine: [[24, 54], [24, 68], [26, 82], [29, 95]], root: 9, tip: 4.5, deep: true },
+  { spine: [[15, 46], [11, 62], [9, 78], [10, 98]], root: 13, tip: 5, deep: true },
+  { spine: [[10, 36], [3, 52], [-1, 68], [-2.5, 86]], root: 12, tip: 5 },
+  { spine: [[19, 48], [17, 64], [18, 80], [21, 99]], root: 11, tip: 4.5 },
+  { spine: [[16, 26], [8, 40], [3.5, 56], [0.5, 72], [0, 92]], root: 11, tip: 5 },
+  { spine: [[23, 26], [17, 40], [13.5, 56], [11.5, 72], [12.5, 89]], root: 10, tip: 4.5 },
+  { spine: [[54, 8.5], [42, 8.5], [29.5, 12.5], [19.5, 20.5], [12, 32.5]], root: 11, tip: 7, coilFrom: 0.3 },
+  { spine: [[53, 13.5], [42, 14.5], [31.5, 19], [23.5, 27.5], [18.5, 38]], root: 10, tip: 6.5, coilFrom: 0.3 },
+  { spine: [[52, 18.5], [43, 19.5], [35.5, 23], [29.5, 29.5]], root: 8, tip: 6, coilFrom: 0.25 },
+];
 
-const curls = curlStrands();
-const curlLights = curlStrands(0.8);
+const lockPaths = LOCKS.flatMap((lock, i) => [
+  { ...lock, ...ringlet(lock, (i * 0.37) % 1) },
+  { ...lock, ...ringlet({ ...lock, spine: lock.spine.map(([x, y]) => [100 - x, y] as const) }, (i * 0.37 + 0.45) % 1) },
+]);
+
+/** Crown and core the locks hang from; only its top edge shows. */
+const curlyCrown = scallop([
+  [10, 88],
+  [4, 76],
+  [2.5, 62],
+  [4, 48],
+  [7, 37],
+  [10.5, 28],
+  [15, 20.5],
+  [20, 14.5],
+  [25.5, 10],
+  [31.5, 7],
+  [37.5, 5.2],
+  [43.5, 4.3],
+  [49.5, 4],
+  [55.5, 4.4],
+  [61.5, 5.4],
+  [67.5, 7.4],
+  [73.5, 10.6],
+  [79, 15],
+  [84, 21],
+  [88.5, 29],
+  [92, 38],
+  [95, 48.5],
+  [96.5, 62],
+  [96, 76],
+  [90, 88],
+  [73, 91],
+  [69.5, 83],
+  [66, 74],
+  [34, 74],
+  [30.5, 83],
+  [27, 91],
+], { bulge: 0.55 });
+
+const curlyMass = [curlyCrown, ...lockPaths.map((lock) => lock.outline)].join(" ");
 const curlShade = "#7A4A12";
 
 const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
   marikaCurlyBangs: {
     cap: capAbove(`M 12 70 L 22 70 ${curlyFringe} L 88 70`),
-    front: curlyMane,
-    // Shade round the rim and along the fringe gives the mass depth; the ringlets carry the flow.
-    paint: () => (
-      <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        <path d={curlyMane} stroke={curlShade} strokeOpacity="0.14" strokeWidth="7" />
-        <path d={`M 22 70 ${curlyFringe}`} stroke={curlShade} strokeOpacity="0.2" strokeWidth="7" />
-        <path d={curlLights} stroke="white" strokeOpacity="0.45" strokeWidth="0.9" />
-        <path d={curls} stroke={curlShade} strokeOpacity="0.4" strokeWidth="1.2" />
+    front: curlyMass,
+    paint: (color) => (
+      <g strokeLinecap="round" strokeLinejoin="round">
+        <path d={curlyCrown} fill={curlShade} fillOpacity="0.12" />
+        {lockPaths.map((lock, i) => (
+          <g key={i}>
+            <path d={lock.outline} fill={color} />
+            <path d={lock.edge} fill="none" stroke={curlShade} strokeOpacity="0.4" strokeWidth="0.8" />
+            {lock.deep && <path d={lock.outline} fill={curlShade} fillOpacity="0.16" />}
+            <path d={lock.coils} fill="none" stroke="white" strokeOpacity="0.35" strokeWidth="0.9" transform="translate(0.5, -0.7)" />
+            <path d={lock.coils} fill="none" stroke={curlShade} strokeOpacity="0.28" strokeWidth="0.8" />
+          </g>
+        ))}
+        <path d={`M 22 70 ${curlyFringe}`} fill="none" stroke={curlShade} strokeOpacity="0.2" strokeWidth="6" />
       </g>
     ),
     shine: "M 30 11 C 40 6, 58 5.5, 70 10 C 58 9.5, 44 10.5, 34 15 Z",
-    top: 4.5,
+    top: 3,
   },
   marikaBangsUpdo: {
     // Short crop: a wispy fringe (uneven strands ending in soft points), volume on top, and the
