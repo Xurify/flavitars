@@ -16,34 +16,39 @@ const curlyRun = (points: Point[]) => scallop(points, { closed: false, inward: t
  */
 const curlyMane = scallop([
   [7, 100],
-  [1, 94.5],
-  [-2, 87],
-  [-2.5, 78.5],
-  [-1, 70],
-  [1, 61.5],
-  [3.5, 53],
-  [6, 45],
-  [9, 37],
-  [12.5, 29.5],
-  [16.5, 22.5],
-  [21.5, 16],
-  [27.5, 11],
-  [34, 7.5],
-  [41, 5.5],
-  [48, 4.5],
-  [55, 5],
-  [62, 6.5],
-  [68.5, 9.5],
-  [74.5, 14],
-  [79.5, 20],
-  [84, 27],
-  [87.5, 35],
-  [90.5, 43],
-  [93, 51.5],
-  [95.5, 60],
-  [98, 68.5],
-  [100, 77],
-  [100.5, 85.5],
+  [0.5, 95],
+  [-2.5, 87.5],
+  [-3.5, 79],
+  [-3, 70],
+  [-4, 65.5],
+  [-1.5, 61],
+  [0.5, 52.5],
+  [3, 44],
+  [6, 36],
+  [6.3, 31.2],
+  [10, 28.5],
+  [14.5, 21.5],
+  [20, 15.5],
+  [26.5, 10.5],
+  [33.5, 7],
+  [41, 5],
+  [48, 4.2],
+  [55, 4.6],
+  [58.7, 3.9],
+  [62, 6.2],
+  [68.5, 9],
+  [74.5, 13.5],
+  [80, 19.5],
+  [85, 26.5],
+  [89, 34],
+  [92.5, 42],
+  [95.4, 45.8],
+  [95, 50.5],
+  [97.5, 59],
+  [99.5, 68],
+  [100.5, 77],
+  [100.5, 86],
+  [101.2, 90.2],
   [98.5, 93.5],
   [93, 100],
   [85.5, 101],
@@ -82,7 +87,32 @@ const curlyHairline: Point[] = [
   [78, 70],
 ];
 
-const curlyFringe = curlyRun(curlyHairline);
+/** A slim lock hanging `length` below the hairline between two of its points, ending in a rounded tip. */
+const fringeLock = ([x0, y0]: Point, [x1, y1]: Point, length: number) => {
+  const tipY = Math.max(y0, y1) + length;
+  const mid = (x0 + x1) / 2;
+  return [
+    `C ${x0 - 0.4} ${y0 + length * 0.5}, ${mid - 2.6} ${tipY - 2.2}, ${mid - 1.4} ${tipY - 0.2}`,
+    `C ${mid - 0.4} ${tipY + 1.3}, ${mid + 2.2} ${tipY + 0.8}, ${mid + 2} ${tipY - 1.4}`,
+    `C ${mid + 1.9} ${tipY - 2.8}, ${x1 + 0.4} ${y1 + length * 0.4}, ${x1} ${y1}`,
+  ].join(" ");
+};
+
+/** Locks falling onto the forehead, either side of centre: [hairline point they start from, length]. */
+const FRINGE_LOCKS = [
+  [7, 4.5],
+  [10, 4],
+] as const;
+
+const curlyFringe = (() => {
+  const runs: string[] = [];
+  let start = 0;
+  for (const [at, length] of FRINGE_LOCKS) {
+    runs.push(curlyRun(curlyHairline.slice(start, at + 1)), fringeLock(curlyHairline[at], curlyHairline[at + 1], length));
+    start = at + 1;
+  }
+  return [...runs, curlyRun(curlyHairline.slice(start))].join(" ");
+})();
 
 /** Where the ringlets run on the left side: from the crown, down and out with the flare. */
 const curlyFlow: Point[][] = [
@@ -166,7 +196,7 @@ const MARIKA_HAIR: Record<MarikaHairId, HairSpec> = {
       </g>
     ),
     shine: "M 30 11 C 40 6, 58 5.5, 70 10 C 58 9.5, 44 10.5, 34 15 Z",
-    top: 4.5,
+    top: 4.2,
   },
   marikaBangsUpdo: {
     // Short crop: a wispy fringe (uneven strands ending in soft points), volume on top, and the
