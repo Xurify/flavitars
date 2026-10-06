@@ -31,8 +31,8 @@ const UrsulaEye = ({ x, uid }: { x: number; uid: string }) => {
         </clipPath>
       </defs>
       <g transform={outward} fill="none" stroke="#C4947C" strokeLinecap="round">
-        <path d={LOWER_LID} strokeWidth="1.3" strokeOpacity="0.5" />
-        <path d={SMILE_LINES} strokeWidth="0.7" strokeOpacity="0.45" />
+        <path d={LOWER_LID} strokeWidth="1.3" strokeOpacity="0.62" />
+        <path d={SMILE_LINES} strokeWidth="0.75" strokeOpacity="0.6" />
       </g>
       <path d={OPENING} transform={outward} fill="#F8F5F2" />
       <g clipPath={`url(#${clipId})`}>
