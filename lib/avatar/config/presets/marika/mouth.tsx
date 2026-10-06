@@ -8,15 +8,15 @@ export type MarikaMouthId = (typeof MarikaMouthIds)[number];
 const marikaRedSmile: PartComponent = () => (
   <g transform="translate(50, 78)">
     <path
-      d="M -11 -2 Q -5.5 -5, 0 -3 Q 5.5 -5, 11 -2 Q 6 4.6, 0 4.9 Q -6 4.6, -11 -2 Z"
+      d="M -10.2 -1.9 Q -5.1 -4.8, 0 -2.9 Q 5.1 -4.8, 10.2 -1.9 Q 5.6 3.6, 0 3.8 Q -5.6 3.6, -10.2 -1.9 Z"
       fill="#D7303F"
       stroke="#9E1E2C"
       strokeWidth="0.9"
       strokeLinejoin="round"
     />
-    <path d="M -11 -2 Q 0 1.2, 11 -2" fill="none" stroke="#8F1826" strokeWidth="0.8" strokeLinecap="round" />
-    <path d="M -11 -2 q -1 -0.6 -1.3 -1.6 M 11 -2 q 1 -0.6 1.3 -1.6" fill="none" stroke="#9E1E2C" strokeWidth="0.6" strokeLinecap="round" opacity="0.7" />
-    <path d="M -4 2.6 Q 0 3.5, 4 2.6" fill="none" stroke="white" strokeWidth="1.1" strokeLinecap="round" opacity="0.35" />
+    <path d="M -10.2 -1.9 Q 0 1, 10.2 -1.9" fill="none" stroke="#8F1826" strokeWidth="0.8" strokeLinecap="round" />
+    <path d="M -10.2 -1.9 q -1 -0.6 -1.2 -1.5 M 10.2 -1.9 q 1 -0.6 1.2 -1.5" fill="none" stroke="#9E1E2C" strokeWidth="0.6" strokeLinecap="round" opacity="0.7" />
+    <path d="M -3.6 1.9 Q 0 2.7, 3.6 1.9" fill="none" stroke="white" strokeWidth="1.1" strokeLinecap="round" opacity="0.35" />
   </g>
 );
 

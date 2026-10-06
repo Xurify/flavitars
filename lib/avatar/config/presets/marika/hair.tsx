@@ -98,12 +98,12 @@ const PERM_CORE: Point[] = [
   [96, 76.5],
   [93, 87.5],
   [87, 95.5],
-  [77, 94.5],
-  [71.5, 86],
-  [67, 75],
-  [33, 75],
-  [28.5, 86],
-  [23, 94.5],
+  [76, 95.5],
+  [69.5, 87],
+  [64.5, 75],
+  [35.5, 75],
+  [30.5, 87],
+  [24, 95.5],
 ];
 /** The outer stretch of the core, where curls spring out: shoulder end to shoulder end. */
 const PERM_EDGE = PERM_CORE.slice(0, 23);
