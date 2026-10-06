@@ -1,22 +1,29 @@
 import React from "react";
-import { getHeadHatTransform } from "../parts";
-import { HeadId, HEAD_PATHS } from "../parts/head";
-import { HatId } from "../parts/hats";
+import { AVATAR_FRAME, HeadId, getHead } from "../anatomy";
+import type { HatId } from "../parts/hats";
 
 export const AVATAR_FILTER_PREFIX = "avatar-filter";
+
+/** Texture filters cover the whole avatar frame (plus margin), not just the 0–100 head box. */
+const FILTER_REGION = {
+  x: AVATAR_FRAME.x - 10,
+  y: AVATAR_FRAME.y - 10,
+  width: AVATAR_FRAME.size + 20,
+  height: AVATAR_FRAME.size + 20,
+};
 
 interface AvatarFiltersProps {
   filterId: string;
   clippingY?: number;
   headId: HeadId;
-  hatId: HatId;
+  hatId?: HatId;
 }
 
-export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId, hatId }) => {
+export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clippingY = 0, headId }) => {
   return (
     <defs>
       {/* STYLE 1: CRUNCHY NOISE */}
-      <filter id={`${filterId}-noise`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter id={`${filterId}-noise`} filterUnits="userSpaceOnUse" {...FILTER_REGION}>
         <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="4" stitchTiles="stitch" result="noise" />
         <feColorMatrix
           in="noise"
@@ -37,7 +44,7 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
       </filter>
 
       {/* STYLE 2: POP-ART HALFTONE (Structured Dots) */}
-      <filter id={`${filterId}-halftone`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter id={`${filterId}-halftone`} filterUnits="userSpaceOnUse" {...FILTER_REGION}>
         <feTurbulence type="fractalNoise" baseFrequency="1" numOctaves="1" result="dots" />
         <feColorMatrix
           in="dots"
@@ -53,7 +60,7 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
       </filter>
 
       {/* STYLE 3: DIGITAL GLITCH (Prime / Lo-Fi) */}
-      <filter id={`${filterId}-glitch`} filterUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%">
+      <filter id={`${filterId}-glitch`} filterUnits="userSpaceOnUse" {...FILTER_REGION}>
         <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" in="SourceGraphic" result="red" />
         <feOffset in="red" dx="1" dy="0" result="redShift" />
         <feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" in="SourceGraphic" result="cyan" />
@@ -65,7 +72,7 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
         <feComposite in="rgbSplit" in2="glitchMask" operator="arithmetic" k2="1" k3="0.2" />
       </filter>
 
-      <filter id={`${filterId}-wobble`} filterUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <filter id={`${filterId}-wobble`} filterUnits="userSpaceOnUse" {...FILTER_REGION}>
         <feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="3" result="edgeTurbulence" />
         <feDisplacementMap in2="edgeTurbulence" in="SourceGraphic" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
       </filter>
@@ -75,13 +82,8 @@ export const AvatarFilters: React.FC<AvatarFiltersProps> = ({ filterId, clipping
       </clipPath>
 
       <clipPath id={`${filterId}-head-shape`}>
-        <path d={HEAD_PATHS[headId] || HEAD_PATHS.angular} />
+        <path d={getHead(headId).path} />
       </clipPath>
-
-      <mask id={`${filterId}-astronaut-glass-mask`} maskUnits="userSpaceOnUse">
-        <rect x="0" y="0" width="100" height="100" fill="black" />
-        <circle cx="50" cy="15" r="41" fill="white" transform={getHeadHatTransform(headId, hatId, 35, 1)} />
-      </mask>
     </defs>
   );
 };

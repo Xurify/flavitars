@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format-hair-paths": "bun run scripts/format-hair-paths.ts"
+    "render-sheet": "bun run scripts/render-sheet.tsx"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

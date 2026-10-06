@@ -1,10 +1,45 @@
-import { AvatarState, CATEGORIES, SKIN_TONES, HAIR_COLORS, ACCESSORY_ACCENT_COLORS } from "../types";
+import { AvatarState, CATEGORIES } from "../types";
+import {
+  canonicalColorId,
+  FABRIC_PALETTE,
+  HAIR_PALETTE,
+  LEGACY_ACCENT_IDS,
+  LEGACY_HAIR_IDS,
+  LEGACY_SKIN_IDS,
+  LENS_PALETTE,
+  Palette,
+  paletteSwatches,
+  SKIN_PALETTE,
+} from "../colors";
 import { TextureId, Textures } from "../parts";
 
 /**
  * Packs the avatar state into a compact Base36 string.
- * ID format: p_ + packed bits in base36
+ * ID format: prefix + packed bits in base36. The prefix versions the option lists, because each
+ * field's bit width depends on how many options its list has.
+ *   p_  — v1: 4 heads, flat legacy colour lists (hat and body used the hair list)
+ *   p2_ — v2: current part lists and grouped palettes
  */
+
+export const PACKED_ID_PREFIX = "p2_";
+const LEGACY_PACKED_ID_PREFIX = "p_";
+const V1_HEAD_IDS = ["square", "rounded", "angular", "oval"] as const;
+
+export const isPackedId = (id: string) => id.startsWith(PACKED_ID_PREFIX) || id.startsWith(LEGACY_PACKED_ID_PREFIX);
+
+const categoryOptions = (category: (typeof CATEGORIES)[number], version: 1 | 2): readonly string[] =>
+  version === 1 && category.id === "head" ? V1_HEAD_IDS : category.sortedKeys;
+
+const ids = (palette: Palette) => paletteSwatches(palette).map((option) => option.id);
+
+/** Colour fields in pack order, with the list each version indexes into. */
+const COLOR_FIELDS = [
+  { key: "skinTone", palette: SKIN_PALETTE, legacy: LEGACY_SKIN_IDS },
+  { key: "hairColor", palette: HAIR_PALETTE, legacy: LEGACY_HAIR_IDS },
+  { key: "hatColor", palette: FABRIC_PALETTE, legacy: LEGACY_HAIR_IDS },
+  { key: "accessoryColor", palette: LENS_PALETTE, legacy: LEGACY_ACCENT_IDS },
+  { key: "bodyColor", palette: FABRIC_PALETTE, legacy: LEGACY_HAIR_IDS },
+] as const;
 
 const BASE36_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -40,14 +75,12 @@ export function packState(state: AvatarState): string {
   };
 
   CATEGORIES.forEach((category) => {
-    pack(state[category.stateKey], category.sortedKeys);
+    pack(state[category.stateKey], categoryOptions(category, 2));
   });
 
-  pack(state.skinTone, SKIN_TONES.map((tone) => tone.id));
-  pack(state.hairColor, HAIR_COLORS.map((color) => color.id));
-  pack(state.hatColor, HAIR_COLORS.map((color) => color.id));
-  pack(state.accessoryColor, ACCESSORY_ACCENT_COLORS.map((color) => color.id));
-  pack(state.bodyColor, HAIR_COLORS.map((color) => color.id));
+  COLOR_FIELDS.forEach(({ key, palette }) => {
+    pack(canonicalColorId(palette, state[key]), ids(palette));
+  });
   pack(state.texture, Object.keys(Textures));
   pack(state.containHair, ["false", "true"]);
 
@@ -55,9 +88,10 @@ export function packState(state: AvatarState): string {
 }
 
 export function unpackState(packedId: string): Partial<AvatarState> | null {
-  if (!packedId.startsWith("p_")) return null;
-  const packedValue = packedId.slice(2);
-  
+  const version = packedId.startsWith(PACKED_ID_PREFIX) ? 2 : packedId.startsWith(LEGACY_PACKED_ID_PREFIX) ? 1 : null;
+  if (!version) return null;
+  const packedValue = packedId.slice(version === 2 ? PACKED_ID_PREFIX.length : LEGACY_PACKED_ID_PREFIX.length);
+
   try {
     const bits = base36ToBigInt(packedValue);
     let offset = BigInt(0);
@@ -72,23 +106,21 @@ export function unpackState(packedId: string): Partial<AvatarState> | null {
     };
 
     CATEGORIES.forEach((category) => {
-      (state as Record<string, string | boolean>)[category.stateKey] = unpack(category.sortedKeys);
+      (state as Record<string, string | boolean>)[category.stateKey] = unpack(categoryOptions(category, version));
     });
 
-    state.skinTone = unpack(SKIN_TONES.map((tone) => tone.id));
-    state.hairColor = unpack(HAIR_COLORS.map((color) => color.id));
-    state.hatColor = unpack(HAIR_COLORS.map((color) => color.id));
-    state.accessoryColor = unpack(ACCESSORY_ACCENT_COLORS.map((color) => color.id));
-    state.bodyColor = unpack(HAIR_COLORS.map((color) => color.id));
+    COLOR_FIELDS.forEach(({ key, palette, legacy }) => {
+      state[key] = canonicalColorId(palette, unpack(version === 1 ? legacy : ids(palette)));
+    });
     state.texture = unpack(Object.keys(Textures)) as TextureId;
     state.containHair = unpack(["false", "true"]) === "true";
 
     return state;
   } catch (error) {
     if (error instanceof Error) {
-        console.error("Failed to unpack avatar state:", error.message);
+      console.error("Failed to unpack avatar state:", error.message);
     } else {
-        console.error("Failed to unpack avatar state: Unknown error");
+      console.error("Failed to unpack avatar state: Unknown error");
     }
     return null;
   }

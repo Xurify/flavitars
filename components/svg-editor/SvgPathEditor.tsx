@@ -18,7 +18,6 @@ import {
   PenToolIcon,
   LayersIcon,
   KeyboardIcon,
-  CopyPlusIcon,
   HandIcon,
   SquareDashedMousePointerIcon,
   EyeIcon,
@@ -32,12 +31,7 @@ import {
   extractNodes,
   PathCommand,
 } from "@/lib/svg-editor/path-parser";
-import {
-  getHairPathData,
-  hasHairVariants,
-  hasHairHighlight,
-  getHairHighlightPath,
-} from "@/lib/avatar/parts/hair-paths";
+import { getHairPathData, HairLayer, HAIR_LAYER_LABELS } from "@/lib/avatar/parts/hair-paths";
 import { AvatarCanvas } from "./AvatarCanvas";
 import { PathBreakdown } from "./PathBreakdown";
 import { CodeExport } from "./CodeExport";
@@ -83,8 +77,7 @@ export function SvgPathEditor(): React.JSX.Element {
 
   const [selectedHair, setSelectedHair] = useState<HairId>(() => avatarState.hair);
   const [selectedHat, setSelectedHat] = useState<HatId>(() => avatarState.hat);
-  const [layer, setLayer] = useState<"front" | "back" | "highlight">("front");
-  const [useHatVariant, setUseHatVariant] = useState<boolean | null>(null);
+  const [layer, setLayer] = useState<HairLayer>("front");
 
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [copiedPath, setCopiedPath] = useState(false);
@@ -149,16 +142,7 @@ export function SvgPathEditor(): React.JSX.Element {
     }
   }, [lastSavedAt, wasManualSave]);
 
-  const hasVariants = useMemo(() => hasHairVariants(selectedHair, layer), [selectedHair, layer]);
-  const hasHighlight = useMemo(() => hasHairHighlight(selectedHair), [selectedHair]);
-  const effectiveUseHatVariant = useHatVariant ?? (selectedHat !== "none" && hasVariants);
-
-  const rawPathData = useMemo(() => {
-    if (layer === "highlight") {
-      return getHairHighlightPath(selectedHair);
-    }
-    return getHairPathData(selectedHair, layer, effectiveUseHatVariant ? "topHat" : "none");
-  }, [selectedHair, layer, effectiveUseHatVariant]);
+  const rawPathData = useMemo(() => getHairPathData(selectedHair, layer), [selectedHair, layer]);
 
   const [commands, setCommands] = useState<PathCommand[]>([]);
   const initialCommandsLoadedRef = useRef(false);
@@ -210,7 +194,7 @@ export function SvgPathEditor(): React.JSX.Element {
   const previousContextKey = useRef("");
 
   useEffect(() => {
-    const currentContextKey = `${selectedHair}-${selectedHat}-${layer}-${effectiveUseHatVariant}`;
+    const currentContextKey = `${selectedHair}-${selectedHat}-${layer}`;
 
     if (activeProject && !initialCommandsLoadedRef.current) {
       initialCommandsLoadedRef.current = true;
@@ -233,9 +217,8 @@ export function SvgPathEditor(): React.JSX.Element {
 
     previousContextKey.current = currentContextKey;
 
-    const layerKey = `${layer}-${effectiveUseHatVariant}`;
-    if (layerCommands[layerKey]) {
-      const savedCommands = layerCommands[layerKey];
+    if (layerCommands[layer]) {
+      const savedCommands = layerCommands[layer];
       setCommands(savedCommands);
       const initialEntry: HistoryEntry = {
         id: Math.random().toString(36).substring(2, 11),
@@ -257,7 +240,7 @@ export function SvgPathEditor(): React.JSX.Element {
       label: `Initial ${selectedHair} (${layer})`,
     };
     setHistoryState({ history: [initialEntry], index: 0 });
-  }, [selectedHair, selectedHat, layer, rawPathData, effectiveUseHatVariant, activeProject, layerCommands]);
+  }, [selectedHair, selectedHat, layer, rawPathData, activeProject, layerCommands]);
 
   const nodes = useMemo(() => extractNodes(commands), [commands]);
   const pathString = useMemo(() => serializePath(commands), [commands]);
@@ -361,19 +344,10 @@ export function SvgPathEditor(): React.JSX.Element {
     pushToHistory(newCommands, "Insert Node on Curve");
   };
 
-  const handleLayerSwitch = (newLayer: "front" | "back" | "highlight"): void => {
-    const currentKey = `${layer}-${effectiveUseHatVariant}`;
-    setLayerCommands((previous) => ({ ...previous, [currentKey]: commands }));
+  const handleLayerSwitch = (newLayer: HairLayer): void => {
+    setLayerCommands((previous) => ({ ...previous, [layer]: commands }));
     setLayer(newLayer);
     setSelectedNodeIds(new Set());
-  };
-
-  const handleCopyVariantToOther = (): void => {
-    const targetVariant = !effectiveUseHatVariant;
-    const targetKey = `${layer}-${targetVariant}`;
-    setLayerCommands((previous) => ({ ...previous, [targetKey]: commands }));
-    setUseHatVariant(targetVariant);
-    pushToHistory(commands, `Copied to ${targetVariant ? "Tucked" : "Default"} Variant`);
   };
 
   useEffect(() => {
@@ -557,7 +531,6 @@ export function SvgPathEditor(): React.JSX.Element {
               originalPathString={rawPathData}
               hairId={selectedHair}
               layer={layer}
-              hatId={effectiveUseHatVariant ? "topHat" : "none"}
             />
 
             <button
@@ -740,44 +713,21 @@ export function SvgPathEditor(): React.JSX.Element {
                   Active Layer
                 </label>
                 <div className="flex gap-1">
-                  <button
-                    type="button"
-                    onClick={() => handleLayerSwitch("front")}
-                    className={cn(
-                      "flex-1 px-2 py-1.5 rounded-xl text-xs font-semibold transition-colors",
-                      layer === "front"
-                        ? "bg-primary text-white shadow-xs"
-                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                    )}
-                  >
-                    Front
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleLayerSwitch("back")}
-                    className={cn(
-                      "flex-1 px-2 py-1.5 rounded-xl text-xs font-semibold transition-colors",
-                      layer === "back"
-                        ? "bg-primary text-white shadow-xs"
-                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                    )}
-                  >
-                    Back
-                  </button>
-                  {hasHighlight && (
+                  {(["cap", "front", "back"] as const).map((layerOption) => (
                     <button
+                      key={layerOption}
                       type="button"
-                      onClick={() => handleLayerSwitch("highlight")}
+                      onClick={() => handleLayerSwitch(layerOption)}
                       className={cn(
                         "flex-1 px-2 py-1.5 rounded-xl text-xs font-semibold transition-colors",
-                        layer === "highlight"
-                          ? "bg-amber-400 text-zinc-950 shadow-xs"
+                        layer === layerOption
+                          ? "bg-primary text-white shadow-xs"
                           : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
                       )}
                     >
-                      Highlight
+                      {HAIR_LAYER_LABELS[layerOption]}
                     </button>
-                  )}
+                  ))}
                 </div>
               </div>
 
@@ -820,7 +770,6 @@ export function SvgPathEditor(): React.JSX.Element {
                     value={selectedHat}
                     onChange={(event) => {
                       setSelectedHat(event.target.value as HatId);
-                      setUseHatVariant(null);
                     }}
                     className="w-full px-3 py-1.5 bg-zinc-800/90 border border-zinc-700/80 rounded-xl text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
@@ -832,28 +781,6 @@ export function SvgPathEditor(): React.JSX.Element {
                   </select>
                 </div>
 
-                {hasVariants && (
-                  <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-zinc-950/60 border border-zinc-800">
-                    <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={effectiveUseHatVariant}
-                        onChange={(event) => setUseHatVariant(event.target.checked)}
-                        className="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-800 text-primary"
-                      />
-                      <span className="text-xs">Tucked Variant</span>
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleCopyVariantToOther}
-                      className="text-[10px] text-primary hover:text-primary/80 flex items-center gap-1 font-semibold"
-                      title="Copy current path to other variant"
-                    >
-                      <CopyPlusIcon className="w-3 h-3" />
-                      <span>Sync</span>
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -1099,7 +1026,6 @@ export function SvgPathEditor(): React.JSX.Element {
               editMode={editMode}
               currentLayer={layer}
               ghostSettings={ghostSettings}
-              useHatVariant={effectiveUseHatVariant}
             />
           </div>
 
@@ -1186,7 +1112,7 @@ export function SvgPathEditor(): React.JSX.Element {
             }
             closeProject();
             setLayerCommands({});
-            const pathData = getHairPathData(selectedHair, layer, "none");
+            const pathData = getHairPathData(selectedHair, layer);
             const initialCommands = parsePath(pathData).commands;
             setCommands(initialCommands);
 

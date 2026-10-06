@@ -1,16 +1,15 @@
-import React, { useId } from "react";
+import React from "react";
 import { AvatarState } from "@/lib/avatar/types";
 import { resolveAvatarColors } from "@/lib/utils/avatar-resolver";
-import { AvatarFilters } from "@/lib/avatar/core/filters";
-import { AvatarLayers } from "@/lib/avatar/core/layers";
 import { cn } from "@/lib/utils/strings";
+import { AvatarSvg } from "./AvatarSvg";
 
 interface AvatarPreviewProps {
   state: AvatarState;
-  size?: "sm" | "md" | "lg" | "xl" | "preview";
+  /** `fill` takes the size of the container, for grids whose tiles set the size. */
+  size?: "sm" | "md" | "lg" | "xl" | "preview" | "fill";
   className?: string;
   showBackground?: boolean;
-  centered?: boolean;
 }
 
 const sizeClasses = {
@@ -19,6 +18,7 @@ const sizeClasses = {
   lg: "w-32 h-32 rounded-2xl",
   xl: "w-48 h-48 rounded-2xl",
   preview: "w-64 h-64 sm:w-72 sm:h-72 rounded-2xl",
+  fill: "w-full h-full",
 };
 
 export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
@@ -26,12 +26,8 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
   size = "preview",
   className,
   showBackground = true,
-  centered = false,
 }): React.JSX.Element => {
   const { hairColor } = resolveAvatarColors(state);
-
-  const baseId = useId();
-  const filterId = `filter-${baseId.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
     <div
@@ -44,47 +40,9 @@ export const AvatarPreview: React.FC<AvatarPreviewProps> = ({
       )}
       style={{ "--avatar-hair": hairColor } as React.CSSProperties}
     >
-      <svg
-        viewBox="0 0 100 100"
-        className={cn(
-          "w-full h-full text-foreground transform transition-transform duration-300",
-          !centered && "scale-[0.88] translate-y-[-4%]"
-        )}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
-
-        <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
-          {state.texture !== "none" && (
-            <>
-              <rect
-                x="0"
-                y="0"
-                width="100"
-                height="100"
-                fill="currentColor"
-                opacity="0.05"
-                className="text-foreground"
-              />
-              <rect
-                x="0"
-                y="0"
-                width="100"
-                height="100"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.5"
-                opacity="0.08"
-              />
-            </>
-          )}
-
-          <AvatarLayers state={state} filterId={filterId} />
-        </g>
-      </svg>
+      <AvatarSvg state={state} className="w-full h-full text-foreground" />
     </div>
   );
 };
 
 export default AvatarPreview;
-

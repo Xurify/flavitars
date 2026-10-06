@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { CodeIcon, ClipboardIcon, CheckIcon } from "lucide-react";
 import { HairId } from "@/lib/avatar/parts/hair";
-import { HatId } from "@/lib/avatar/parts/hats";
+import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 import {
   Dialog,
   DialogContent,
@@ -18,8 +18,7 @@ interface CodeExportProperties {
   pathString: string;
   originalPathString: string;
   hairId: HairId;
-  layer: "front" | "back" | "highlight";
-  hatId: HatId;
+  layer: HairLayer;
 }
 
 function useCopyFeedback(): [(text: string, key: string) => Promise<void>, string | null] {
@@ -43,7 +42,6 @@ export function CodeExport({
   originalPathString,
   hairId: _hairId,
   layer: _layer,
-  hatId: _hatId,
 }: CodeExportProperties): React.JSX.Element {
   const [handleCopy, copiedKey] = useCopyFeedback();
   const [isOpen, setIsOpen] = useState(false);

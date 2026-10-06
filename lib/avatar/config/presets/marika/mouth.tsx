@@ -1,19 +1,39 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
 
-export const MarikaMouthIds = ["marikaDefinedRedSmile", "marikaAtelier"] as const;
+export const MarikaMouthIds = ["marikaRedSmile", "marikaDefinedRedSmile", "marikaAtelier"] as const;
 
 export type MarikaMouthId = (typeof MarikaMouthIds)[number];
 
+/** Closed red lips with the corners lifted into a gentle smile. */
+const marikaRedSmile: PartComponent = () => (
+  <g transform="translate(50, 78)">
+    <path
+      d="M -11 -2 Q -5.5 -5, 0 -3 Q 5.5 -5, 11 -2 Q 6 4.6, 0 4.9 Q -6 4.6, -11 -2 Z"
+      fill="#D7303F"
+      stroke="#9E1E2C"
+      strokeWidth="0.9"
+      strokeLinejoin="round"
+    />
+    <path d="M -11 -2 Q 0 1.2, 11 -2" fill="none" stroke="#8F1826" strokeWidth="0.8" strokeLinecap="round" />
+    <path d="M -11 -2 q -1 -0.6 -1.3 -1.6 M 11 -2 q 1 -0.6 1.3 -1.6" fill="none" stroke="#9E1E2C" strokeWidth="0.6" strokeLinecap="round" opacity="0.7" />
+    <path d="M -4 2.6 Q 0 3.5, 4 2.6" fill="none" stroke="white" strokeWidth="1.1" strokeLinecap="round" opacity="0.35" />
+  </g>
+);
+
+/** Warm berry smile showing the top teeth. */
 const marikaDefinedRedSmile: PartComponent = () => (
   <g transform="translate(50, 78)">
-    <path d="M -13 0 Q -6 -5, 0 -1.5 Q 6 -5, 13 0" fill="#881337" stroke="#4C0519" strokeWidth="1" />
-
-    <path d="M -10 0.5 L -9 3 Q 0 4, 9 3 L 10 0.5 Z" fill="white" />
-    <path d="M -9 0.5 H 9" stroke="#4C0519" opacity="0.2" strokeWidth="0.5" />
-
-    <path d="M -12 2 Q 0 10, 12 2 Q 13 0, 10 0.5 Q 0 2, -10 0.5 Q -13 0, -12 2" fill="#881337" stroke="#4C0519" strokeWidth="1" />
-
-    <path d="M -6 4 Q 0 6, 6 4" fill="none" stroke="white" opacity="0.2" strokeWidth="1.5" strokeLinecap="round" />
+    <path
+      d="M -11.5 -2.4 Q -6 -5.4, 0 -3.6 Q 6 -5.4, 11.5 -2.4 Q 6.5 5.8, 0 6.1 Q -6.5 5.8, -11.5 -2.4 Z"
+      fill="#C2485C"
+      stroke="#8E2F42"
+      strokeWidth="0.9"
+      strokeLinejoin="round"
+    />
+    <path d="M -9.6 -1.6 Q 0 0.5, 9.6 -1.6 Q 5.6 3.4, 0 3.7 Q -5.6 3.4, -9.6 -1.6 Z" fill="#6E2A38" />
+    <path d="M -9 -1.4 Q 0 0.6, 9 -1.4 Q 5.2 1.9, 0 2.2 Q -5.2 1.9, -9 -1.4 Z" fill="#FBF8F3" />
+    <path d="M -11.5 -2.4 q -1 -0.7 -1.3 -1.8 M 11.5 -2.4 q 1 -0.7 1.3 -1.8" fill="none" stroke="#8E2F42" strokeWidth="0.6" strokeLinecap="round" opacity="0.7" />
+    <path d="M -4 4.4 Q 0 5.2, 4 4.4" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
   </g>
 );
 
@@ -30,12 +50,10 @@ const marikaAtelier: PartComponent = () => (
   </g>
 );
 
+const preset = { presetOnly: true, isExclusive: true };
+
 export const MarikaMouths: PartRegistry<MarikaMouthId> = {
-  marikaDefinedRedSmile: {
-    component: marikaDefinedRedSmile,
-    label: "Marika Red Smile",
-    presetOnly: true,
-    isExclusive: true,
-  },
-  marikaAtelier: { component: marikaAtelier, label: "Marika Atelier", presetOnly: true, isExclusive: true },
+  marikaRedSmile: { component: marikaRedSmile, label: "Marika Red Smile", ...preset },
+  marikaDefinedRedSmile: { component: marikaDefinedRedSmile, label: "Marika Berry Smile", ...preset },
+  marikaAtelier: { component: marikaAtelier, label: "Marika Atelier", ...preset },
 };

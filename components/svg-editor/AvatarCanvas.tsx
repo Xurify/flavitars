@@ -12,6 +12,7 @@ import {
   Point,
 } from "@/lib/svg-editor/path-engine";
 import { GhostLayers, GhostLayerSettings } from "./GhostLayers";
+import { HairLayer } from "@/lib/avatar/parts/hair-paths";
 import { cn } from "@/lib/utils/strings";
 
 interface AvatarCanvasProperties {
@@ -26,9 +27,8 @@ interface AvatarCanvasProperties {
   onPathSplit: (newCommands: PathCommand[]) => void;
   onDragEnd?: () => void;
   editMode: "select" | "marquee" | "pen" | "move" | "pan";
-  currentLayer: "front" | "back" | "highlight";
+  currentLayer: HairLayer;
   ghostSettings: GhostLayerSettings;
-  useHatVariant?: boolean;
 }
 
 const CANVAS_SIZE = 100;
@@ -49,7 +49,6 @@ export function AvatarCanvas({
   editMode,
   currentLayer,
   ghostSettings,
-  useHatVariant = false,
 }: AvatarCanvasProperties): React.JSX.Element {
   const containerReference = useRef<HTMLDivElement>(null);
   const svgReference = useRef<SVGSVGElement>(null);
@@ -607,7 +606,6 @@ export function AvatarCanvas({
             avatarState={avatarState}
             currentLayer={currentLayer}
             settings={ghostSettings}
-            useHatVariant={useHatVariant}
           />
 
           {/* Editable Hair Vector Path with High-Contrast Stroke */}
@@ -624,7 +622,7 @@ export function AvatarCanvas({
               <path
                 d={pathString}
                 fill={
-                  currentLayer === "highlight"
+                  currentLayer === "cap"
                     ? "#fde68a"
                     : currentLayer === "back"
                       ? canvasTheme === "light"
@@ -637,7 +635,7 @@ export function AvatarCanvas({
                 stroke={
                   editMode === "move"
                     ? "#f97316"
-                    : currentLayer === "highlight"
+                    : currentLayer === "cap"
                       ? "#b45309"
                       : canvasTheme === "light"
                         ? "#0f172a"

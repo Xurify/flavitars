@@ -1,25 +1,24 @@
-import { PartRegistry, PartComponent, getHeadSideOffset } from "../../../parts/common";
+import { PartRegistry, PartComponent, getEarLobe } from "../../../parts/common";
 
 export const UrsulaAccessoryIds = ["ursulaPearlEarrings"] as const;
 export type UrsulaAccessoryId = (typeof UrsulaAccessoryIds)[number];
 
+/** A single pearl hanging just below each ear lobe. */
+const Pearl = ({ x, y }: { x: number; y: number }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <circle r="2.45" fill="#B7B5AD" />
+    <circle r="1.75" fill="#FCFCFA" />
+    <circle cx="-0.55" cy="-0.6" r="0.55" fill="white" />
+  </g>
+);
+
 const ursulaPearlEarrings: PartComponent = ({ headId }) => {
-  const leftX = getHeadSideOffset(headId, true) * 0.5;
-  const rightX = getHeadSideOffset(headId, false) * 0.5;
+  const left = getEarLobe(headId, true);
+  const right = getEarLobe(headId, false);
   return (
     <g>
-      {/* Left Earring */}
-      <g transform={`translate(${leftX}, 0)`}>
-        <circle cx="22" cy="61" r="0.8" fill="#F59E0B" />
-        <circle cx="22" cy="64" r="2.2" fill="#FAFAFA" stroke="#D1D5DB" strokeWidth="0.5" />
-        <circle cx="21.3" cy="63.3" r="0.6" fill="white" opacity="0.6" />
-      </g>
-      {/* Right Earring */}
-      <g transform={`translate(${rightX}, 0)`}>
-        <circle cx="78" cy="61" r="0.8" fill="#F59E0B" />
-        <circle cx="78" cy="64" r="2.2" fill="#FAFAFA" stroke="#D1D5DB" strokeWidth="0.5" />
-        <circle cx="77.3" cy="63.3" r="0.6" fill="white" opacity="0.6" />
-      </g>
+      <Pearl x={left.x + 1.3} y={left.y + 6.1} />
+      <Pearl x={right.x - 1.3} y={right.y + 6.1} />
     </g>
   );
 };

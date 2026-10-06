@@ -30,7 +30,7 @@ export default function PresetsPage(): React.JSX.Element {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {Object.entries(AVATAR_PRESETS).map(([presetKey, preset]) => {
             const avatarState = {
               ...DEFAULT_AVATAR_STATE,
@@ -41,32 +41,31 @@ export default function PresetsPage(): React.JSX.Element {
               <Link
                 key={presetKey}
                 href={`/?preset=${presetKey}`}
-                className="group relative flex flex-col justify-between rounded-2xl bg-white border border-border/80 p-5 shadow-xs hover:border-primary/50 hover:shadow-lg hover:shadow-black/5 hover:-translate-y-1 transition-all duration-200"
+                className="group relative flex flex-col justify-between rounded-xl bg-white border border-border/80 p-3 sm:p-3.5 shadow-xs hover:border-primary/50 hover:shadow-md hover:shadow-black/5 hover:-translate-y-0.5 transition-all duration-200"
               >
                 <div>
-                  <div className="aspect-square mb-4 rounded-xl border border-border/60 overflow-hidden flex items-center justify-center bg-stone-50/70 p-3 group-hover:bg-primary/5 transition-colors">
+                  <div className="aspect-square mb-3 rounded-lg border border-border/60 overflow-hidden flex items-center justify-center bg-stone-50/70 p-2 group-hover:bg-primary/5 transition-colors">
                     <AvatarPreview
                       state={avatarState}
-                      size="preview"
+                      size="fill"
                       showBackground={false}
-                      centered={true}
-                      className="w-full h-full drop-shadow-xs"
+                      className="drop-shadow-xs"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <h2 className="text-base font-bold capitalize text-foreground group-hover:text-primary transition-colors truncate">
+                  <div className="space-y-1">
+                    <h2 className="text-sm font-bold leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
                       {preset.name}
                     </h2>
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
                       {preset.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
+                <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[11px] font-semibold text-primary">
                   <span>Open in Studio</span>
-                  <ArrowRightIcon className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
             );

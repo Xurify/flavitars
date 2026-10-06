@@ -1,29 +1,24 @@
 import { PartRegistry, PartComponent } from "../../../parts/common";
+import { mirrorPath } from "../../../anatomy";
 
-export const MarikaEyebrowsIds = ["marikaArch", "marikaDefinedArch"] as const;
+export const MarikaEyebrowsIds = ["marikaArch"] as const;
 
 export type MarikaEyebrowsId = (typeof MarikaEyebrowsIds)[number];
 
+const leftArch = "M 25.5 37.5 C 29 33.5, 36 31.8, 44.5 35";
+
+/** Thin, gently arched brows in a warm brown, so the eyes do the talking. */
 const marikaArch: PartComponent = () => (
-  <g opacity="0.9">
-    <path d="M 24 38 Q 35 31, 46 37" fill="none" stroke="#5D4037" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M 54 37 Q 65 31, 76 38" fill="none" stroke="#5D4037" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M 30 34 Q 35 33, 40 34" fill="none" stroke="#5D4037" opacity="0.3" strokeWidth="0.5" />
-    <path d="M 60 34 Q 65 33, 70 34" fill="none" stroke="#5D4037" opacity="0.3" strokeWidth="0.5" />
-  </g>
-);
-
-const marikaDefinedArch: PartComponent = () => (
-  <g opacity="0.95">
-    <path d="M 24 35 Q 35 28, 46 34" fill="none" stroke="#3E2723" strokeWidth="2" strokeLinecap="round" />
-    <path d="M 54 34 Q 65 28, 76 35" fill="none" stroke="#3E2723" strokeWidth="2" strokeLinecap="round" />
-
-    <path d="M 40 30 L 46 34" fill="none" stroke="#3E2723" strokeWidth="1" />
-    <path d="M 60 30 L 54 34" fill="none" stroke="#3E2723" strokeWidth="1" />
-  </g>
+  <path
+    d={`${leftArch} ${mirrorPath(leftArch)}`}
+    fill="none"
+    stroke="#8A6A55"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    opacity="0.9"
+  />
 );
 
 export const MarikaEyebrows: PartRegistry<MarikaEyebrowsId> = {
   marikaArch: { component: marikaArch, label: "Marika Arch", presetOnly: true, isExclusive: true },
-  marikaDefinedArch: { component: marikaDefinedArch, label: "Marika Defined Arch", presetOnly: true, isExclusive: true },
 };

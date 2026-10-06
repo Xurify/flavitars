@@ -1,48 +1,62 @@
-import { PartRegistry, createAvatarItem } from "./common";
+import {
+  HeadIds,
+  type HeadId,
+  HEADS,
+  HEAD_PATHS,
+  getHead,
+  getEarPath,
+  getEarDetailPath,
+  getHeadFacialTransform,
+  NECK_PATH,
+} from "../anatomy";
+import { PartRegistry, PartComponent } from "./common";
 
-export const HeadIds = ["square", "rounded", "angular", "oval"] as const;
-export type HeadId = (typeof HeadIds)[number];
+export { HeadIds, type HeadId, HEAD_PATHS };
 
-export const HEAD_PATHS: Record<string, string> = {
-  square: "M20 22 Q 50 18, 80 22 L 78 85 Q 50 92, 22 85 Z",
-  rounded: "M20 30 C 20 10, 80 10, 80 30 C 80 60, 80 85, 50 92 C 20 85, 20 60, 20 30 Z",
-  angular: "M20 20 L 80 20 L 75 75 L 50 92 L 25 75 Z",
-  oval: "M20 40 C 20 10, 80 10, 80 40 C 80 70, 75 90, 50 90 C 25 90, 20 70, 20 40 Z",
+const HEAD_LABELS: Record<HeadId, string> = {
+  square: "Square",
+  rounded: "Rounded",
+  angular: "Angular",
+  oval: "Oval",
+  slender: "Slender",
 };
 
-export const SquareHead = createAvatarItem({
-  id: "square",
-  name: "Square",
-  svg: ({ fill }) => (
-    <path d={HEAD_PATHS.square} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-  )
-});
-
-export const RoundedHead = createAvatarItem({
-  id: "rounded",
-  name: "Rounded",
-  svg: ({ fill }) => (
-    <path d={HEAD_PATHS.rounded} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-  )
-});
-
-export const AngularHead = createAvatarItem({
-  id: "angular",
-  name: "Angular",
-  svg: ({ fill }) => (
-    <path d={HEAD_PATHS.angular} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-  )
-});
-
-export const OvalHead = createAvatarItem({
-  id: "oval",
-  name: "Oval",
-  svg: ({ fill }) => <path d={HEAD_PATHS.oval} fill={fill} stroke="currentColor" strokeWidth="2" />
-});
-
-export const HeadShapes: PartRegistry<HeadId> = {
-  square: { component: SquareHead.svg, label: SquareHead.name },
-  rounded: { component: RoundedHead.svg, label: RoundedHead.name },
-  angular: { component: AngularHead.svg, label: AngularHead.name },
-  oval: { component: OvalHead.svg, label: OvalHead.name },
+const headPart = (headId: HeadId): PartComponent => {
+  const Head: PartComponent = ({ fill }) => (
+    <path d={HEADS[headId].path} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  );
+  return Head;
 };
+
+export const HeadShapes: PartRegistry<HeadId> = Object.fromEntries(
+  HeadIds.map((id) => [id, { component: headPart(id), label: HEAD_LABELS[id] }]),
+) as PartRegistry<HeadId>;
+
+export const Ears: PartComponent = ({ headId, fill }) => (
+  <g transform={getHeadFacialTransform(headId)} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+    {[true, false].map((isLeft) => (
+      <g key={String(isLeft)}>
+        <path d={getEarPath(headId, isLeft)} />
+        <path d={getEarDetailPath(headId, isLeft)} fill="none" strokeWidth="1.2" strokeOpacity="0.35" strokeLinecap="round" />
+      </g>
+    ))}
+  </g>
+);
+
+export const Neck: PartComponent = ({ headId, fill, uid = "fv" }) => (
+  <g>
+    <defs>
+      <clipPath id={`${uid}-neck`}>
+        <path d={NECK_PATH} />
+      </clipPath>
+    </defs>
+    <path d={NECK_PATH} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    <path
+      d={getHead(headId).path}
+      transform="translate(0, 5)"
+      fill="black"
+      opacity="0.12"
+      clipPath={`url(#${uid}-neck)`}
+    />
+  </g>
+);

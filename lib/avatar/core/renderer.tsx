@@ -1,8 +1,9 @@
 import { AvatarState } from "../types";
 import { resolveAvatarColors } from "../../utils/avatar-resolver";
 import { AvatarFilters } from "./filters";
-import { AvatarLayers } from "./layers";
+import { AvatarLayers, AvatarOverlays } from "./layers";
 import { AVATAR_FILTER_PREFIX } from "./filters";
+import { AVATAR_FRAME, AVATAR_VIEWBOX } from "../anatomy";
 
 export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
   const { hairColor, skinTone } = resolveAvatarColors(state);
@@ -11,7 +12,7 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
 
   const svgContent = (
     <svg
-      viewBox="5 5 90 90"
+      viewBox={AVATAR_VIEWBOX}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="100"
@@ -24,8 +25,18 @@ export const renderAvatarSvg = async (state: AvatarState): Promise<string> => {
     >
       <AvatarFilters filterId={filterId} headId={state.head} hatId={state.hat} />
       <g>
-        <rect x="0" y="0" width="100" height="100" fill="#1a1a1a" opacity="0.03" />
-        <AvatarLayers state={state} filterId={filterId} />
+        <rect
+          x={AVATAR_FRAME.x}
+          y={AVATAR_FRAME.y}
+          width={AVATAR_FRAME.size}
+          height={AVATAR_FRAME.size}
+          fill="#1a1a1a"
+          opacity="0.03"
+        />
+        <g filter={state.texture !== "none" ? `url(#${filterId}-${state.texture})` : undefined}>
+          <AvatarLayers state={state} filterId={filterId} />
+        </g>
+        <AvatarOverlays state={state} filterId={filterId} />
       </g>
     </svg>
   );

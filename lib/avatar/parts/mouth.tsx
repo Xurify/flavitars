@@ -1,4 +1,4 @@
-import { PartRegistry, createAvatarItem } from "./common";
+import { PartRegistry, PartComponent } from "./common";
 
 export const MouthId = [
   "neutral",
@@ -23,308 +23,117 @@ export const MouthId = [
 ] as const;
 export type MouthId = (typeof MouthId)[number];
 
-export const SmileMouth = createAvatarItem({
-  id: "smile",
-  name: "Smile",
-  svg: () => (
+const INK = { stroke: "currentColor", strokeLinecap: "round", strokeLinejoin: "round" } as const;
+const LINE = { ...INK, fill: "none" } as const;
+
+/**
+ * Lip mouths share one shape: a bow-shaped top lip, a rounder bottom lip, an ink outline like
+ * every other part, a dark centre line and a gloss highlight.
+ */
+interface LipStyle {
+  color: string;
+  halfWidth: number;
+  /** How far the corners sit above the centre line. */
+  smile?: number;
+  /** Bottom lip depth as a fraction of `halfWidth`. */
+  fullness?: number;
+  teeth?: boolean;
+}
+
+const lips = ({ color, halfWidth: w, smile: s = 1.2, fullness = 0.5, teeth }: LipStyle): PartComponent => {
+  const h = w * fullness;
+  const Lips: PartComponent = () => (
     <g transform="translate(50, 78)">
-      <path d="M-15 -3 Q 0 7, 15 -3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M-12 -2 Q 0 5, 12 -2" fill="none" stroke="currentColor" opacity="0.15" strokeWidth="1" strokeLinecap="round" />
       <path
-        d="M-16 -4 L -14 -2 M 16 -4 L 14 -2"
-        fill="none"
-        stroke="currentColor"
-        opacity="0.3"
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-    </g>
-  )
-});
-
-export const NeutralMouth = createAvatarItem({
-  id: "neutral",
-  name: "Neutral",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M-10 0 H 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M-8 1.5 H 8" stroke="currentColor" opacity="0.1" strokeWidth="1" strokeLinecap="round" />
-      <circle cx="-11" cy="0" r="0.8" fill="currentColor" opacity="0.4" />
-      <circle cx="11" cy="0" r="0.8" fill="currentColor" opacity="0.4" />
-    </g>
-  )
-});
-
-export const OMouth = createAvatarItem({
-  id: "oMouth",
-  name: "O Mouth",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <circle r="4.5" fill="none" stroke="currentColor" strokeWidth="2.1" />
-      <circle r="2.5" fill="none" stroke="currentColor" opacity="0.2" strokeWidth="1.2" />
-    </g>
-  )
-});
-
-export const SmirkMouth = createAvatarItem({
-  id: "smirk",
-  name: "Smirk",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M-5 0 Q 5 4, 15 -4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  )
-});
-
-export const SmirkRedMouth = createAvatarItem({
-  id: "smirkRed",
-  name: "Smirk Red",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M-5 0 Q 5 4, 15 -4" fill="none" stroke="#D0021B" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M-5 0 Q 5 4, 15 -4" fill="none" stroke="#FF0526" opacity="0.6" strokeWidth="1" strokeLinecap="round" />
-    </g>
-  )
-});
-
-export const PoutMouth = createAvatarItem({
-  id: "pout",
-  name: "Pout",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M-4 0 Q 0 3, 4 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M-2 3.5 Q 0 4.5, 2 3.5" fill="none" stroke="currentColor" opacity="0.2" strokeWidth="1" strokeLinecap="round" />
-    </g>
-  )
-});
-
-export const SmileDimplesMouth = createAvatarItem({
-  id: "smileDimples",
-  name: "Smile with Dimples",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M-15 -3 Q 0 7, 15 -3" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" />
-      <g transform="translate(-18, -4)">
-        <circle r="1" fill="currentColor" opacity="0.5" />
-      </g>
-      <g transform="translate(18, -4)">
-        <circle r="1" fill="currentColor" opacity="0.5" />
-      </g>
-    </g>
-  )
-});
-
-export const LipstickMouth = createAvatarItem({
-  id: "lipstickMouth",
-  name: "Lipstick",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -12 0 Q -6 -4, 0 -1 Q 6 -4, 12 0" fill="#D87D7D" stroke="#B25E5E" strokeWidth="1" />
-      <path d="M -12 0 Q 0 8, 12 0 Z" fill="#D87D7D" stroke="#B25E5E" strokeWidth="1" />
-      <path d="M -10 0 H 10" stroke="#B25E5E" opacity="0.4" strokeWidth="0.5" />
-    </g>
-  )
-});
-
-export const SoftMatteMouth = createAvatarItem({
-  id: "softMatte",
-  name: "Soft Matte",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -12 0 Q -6 -3, 0 -0.5 Q 6 -3, 12 0" fill="#C08081" stroke="#A06060" strokeWidth="1" />
-      <path d="M -11 0 Q 0 7, 11 0 Z" fill="#C08081" stroke="#A06060" strokeWidth="1" />
-      <path d="M -8 0 H 8" stroke="#704040" opacity="0.3" strokeWidth="0.5" />
-    </g>
-  )
-});
-
-export const SoftMatteSmileMouth = createAvatarItem({
-  id: "softMatteSmile",
-  name: "Soft Matte Smile",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -13 0 Q -6 -4, 0 -1 Q 6 -4, 13 0" fill="#C08081" stroke="#A06060" strokeWidth="1" />
-      <rect x="-6" y="-0.5" width="12" height="2" rx="0.5" fill="white" opacity="0.9" />
-      <path d="M 0 -0.5 V 1.5" stroke="black" opacity="0.1" strokeWidth="0.5" />
-      <path d="M -12 0 Q 0 8, 12 0 Z" fill="#C08081" stroke="#A06060" strokeWidth="1" />
-    </g>
-  )
-});
-
-export const NaturalNudeMouth = createAvatarItem({
-  id: "naturalNude",
-  name: "Natural Nude",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -11 0 Q -5 -3, 0 -0.5 Q 5 -3, 11 0" fill="#E8A8A9" stroke="#B07070" strokeWidth="1" />
-      <path d="M -10 0 Q 0 6, 10 0 Z" fill="#E8A8A9" stroke="#B07070" strokeWidth="1" />
-      <path d="M -7 0 H 7" stroke="#804040" opacity="0.2" strokeWidth="0.5" />
-    </g>
-  )
-});
-
-export const NaturalPinkSmileMouth = createAvatarItem({
-  id: "naturalPinkSmile",
-  name: "Natural Pink Smile",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -13 0 Q -6 -5, 0 -1.5 Q 6 -5, 13 0" fill="#F472B6" stroke="#DB2777" strokeWidth="1" />
-      <path d="M -12 0 Q 0 9, 12 0 Z" fill="#F472B6" stroke="#DB2777" strokeWidth="1" />
-      <rect x="-7" y="-1" width="14" height="2.5" rx="1" fill="white" opacity="0.95" />
-      <path d="M -11 0 H 11" stroke="#DB2777" opacity="0.15" strokeWidth="0.5" />
-    </g>
-  )
-});
-
-export const GlossyMauveLipsMouth = createAvatarItem({
-  id: "glossyMauveLips",
-  name: "Glossy Mauve",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -13 0 Q -7 -4.5, 0 -1 Q 7 -4.5, 13 0" fill="#B18485" stroke="#8A5C5D" strokeWidth="1" />
-      <path d="M -12 0 Q 0 8, 12 0 Z" fill="#B18485" stroke="#8A5C5D" strokeWidth="1" />
-      <path d="M -6 -1.5 Q 0 -3, 6 -1.5" fill="none" stroke="white" opacity="0.3" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M -8 2 Q 0 4, 8 2" fill="none" stroke="white" opacity="0.2" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  )
-});
-
-export const LaughingMouth = createAvatarItem({
-  id: "laughing",
-  name: "Laughing",
-  svg: () => (
-    <g transform="translate(50, 75)">
-      <path
-        d="M -15 -5 Q 0 -10, 15 -5 Q 18 0, 12 15 Q 0 18, -12 15 Q -18 0, -15 -5 Z"
-        fill="#752222"
-        stroke="#A05050"
+        d={`M ${-w} ${-s} Q ${-w / 2} -4.2, 0 -2.2 Q ${w / 2} -4.2, ${w} ${-s} Q ${w / 2} ${h}, 0 ${h + 0.4} Q ${-w / 2} ${h}, ${-w} ${-s} Z`}
+        fill={color}
+        {...INK}
         strokeWidth="1.5"
       />
-      <path d="M -13 -4 Q 0 -8, 13 -4 L 11 2 Q 0 4, -11 2 Z" fill="white" />
-      <path d="M 0 -6 V 2" stroke="#E5E5E5" strokeWidth="0.5" />
-      <path d="M -5 -5 V 1" stroke="#E5E5E5" strokeWidth="0.5" />
-      <path d="M 5 -5 V 1" stroke="#E5E5E5" strokeWidth="0.5" />
-      <path d="M -10 10 Q 0 6, 10 10 Q 6 14, 0 14 Q -6 14, -10 10" fill="#EF4444" opacity="0.8" />
+      {teeth && <path d={`M ${-w + 2.5} ${-s + 0.4} Q 0 1.4, ${w - 2.5} ${-s + 0.4} Q ${w / 2.2} ${h / 2.4}, 0 ${h / 2.2} Q ${-w / 2.2} ${h / 2.4}, ${-w + 2.5} ${-s + 0.4} Z`} fill="white" />}
+      <path d={`M ${-w} ${-s} Q 0 ${teeth ? 1.6 : 1.2}, ${w} ${-s}`} {...LINE} strokeWidth="1" strokeOpacity="0.45" />
+      <path d={`M ${-w / 3} ${h * 0.55} Q 0 ${h * 0.72}, ${w / 3} ${h * 0.55}`} fill="none" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.35" />
+    </g>
+  );
+  return Lips;
+};
+
+/** Wide-open mouth: dark inside, a row of top teeth, a tongue, and an ink outline. */
+const openMouth = ({ width: w, depth: h, tongue }: { width: number; depth: number; tongue?: boolean }): PartComponent => {
+  const Mouth: PartComponent = () => (
+    <g transform="translate(50, 76)">
       <path
-        d="M -16 -6 Q 0 -12, 16 -6 Q 19 0, 13 16 Q 0 20, -13 16 Q -19 0, -16 -6 Z"
-        fill="none"
-        stroke="#D44D5C"
+        d={`M ${-w} -3 Q 0 -9, ${w} -3 Q ${w + 1.5} 4, ${w - 4} ${h} Q 0 ${h + 4}, ${-w + 4} ${h} Q ${-w - 1.5} 4, ${-w} -3 Z`}
+        fill="#6B2430"
+        {...INK}
         strokeWidth="2"
       />
-      <path d="M -12 16 Q 0 18, 12 16" fill="none" stroke="white" opacity="0.4" strokeWidth="1.5" strokeLinecap="round" />
+      <path d={`M ${-w + 2.5} -2.4 Q 0 -6.8, ${w - 2.5} -2.4 L ${w - 5} 2.6 Q 0 4.6, ${-w + 5} 2.6 Z`} fill="white" />
+      <path d="M -4.5 -5.2 V 3.6 M 0 -5.8 V 4.2 M 4.5 -5.2 V 3.6" fill="none" stroke="currentColor" strokeWidth="0.5" strokeOpacity="0.25" />
+      {tongue && <path d={`M -7 ${h - 3} Q 0 ${h - 7}, 7 ${h - 3} Q 4 ${h + 1}, 0 ${h + 1} Q -4 ${h + 1}, -7 ${h - 3} Z`} fill="#E8636F" />}
     </g>
-  )
-});
+  );
+  return Mouth;
+};
 
-export const NeutralFullLipsMouth = createAvatarItem({
-  id: "neutralFullLips",
-  name: "Neutral Full Lips",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -13 0 Q -6-3, 0-1 Q 6-3, 13 0" fill="#9C6B5E" stroke="#7A4B3D" strokeWidth="1" />
-      <path d="M -11 0 Q 0 7.5, 11 0 Z" fill="#9C6B5E" stroke="#7A4B3D" strokeWidth="1" />
-      <path d="M -9 0 L -11 1 M 9 0 L 11 1" stroke="#7A4B3D" opacity="0.4" strokeWidth="1" strokeLinecap="round" />
-      <path d="M -8 0 H 8" stroke="#7A4B3D" opacity="0.3" strokeWidth="0.5" />
-    </g>
-  )
-});
+const neutral: PartComponent = () => (
+  <g transform="translate(50, 78)" {...LINE} strokeWidth="2.2">
+    <path d="M -9 0 H 9" />
+  </g>
+);
 
-export const VibrantRedFullMouth = createAvatarItem({
-  id: "vibrantRedFull",
-  name: "Vibrant Red Full",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -14 0 Q -7 -5, 0 -1.5 Q 7 -5, 14 0" fill="#DC2626" stroke="#991B1B" strokeWidth="1.2" />
-      <path d="M -13 0 Q 0 9, 13 0 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1.2" />
-      <path d="M -8 3 Q 0 5, 8 3" fill="none" stroke="white" opacity="0.15" strokeWidth="2" strokeLinecap="round" />
-      <path d="M -10 0 H 10" stroke="#7F1D1D" opacity="0.3" strokeWidth="0.5" />
-    </g>
-  )
-});
+const smile: PartComponent = () => (
+  <g transform="translate(50, 78)" {...LINE} strokeWidth="2.2">
+    <path d="M -14 -3 Q 0 7, 14 -3" />
+  </g>
+);
 
-export const BrightGrinMouth = createAvatarItem({
-  id: "brightGrin",
-  name: "Bright Grin",
-  svg: () => (
-    <g transform="translate(50, 74)">
-      <path
-        d="M -18 -4 Q 0 -10, 18 -4 Q 20 5, 15 12 Q 0 18, -15 12 Q -20 5, -18 -4 Z"
-        fill="#5C2020"
-        stroke="#E8B4B4"
-        strokeWidth="1.5"
-      />
-      <path d="M -15 -3 Q 0 -8, 15 -3 L 12 3 Q 0 5, -12 3 Z" fill="white" />
-      <g stroke="#E5E5E5" strokeWidth="0.5">
-        <path d="M -9 -4 V 2" />
-        <path d="M -4 -5 V 3" />
-        <path d="M 0 -6 V 3" />
-        <path d="M 4 -5 V 3" />
-        <path d="M 9 -4 V 2" />
-      </g>
-      <path d="M -8 10 Q 0 6, 8 10 Q 4 14, 0 13 Q -4 14, -8 10" fill="#E57373" opacity="0.9" />
-      <path
-        d="M -19 -5 Q 0 -12, 19 -5 Q 22 5, 16 14 Q 0 20, -16 14 Q -22 5, -19 -5 Z"
-        fill="none"
-        stroke="#E8A8A8"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path d="M -14 14 Q 0 16, 14 14" fill="none" stroke="white" opacity="0.3" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="-20" cy="0" r="1" fill="currentColor" opacity="0.2" />
-      <circle cx="20" cy="0" r="1" fill="currentColor" opacity="0.2" />
-    </g>
-  )
-});
+const smileDimples: PartComponent = () => (
+  <g transform="translate(50, 78)" {...LINE} strokeWidth="2.2">
+    <path d="M -14 -3 Q 0 7, 14 -3" />
+    <path d="M -17 -5.5 q -1 1.5 0 3 M 17 -5.5 q 1 1.5 0 3" strokeWidth="1.6" />
+  </g>
+);
 
-export const SoftTeethSmileMouth = createAvatarItem({
-  id: "softTeethSmile",
-  name: "Soft Teeth Smile",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -14 0 Q -7 -4, 0 -1.5 Q 7 -4, 14 0" fill="#D4A4A4" stroke="#B07070" strokeWidth="1" />
-      <rect x="-8" y="-1" width="16" height="3" rx="1" fill="white" opacity="0.95" />
-      <g stroke="#E8E8E8" strokeWidth="0.3" opacity="0.5">
-        <path d="M -4 -1 V 2" />
-        <path d="M 0 -1 V 2" />
-        <path d="M 4 -1 V 2" />
-      </g>
-      <path d="M -13 0 Q 0 8, 13 0 Z" fill="#D4A4A4" stroke="#B07070" strokeWidth="1" />
-      <path d="M -8 3 Q 0 5, 8 3" fill="none" stroke="white" opacity="0.15" strokeWidth="1.5" strokeLinecap="round" />
-    </g>
-  )
-});
+const smirk: PartComponent = () => (
+  <g transform="translate(50, 78)" {...LINE} strokeWidth="2.2">
+    <path d="M -5 0 Q 5 4, 15 -4" />
+  </g>
+);
 
-export const VibrantRedSmallMouth = createAvatarItem({
-  id: "vibrantRedSmall",
-  name: "Vibrant Red Small",
-  svg: () => (
-    <g transform="translate(50, 78)">
-      <path d="M -10 0 Q -5 -3.5, 0 -1 Q 5 -3.5, 10 0" fill="#DC2626" stroke="#991B1B" strokeWidth="1" />
-      <path d="M -9 0 Q 0 6, 9 0 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1" />
-      <path d="M -5 2 Q 0 3.5, 5 2" fill="none" stroke="white" opacity="0.15" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M -7 0 H 7" stroke="#7F1D1D" opacity="0.3" strokeWidth="0.4" />
-    </g>
-  )
-});
+const smirkRed: PartComponent = () => (
+  <g transform="translate(50, 78)" fill="none" strokeLinecap="round">
+    <path d="M -5 0 Q 5 4, 15 -4" stroke="currentColor" strokeWidth="4.2" />
+    <path d="M -5 0 Q 5 4, 15 -4" stroke="#E0233A" strokeWidth="2.4" />
+  </g>
+);
+
+const pout = lips({ color: "#D98A8A", halfWidth: 4.5, smile: 0, fullness: 0.75 });
+
+const oMouth: PartComponent = () => (
+  <g transform="translate(50, 78)">
+    <ellipse rx="4" ry="4.8" fill="#6B2430" {...INK} strokeWidth="2.2" />
+  </g>
+);
 
 export const Mouths: PartRegistry<MouthId> = {
-  neutral: { component: NeutralMouth.svg, label: NeutralMouth.name },
-  smile: { component: SmileMouth.svg, label: SmileMouth.name },
-  smileDimples: { component: SmileDimplesMouth.svg, label: SmileDimplesMouth.name },
-  softTeethSmile: { component: SoftTeethSmileMouth.svg, label: SoftTeethSmileMouth.name },
-  brightGrin: { component: BrightGrinMouth.svg, label: BrightGrinMouth.name },
-  laughing: { component: LaughingMouth.svg, label: LaughingMouth.name },
-  neutralFullLips: { component: NeutralFullLipsMouth.svg, label: NeutralFullLipsMouth.name },
-  naturalNude: { component: NaturalNudeMouth.svg, label: NaturalNudeMouth.name },
-  naturalPinkSmile: { component: NaturalPinkSmileMouth.svg, label: NaturalPinkSmileMouth.name },
-  lipstickMouth: { component: LipstickMouth.svg, label: LipstickMouth.name },
-  softMatte: { component: SoftMatteMouth.svg, label: SoftMatteMouth.name },
-  softMatteSmile: { component: SoftMatteSmileMouth.svg, label: SoftMatteSmileMouth.name },
-  glossyMauveLips: { component: GlossyMauveLipsMouth.svg, label: GlossyMauveLipsMouth.name },
-  vibrantRedFull: { component: VibrantRedFullMouth.svg, label: VibrantRedFullMouth.name },
-  vibrantRedSmall: { component: VibrantRedSmallMouth.svg, label: VibrantRedSmallMouth.name },
-  smirk: { component: SmirkMouth.svg, label: SmirkMouth.name },
-  smirkRed: { component: SmirkRedMouth.svg, label: SmirkRedMouth.name },
-  pout: { component: PoutMouth.svg, label: PoutMouth.name },
-  oMouth: { component: OMouth.svg, label: OMouth.name },
+  neutral: { component: neutral, label: "Neutral" },
+  smile: { component: smile, label: "Smile" },
+  smileDimples: { component: smileDimples, label: "Smile with Dimples" },
+  softTeethSmile: { component: lips({ color: "#D9A3A3", halfWidth: 13, smile: 2, teeth: true }), label: "Soft Teeth Smile" },
+  brightGrin: { component: openMouth({ width: 17, depth: 11 }), label: "Bright Grin" },
+  laughing: { component: openMouth({ width: 15, depth: 13, tongue: true }), label: "Laughing" },
+  neutralFullLips: { component: lips({ color: "#A46F62", halfWidth: 12.5, smile: 0.8, fullness: 0.62 }), label: "Neutral Full Lips" },
+  naturalNude: { component: lips({ color: "#E8A8A9", halfWidth: 10.5, smile: 1 }), label: "Natural Nude" },
+  naturalPinkSmile: { component: lips({ color: "#F472B6", halfWidth: 12.5, smile: 2, teeth: true }), label: "Natural Pink Smile" },
+  lipstickMouth: { component: lips({ color: "#E07A7A", halfWidth: 12 }), label: "Lipstick" },
+  softMatte: { component: lips({ color: "#C27B7C", halfWidth: 11.5, smile: 0.8 }), label: "Soft Matte" },
+  softMatteSmile: { component: lips({ color: "#C27B7C", halfWidth: 12.5, smile: 1.5, teeth: true }), label: "Soft Matte Smile" },
+  glossyMauveLips: { component: lips({ color: "#B18485", halfWidth: 12.5, fullness: 0.58 }), label: "Glossy Mauve" },
+  vibrantRedFull: { component: lips({ color: "#DC2626", halfWidth: 13.5, smile: 0.8, fullness: 0.62 }), label: "Vibrant Red Full" },
+  vibrantRedSmall: { component: lips({ color: "#DC2626", halfWidth: 9.5, smile: 0.8 }), label: "Vibrant Red Small" },
+  smirk: { component: smirk, label: "Smirk" },
+  smirkRed: { component: smirkRed, label: "Smirk Red" },
+  pout: { component: pout, label: "Pout" },
+  oMouth: { component: oMouth, label: "O Mouth" },
 };

@@ -1,4 +1,4 @@
-import { PartRegistry, createAvatarItem } from "./common";
+import { PartRegistry, PartComponent } from "./common";
 
 export const EyesId = [
   "standard",
@@ -28,623 +28,200 @@ export const EyesId = [
 ] as const;
 export type EyesId = (typeof EyesId)[number];
 
-export const StandardEyes = createAvatarItem({
-  id: "standard",
-  name: "Standard",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4" fill="currentColor" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M-1.5 1.5 Q 0 2.5, 1.5 1.5" fill="none" stroke="white" opacity="0.2" strokeWidth="0.5" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4" fill="currentColor" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M-1.5 1.5 Q 0 2.5, 1.5 1.5" fill="none" stroke="white" opacity="0.2" strokeWidth="0.5" />
-      </g>
-      <path d="M30 38 Q 35 36, 40 38" fill="none" stroke="currentColor" opacity="0.4" strokeWidth="1" />
-      <path d="M60 38 Q 65 36, 70 38" fill="none" stroke="currentColor" opacity="0.4" strokeWidth="1" />
-    </g>
-  )
-});
+/**
+ * Every style is built from the same cartoon pieces so they read as one family: a round eye (an
+ * iris in an ink ring, or a plain ink dot) that always stays fully open, an optional liner hugging
+ * its top, tapered lashes rooted on its outer edge, and a flat patch of eyeshadow.
+ *
+ * Lashes, liner and shadow are drawn in a frame where +x points away from the nose (the left eye's
+ * frame is mirrored). The iris and its highlights are not mirrored, so light falls the same way on
+ * both eyes and the gaze stays straight.
+ */
+interface EyeStyle {
+  /** Iris colour; without one the eye is a plain ink dot. */
+  iris?: string;
+  /** Liner hugging the top of the eye; "wing" flicks out at the outer corner. */
+  liner?: "thin" | "bold" | "wing";
+  /** Lashes on the outer upper edge. */
+  lashes?: 0 | 1 | 2 | 3;
+  /** Flat eyeshadow above the eye. */
+  shadow?: string;
+  /** Star-shaped highlight instead of a round one. */
+  sparkle?: boolean;
+}
 
-export const LashesEyes = createAvatarItem({
-  id: "lashes",
-  name: "Lashes",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <circle cx="-1.5" cy="1.5" r="0.8" fill="white" opacity="0.3" />
-        <path
-          d="M -1 -4.5 L -2 -9 M -4 -4 L -7 -8 M -6.5 -2.5 L -10 -5"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-        />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <circle cx="-1.5" cy="1.5" r="0.8" fill="white" opacity="0.3" />
-        <path d="M 1 -4.5 L 2 -9 M 4 -4 L 7 -8 M 6.5 -2.5 L 10 -5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
+const PUPIL = "#1F2933";
+const IRIS_R = 4.6;
+const DOT_R = 4.2;
+const SHADOW = "M -8 -3 C -6 -10, 6 -11, 10 -4 C 6 -7.6, -3 -7.8, -8 -3 Z";
+const SPARKLE = "M 1.6 -4 Q 1.9 -2, 3.9 -1.7 Q 1.9 -1.4, 1.6 0.6 Q 1.3 -1.4, -0.7 -1.7 Q 1.3 -2, 1.6 -4 Z";
+const LASH_ANGLES = [-34, -56, -78];
 
-export const TiredEyes = createAvatarItem({
-  id: "tired",
-  name: "Tired",
-  svg: () => (
-    <g>
-      <path d="M28 44 Q 35 40, 42 44" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M58 44 Q 65 40, 72 44" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <g transform="translate(35, 48)">
-        <circle r="3" fill="currentColor" />
-        <circle cx="1" cy="-1" r="0.8" fill="white" />
-      </g>
-      <g transform="translate(65, 48)">
-        <circle r="3" fill="currentColor" />
-        <circle cx="1" cy="-1" r="0.8" fill="white" />
-      </g>
-      <path d="M28 53 Q 35 55, 42 53" fill="none" stroke="currentColor" opacity="0.3" strokeWidth="1" />
-      <path d="M58 53 Q 65 55, 72 53" fill="none" stroke="currentColor" opacity="0.3" strokeWidth="1" />
-    </g>
-  )
-});
+const round = (n: number) => +n.toFixed(2);
+const polar = (r: number, deg: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [r * Math.cos(a), r * Math.sin(a)] as const;
+};
 
-export const WinkingEyes = createAvatarItem({
-  id: "winking",
-  name: "Winking",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <path d="M-6 4 Q 0 8, 6 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <path d="M-5 2 Q 0 0, 5 2" fill="none" stroke="currentColor" opacity="0.4" strokeWidth="1" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4" fill="currentColor" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M7 2 L 11 -2 M 5 -4 L 8 -8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
+/** A lash as a filled wedge: base centred on (x, y), tip `length` away at angle `deg`. */
+const wedge = (x: number, y: number, deg: number, length: number, base = 0.8) => {
+  const [px, py] = polar(base, deg + 90);
+  const [dx, dy] = polar(length, deg);
+  return `M ${round(x - px)} ${round(y - py)} L ${round(x + dx)} ${round(y + dy)} L ${round(x + px)} ${round(y + py)} Z`;
+};
 
-export const AlmondEyes = createAvatarItem({
-  id: "almond",
-  name: "Almond",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <path d="M-12 0 Q 0 -9, 12 0 Q 0 9, -12 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <circle r="4" fill="currentColor" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M-9 -4 L -13 -8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+/** A lash rooted on a circle of radius `r` at angle `deg`, leaning slightly outwards. */
+const ringLash = (r: number, deg: number, length: number) => {
+  const [x, y] = polar(r, deg);
+  return wedge(x, y, deg + 14, length);
+};
+
+const arc = (r: number, from: number, to: number) => {
+  const [x0, y0] = polar(r, from);
+  const [x1, y1] = polar(r, to);
+  return `M ${round(x0)} ${round(y0)} A ${r} ${r} 0 0 1 ${round(x1)} ${round(y1)}`;
+};
+
+const Highlights = ({ sparkle }: { sparkle?: boolean }) => (
+  <g fill="white">
+    {sparkle ? <path d={SPARKLE} /> : <circle cx="1.6" cy="-1.7" r="1.6" />}
+    <circle cx="-1.5" cy="1.6" r="0.7" opacity="0.6" />
+  </g>
+);
+
+const Iris = ({ color, sparkle }: { color?: string; sparkle?: boolean }) => (
+  <g>
+    {color ? (
+      <g>
+        <circle r={IRIS_R} fill={color} stroke="currentColor" strokeWidth="1.2" />
+        <circle r="2.1" fill={PUPIL} />
       </g>
-      <g transform="translate(65, 45)">
-        <path d="M-12 0 Q 0 -9, 12 0 Q 0 9, -12 0" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <circle r="4" fill="currentColor" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M9 -4 L 13 -8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+    ) : (
+      <circle r={DOT_R} fill="currentColor" />
+    )}
+    <Highlights sparkle={sparkle} />
+  </g>
+);
+
+/** Liner, wing and lashes for one eye, in the outward-facing frame. */
+const Lining = ({ style }: { style: EyeStyle }) => {
+  const edge = style.iris ? IRIS_R + 0.6 : DOT_R;
+  const liner = style.liner && (style.liner === "thin" ? { r: edge, width: 1.6 } : { r: edge + 0.6, width: 2.6 });
+  const root = liner ? liner.r : edge;
+  const [wingX, wingY] = polar(root, -10);
+  return (
+    <g>
+      {liner && <path d={arc(liner.r, -165, -12)} fill="none" stroke="currentColor" strokeWidth={liner.width} strokeLinecap="round" />}
+      <g fill="currentColor" stroke="currentColor" strokeWidth="0.6" strokeLinejoin="round">
+        {style.liner === "wing" && <path d={wedge(wingX, wingY, -32, 4.8, 1.3)} />}
+        {LASH_ANGLES.slice(0, style.lashes ?? 0).map((deg, i) => (
+          <path key={deg} d={ringLash(root, deg, 3.6 - i * 0.3)} />
+        ))}
       </g>
     </g>
-  )
-});
+  );
+};
 
-export const WingedLashesEyes = createAvatarItem({
-  id: "wingedLashes",
-  name: "Winged Lashes",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -10 -4 Q -6 -10, 2 -7" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -9 -3 L -12 -6 M -7 -5 L -10 -9 M -4 -6 L -6 -11" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 10 -4 Q 6 -10, -2 -7" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 9 -3 L 12 -6 M 7 -5 L 10 -9 M 4 -6 L 6 -11" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
+const outward = (x: number) => (x < 50 ? "scale(-1, 1)" : undefined);
 
-export const BlueWingedEyes = createAvatarItem({
-  id: "blueWinged",
-  name: "Blue Winged",
-  svg: () => (
+const eyes = (style: EyeStyle): PartComponent => {
+  const Eyes: PartComponent = () => (
     <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#3B82F6" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -10 -4 Q -6 -10, 2 -7" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -9 -3 L -12 -6 M -7 -5 L -10 -9 M -4 -6 L -6 -11" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#3B82F6" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 10 -4 Q 6 -10, -2 -7" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 9 -3 L 12 -6 M 7 -5 L 10 -9 M 4 -6 L 6 -11" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const LightHazelEyes = createAvatarItem({
-  id: "lightHazel",
-  name: "Light Hazel",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#A3E635" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -11 -4 Q -6 -9, 3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -10 -3 L -12 -6 M -8 -5 L -10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#A3E635" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 11 -4 Q 6 -9, -3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 10 -3 L 13 -6 M 8 -5 L 10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const BrightBlueGlamEyes = createAvatarItem({
-  id: "brightBlueGlam",
-  name: "Bright Blue Glam",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#3B82F6" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -11 -4 Q -6 -9, 3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -10 -3 L -12 -6 M -8 -5 L -10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#3B82F6" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 11 -4 Q 6 -9, -3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 10 -3 L 13 -6 M 8 -5 L 10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const BrownAlmondEyes = createAvatarItem({
-  id: "brownAlmond",
-  name: "Brown Almond",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.2" fill="#543b2b" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.5" cy="-1.5" r="1.5" fill="white" />
-        <path d="M-9 -3 Q-4 -8, 4 -4" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.2" fill="#543b2b" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.5" cy="-1.5" r="1.5" fill="white" />
-        <path d="M 9 -3 Q 4 -8, -4 -4" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const GreenLavenderGlamEyes = createAvatarItem({
-  id: "greenLavenderGlam",
-  name: "Green Lavender Glam",
-  svg: () => (
-    <g>
-      <path d="M 22 42 Q 35 32, 48 42" fill="#A78BFA" opacity="0.4" />
-      <path d="M 52 42 Q 65 32, 78 42" fill="#A78BFA" opacity="0.4" />
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#22C55E" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -11 -4 Q -6 -9, 3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -10 -3 L -12 -6 M -8 -5 L -10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#22C55E" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 11 -4 Q 6 -9, -3 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 10 -3 L 13 -6 M 8 -5 L 10 -8" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const SoftBlueGreyEyes = createAvatarItem({
-  id: "softBlueGrey",
-  name: "Soft Blue Grey",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.2" fill="#64748b" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M -9 -4 Q -5 -8, 2 -5" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M -8 -3 L -10 -5 M -6 -5 L -7 -8" stroke="black" opacity="0.6" strokeWidth="0.8" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.2" fill="#64748b" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M 9 -4 Q 5 -8, -2 -5" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M 8 -3 L 10 -5 M 6 -5 L 7 -8" stroke="black" opacity="0.6" strokeWidth="0.8" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const BrightBlueNaturalEyes = createAvatarItem({
-  id: "brightBlueNatural",
-  name: "Bright Blue Natural",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.2" fill="#3B82F6" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M -9 -3 Q -4 -7, 3 -4" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M -8 -2 L -10 -4 M -5 -3.5 L -6 -6" stroke="black" opacity="0.4" strokeWidth="0.8" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.2" fill="#3B82F6" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M 9 -3 Q 4 -7, -3 -4" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M 8 -2 L 10 -4 M 5 -3.5 L 6 -6" stroke="black" opacity="0.4" strokeWidth="0.8" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const HeavyLashesEyes = createAvatarItem({
-  id: "heavyLashes",
-  name: "Heavy Lashes",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M -11 -5 Q -8 -14, 3 -8" fill="none" stroke="black" strokeWidth="3.5" strokeLinecap="round" />
-        <g stroke="black" strokeWidth="1.5" strokeLinecap="round">
-          <path d="M -10 -4 L -14 -9" />
-          <path d="M -8 -6 L -11 -12" />
-          <path d="M -5 -7 L -7 -14" />
-          <path d="M -2 -7 L -3 -15" />
+      {[35, 65].map((x) => (
+        <g key={x} transform={`translate(${x}, 45)`}>
+          {style.shadow && <path d={SHADOW} transform={outward(x)} fill={style.shadow} opacity="0.55" />}
+          <Iris color={style.iris} sparkle={style.sparkle} />
+          <g transform={outward(x)}>
+            <Lining style={style} />
+          </g>
         </g>
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="currentColor" />
-        <circle cx="2" cy="-2" r="1.8" fill="white" />
-        <path d="M 11 -5 Q 8 -14, -3 -8" fill="none" stroke="black" strokeWidth="3.5" strokeLinecap="round" />
-        <g stroke="black" strokeWidth="1.5" strokeLinecap="round">
-          <path d="M 10 -4 L 14 -9" />
-          <path d="M 8 -6 L 11 -12" />
-          <path d="M 5 -7 L 7 -14" />
-          <path d="M 2 -7 L 3 -15" />
+      ))}
+    </g>
+  );
+  return Eyes;
+};
+
+/** Outlined almond eye looking straight ahead, with one lash flicking out at the outer corner. */
+const almondEyes = (iris?: string): PartComponent => {
+  const Eyes: PartComponent = () => (
+    <g>
+      {[35, 65].map((x) => (
+        <g key={x} transform={`translate(${x}, 45)`}>
+          <path d="M -8 0 Q 0 -8, 8 0 Q 0 8, -8 0 Z" fill="white" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          {iris && <circle r="3.4" fill={iris} />}
+          <circle r={iris ? 1.8 : 2.8} fill={PUPIL} />
+          <circle cx="1.1" cy="-1.2" r="1" fill="white" />
+          <path
+            d={wedge(6.4, -1.6, -36, 4, 1.1)}
+            transform={outward(x)}
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth="0.6"
+            strokeLinejoin="round"
+          />
         </g>
-      </g>
+      ))}
     </g>
-  )
-});
+  );
+  return Eyes;
+};
 
-export const GlamGreyEyes = createAvatarItem({
-  id: "glamGreyEyes",
-  name: "Glam Grey",
-  svg: () => (
-    <g>
-      <path d="M 22 42 Q 35 30, 48 42" fill="#78350F" opacity="0.15" />
-      <path d="M 52 42 Q 65 30, 78 42" fill="#78350F" opacity="0.15" />
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#94A3B8" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M -10 -4 Q -6 -9, 3 -6" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path d="M -9 -3 L -12 -6 M -7 -4.5 L -9 -8" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.8" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#94A3B8" />
-        <circle r="2.2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M 10 -4 Q 6 -9, -3 -6" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path d="M 9 -3 L 12 -6 M 7 -4.5 L 9 -8" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.8" />
+/** The left eye squeezed shut in a happy arc with two lashes, the right one wide open. */
+const winkingEyes: PartComponent = () => (
+  <g>
+    <g transform="translate(35, 45) scale(-1, 1)">
+      <path d="M -5.5 0.8 Q 0 -4.4, 5.5 0.8" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <g fill="currentColor" stroke="currentColor" strokeWidth="0.6" strokeLinejoin="round">
+        <path d={wedge(4.4, -0.3, -38, 3.4)} />
+        <path d={wedge(2.2, -1.5, -62, 3.1)} />
       </g>
     </g>
-  )
-});
+    <g transform="translate(65, 45)">
+      <Iris />
+    </g>
+  </g>
+);
 
-export const WingedGlamEyes = createAvatarItem({
-  id: "wingedGlamEyes",
-  name: "Winged Glam",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.8" fill="#5E7B87" />
-        <circle r="2" fill="black" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M -9 -2 Q -12 -12, 5 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -8 -1 L -12 -10" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.8" fill="#5E7B87" />
-        <circle r="2" fill="black" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M 9 -2 Q 12 -12, -5 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 8 -1 L 12 -10" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
+const HALF_X = round(Math.sqrt(DOT_R ** 2 - 1.4 ** 2));
+const HALF_DOT = `M ${-HALF_X} -1.4 A ${DOT_R} ${DOT_R} 0 1 0 ${HALF_X} -1.4 Z`;
 
-export const BlueGreyGlamEyes = createAvatarItem({
-  id: "blueGreyGlam",
-  name: "Blue Grey Glam",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.8" fill="#64748B" />
-        <circle r="2" fill="black" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M -9 -2 Q -12 -12, 5 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M -8 -1 L -12 -10" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
+/** Sleepy: the lid drops to the middle of the eye, with a soft line underneath. */
+const tiredEyes: PartComponent = () => (
+  <g>
+    {[35, 65].map((x) => (
+      <g key={x} transform={`translate(${x}, 46)`}>
+        <path d={HALF_DOT} fill="currentColor" />
+        <circle cx="1.4" cy="0.4" r="1" fill="white" />
+        <path d="M -5.8 -1.2 Q 0 -2.6, 5.8 -1.2" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+        <path d="M -4 5.4 Q 0 6.8, 4 5.4" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
       </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.8" fill="#64748B" />
-        <circle r="2" fill="black" />
-        <circle cx="1.5" cy="-1.5" r="1.2" fill="white" />
-        <path d="M 9 -2 Q 12 -12, -5 -6" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M 8 -1 L 12 -10" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const WarmBrownNaturalEyes = createAvatarItem({
-  id: "warmBrownNatural",
-  name: "Warm Brown Natural",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#8B5A2B" />
-        <circle r="3" fill="#5D3A1A" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.5" cy="-1.5" r="1.5" fill="white" />
-        <circle cx="-1" cy="1" r="0.5" fill="white" opacity="0.3" />
-        <path d="M -9 -3 Q -5 -7, 2 -5" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path
-          d="M -8 -2 L -10 -5 M -6 -4 L -7 -7 M -3 -4.5 L -4 -8"
-          stroke="black"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-          opacity="0.7"
-        />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#8B5A2B" />
-        <circle r="3" fill="#5D3A1A" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.5" cy="-1.5" r="1.5" fill="white" />
-        <circle cx="-1" cy="1" r="0.5" fill="white" opacity="0.3" />
-        <path d="M 9 -3 Q 5 -7, -2 -5" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path
-          d="M 8 -2 L 10 -5 M 6 -4 L 7 -7 M 3 -4.5 L 4 -8"
-          stroke="black"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-          opacity="0.7"
-        />
-      </g>
-    </g>
-  )
-});
-
-export const WarmBrownSoftEyes = createAvatarItem({
-  id: "warmBrownSoft",
-  name: "Warm Brown Soft",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#78350F" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M -9 -4 Q -5 -8, 2 -5" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path d="M -8 -3 L -11 -6 M -5 -5 L -7 -9" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#78350F" />
-        <circle r="2" fill="#1e293b" />
-        <circle cx="1.8" cy="-1.8" r="1.5" fill="white" />
-        <path d="M 9 -4 Q 5 -8, -2 -5" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path d="M 8 -3 L 11 -6 M 5 -5 L 7 -9" stroke="black" strokeWidth="1" strokeLinecap="round" />
-      </g>
-    </g>
-  )
-});
-
-export const HappyBrownFeminineEyes = createAvatarItem({
-  id: "happyBrownFeminine",
-  name: "Happy Brown Feminine",
-  svg: () => (
-    <g>
-      <path d="M 22 42 Q 35 34, 48 42" fill="#D6BCAB" opacity="0.3" />
-      <path d="M 52 42 Q 65 34, 78 42" fill="#D6BCAB" opacity="0.3" />
-      <g transform="translate(35, 45)">
-        <circle r="4.8" fill="#6B4423" />
-        <circle r="3.2" fill="#8B5A2B" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="2" cy="-2" r="1.5" fill="white" />
-        <circle cx="-1" cy="1.5" r="0.6" fill="white" opacity="0.4" />
-        <path d="M -9 -2 Q -5 -6, 3 -4" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path
-          d="M -8 -1 L -10 -4 M -5 -3 L -6 -6 M -2 -4 L -2 -7"
-          stroke="black"
-          strokeWidth="0.9"
-          strokeLinecap="round"
-          opacity="0.8"
-        />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.8" fill="#6B4423" />
-        <circle r="3.2" fill="#8B5A2B" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="2" cy="-2" r="1.5" fill="white" />
-        <circle cx="-1" cy="1.5" r="0.6" fill="white" opacity="0.4" />
-        <path d="M 9 -2 Q 5 -6, -3 -4" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" />
-        <path d="M 8 -1 L 10 -4 M 5 -3 L 6 -6 M 2 -4 L 2 -7" stroke="black" strokeWidth="0.9" strokeLinecap="round" opacity="0.8" />
-      </g>
-    </g>
-  )
-});
-
-export const BlueGreyNaturalEyes = createAvatarItem({
-  id: "blueGreyNatural",
-  name: "Blue Grey Natural",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#7D9AAA" />
-        <circle r="3" fill="#5C7A8A" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <circle cx="-0.5" cy="1" r="0.5" fill="white" opacity="0.3" />
-        <path d="M -9 -3 Q -5 -6, 2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M -7 -2 L -9 -4 M -4 -4 L -5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#7D9AAA" />
-        <circle r="3" fill="#5C7A8A" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <circle cx="-0.5" cy="1" r="0.5" fill="white" opacity="0.3" />
-        <path d="M 9 -3 Q 5 -6, -2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M 7 -2 L 9 -4 M 4 -4 L 5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-    </g>
-  )
-});
-
-export const HazelGreenNaturalEyes = createAvatarItem({
-  id: "hazelGreenNatural",
-  name: "Hazel Green Natural",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#7B8B6F" />
-        <circle r="3" fill="#5A6B4F" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <path d="M -9 -3 Q -5 -6, 2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M -7 -2 L -9 -4 M -4 -4 L -5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#7B8B6F" />
-        <circle r="3" fill="#5A6B4F" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <path d="M 9 -3 Q 5 -6, -2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M 7 -2 L 9 -4 M 4 -4 L 5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-    </g>
-  )
-});
-
-export const AquaBlueNaturalEyes = createAvatarItem({
-  id: "aquaBlueNatural",
-  name: "Aqua Blue Natural",
-  svg: () => (
-    <g>
-      <g transform="translate(35, 45)">
-        <circle r="4.5" fill="#5BA3B0" />
-        <circle r="3" fill="#4A8A96" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <path d="M -9 -3 Q -5 -6, 2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M -7 -2 L -9 -4 M -4 -4 L -5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-      <g transform="translate(65, 45)">
-        <circle r="4.5" fill="#5BA3B0" />
-        <circle r="3" fill="#4A8A96" />
-        <circle r="2" fill="#1a1a1a" />
-        <circle cx="1.8" cy="-1.8" r="1.4" fill="white" />
-        <path d="M 9 -3 Q 5 -6, -2 -4" fill="none" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="M 7 -2 L 9 -4 M 4 -4 L 5 -6" stroke="black" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-      </g>
-    </g>
-  )
-});
-
-export const CalmBlueGreyEyes = createAvatarItem({
-  id: "calmBlueGrey",
-  name: "Calm Blue Grey",
-  svg: () => (
-    <g>
-      <path d="M 23 42 Q 35 35, 47 42" fill="#C8B8C4" opacity="0.35" />
-      <path d="M 53 42 Q 65 35, 77 42" fill="#C8B8C4" opacity="0.35" />
-      <g transform="translate(35, 46)">
-        <path d="M -8 -2 Q 0 -5, 8 -2" fill="none" stroke="#9CA3AF" strokeWidth="0.8" opacity="0.5" />
-        <ellipse rx="4.2" ry="4" fill="#8B9DB3" />
-        <ellipse rx="2.8" ry="2.6" fill="#6B7D91" />
-        <circle r="1.8" fill="#1a1a1a" />
-        <circle cx="1.5" cy="-1.2" r="1.2" fill="white" opacity="0.9" />
-        <path d="M -8 -1 Q -4 -3, 2 -2" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M -6 0 L -8 -2 M -3 -1 L -4 -3" stroke="black" strokeWidth="0.7" strokeLinecap="round" opacity="0.6" />
-      </g>
-      <g transform="translate(65, 46)">
-        <path d="M -8 -2 Q 0 -5, 8 -2" fill="none" stroke="#9CA3AF" strokeWidth="0.8" opacity="0.5" />
-        <ellipse rx="4.2" ry="4" fill="#8B9DB3" />
-        <ellipse rx="2.8" ry="2.6" fill="#6B7D91" />
-        <circle r="1.8" fill="#1a1a1a" />
-        <circle cx="1.5" cy="-1.2" r="1.2" fill="white" opacity="0.9" />
-        <path d="M 8 -1 Q 4 -3, -2 -2" fill="none" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M 6 0 L 8 -2 M 3 -1 L 4 -3" stroke="black" strokeWidth="0.7" strokeLinecap="round" opacity="0.6" />
-      </g>
-    </g>
-  )
-});
+    ))}
+  </g>
+);
 
 export const Eyes: PartRegistry<EyesId> = {
-  standard: { component: StandardEyes.svg, label: StandardEyes.name },
-  almond: { component: AlmondEyes.svg, label: AlmondEyes.name },
-  brownAlmond: { component: BrownAlmondEyes.svg, label: BrownAlmondEyes.name },
-  warmBrownNatural: { component: WarmBrownNaturalEyes.svg, label: WarmBrownNaturalEyes.name },
-  warmBrownSoft: { component: WarmBrownSoftEyes.svg, label: WarmBrownSoftEyes.name },
-  blueGreyNatural: { component: BlueGreyNaturalEyes.svg, label: BlueGreyNaturalEyes.name },
-  hazelGreenNatural: { component: HazelGreenNaturalEyes.svg, label: HazelGreenNaturalEyes.name },
-  aquaBlueNatural: { component: AquaBlueNaturalEyes.svg, label: AquaBlueNaturalEyes.name },
-  calmBlueGrey: { component: CalmBlueGreyEyes.svg, label: CalmBlueGreyEyes.name },
-  softBlueGrey: { component: SoftBlueGreyEyes.svg, label: SoftBlueGreyEyes.name },
-  brightBlueNatural: { component: BrightBlueNaturalEyes.svg, label: BrightBlueNaturalEyes.name },
-  lashes: { component: LashesEyes.svg, label: LashesEyes.name },
-  heavyLashes: { component: HeavyLashesEyes.svg, label: HeavyLashesEyes.name },
-  wingedLashes: { component: WingedLashesEyes.svg, label: WingedLashesEyes.name },
-  wingedGlamEyes: { component: WingedGlamEyes.svg, label: WingedGlamEyes.name },
-  glamGreyEyes: { component: GlamGreyEyes.svg, label: GlamGreyEyes.name },
-  blueGreyGlam: { component: BlueGreyGlamEyes.svg, label: BlueGreyGlamEyes.name },
-  lightHazel: { component: LightHazelEyes.svg, label: LightHazelEyes.name },
-  brightBlueGlam: { component: BrightBlueGlamEyes.svg, label: BrightBlueGlamEyes.name },
-  greenLavenderGlam: { component: GreenLavenderGlamEyes.svg, label: GreenLavenderGlamEyes.name },
-  blueWinged: { component: BlueWingedEyes.svg, label: BlueWingedEyes.name },
-  happyBrownFeminine: { component: HappyBrownFeminineEyes.svg, label: HappyBrownFeminineEyes.name },
-  winking: { component: WinkingEyes.svg, label: WinkingEyes.name },
-  tired: { component: TiredEyes.svg, label: TiredEyes.name },
+  standard: { label: "Standard", component: eyes({}) },
+  almond: { label: "Almond", component: almondEyes() },
+  brownAlmond: { label: "Brown Almond", component: almondEyes("#8B5A2B") },
+  warmBrownNatural: { label: "Warm Brown", component: eyes({ iris: "#8B5A2B", lashes: 2 }) },
+  warmBrownSoft: { label: "Soft Brown", component: eyes({ iris: "#6B3F1D" }) },
+  blueGreyNatural: { label: "Blue Grey", component: eyes({ iris: "#7D9AAA", lashes: 1 }) },
+  hazelGreenNatural: { label: "Hazel Green", component: eyes({ iris: "#8FA66B", lashes: 1 }) },
+  aquaBlueNatural: { label: "Aqua Blue", component: eyes({ iris: "#4FB3C4", lashes: 1 }) },
+  calmBlueGrey: { label: "Calm Blue Grey", component: eyes({ iris: "#8B9DB3", liner: "thin", lashes: 1, shadow: "#C8B8C4" }) },
+  softBlueGrey: { label: "Soft Blue Grey", component: eyes({ iris: "#6E8AA3" }) },
+  brightBlueNatural: { label: "Bright Blue", component: eyes({ iris: "#3B82F6", lashes: 1 }) },
+  lashes: { label: "Lashes", component: eyes({ lashes: 3 }) },
+  heavyLashes: { label: "Heavy Lashes", component: eyes({ liner: "bold", lashes: 3 }) },
+  wingedLashes: { label: "Winged Lashes", component: eyes({ liner: "wing", lashes: 2 }) },
+  wingedGlamEyes: { label: "Winged Glam", component: eyes({ iris: "#5E7B87", liner: "wing", lashes: 1 }) },
+  glamGreyEyes: { label: "Glam Grey", component: eyes({ iris: "#94A3B8", liner: "bold", lashes: 2, shadow: "#C9A27E" }) },
+  blueGreyGlam: { label: "Blue Grey Glam", component: eyes({ iris: "#64748B", liner: "wing", lashes: 1 }) },
+  lightHazel: { label: "Light Hazel", component: eyes({ iris: "#A3E635", liner: "bold", lashes: 2 }) },
+  brightBlueGlam: { label: "Bright Blue Glam", component: eyes({ iris: "#3B82F6", liner: "bold", lashes: 2 }) },
+  greenLavenderGlam: { label: "Green Lavender Glam", component: eyes({ iris: "#22C55E", liner: "bold", lashes: 2, shadow: "#A78BFA" }) },
+  blueWinged: { label: "Blue Winged", component: eyes({ iris: "#3B82F6", liner: "wing", lashes: 2 }) },
+  happyBrownFeminine: { label: "Happy Brown", component: eyes({ iris: "#8B5A2B", lashes: 2, sparkle: true, shadow: "#E8C9B8" }) },
+  winking: { label: "Winking", component: winkingEyes },
+  tired: { label: "Tired", component: tiredEyes },
 };
