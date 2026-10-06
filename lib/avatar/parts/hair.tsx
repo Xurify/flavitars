@@ -346,16 +346,20 @@ export const HAIR_SPECS: Record<HairId, HairSpec> = {
   },
 
   aviatorFlaps: {
-    cap: capAbove(HAIRLINE.natural),
-    front: `${DOME.medium} ${both("M 13 36 Q 8 50, 12 64 Q 18 69, 25 64 L 25 36 Z")}`,
-    details: both("M 15 46 Q 14 54, 16 62"),
+    front: `M 26 73 C 22 79, 16 82, 10 80 C 4 78, 1.5 70, 2 60 C 2.5 46, 7 35, 13.5 28 L 15 26 L 15 18 Q 15 14, 19 13 Q 50 2, 81 13 Q 85 14, 85 18 L 85 26 L 86.5 28 C 93 35, 97.5 46, 98 60 C 98.5 70, 96 78, 90 80 C 84 82, 78 79, 74 73 L 74 35 L 26 35 Z`,
+    details: both("M 12 31 C 7 40, 5 52, 6 66 M 16.5 33 C 13 44, 12 56, 14 72"),
+    shine: both("M 6 50 C 6.5 42, 9 36, 12 32 C 10.5 38, 9 45, 8.5 54 Z") + " M 30 9.5 Q 50 4, 70 9.5 Q 50 6.5, 30 9.5 Z",
     accents: () => (
-      <g fill="#ff6b6b" stroke="currentColor" strokeWidth="1.5">
-        <rect x="12" y="37" width="11" height="4" rx="2" />
-        <rect x="77" y="37" width="11" height="4" rx="2" />
+      <g>
+        <path d={both("M 15 26 L 15 35 L 21 35")} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        <g fill="#ff6b6b" stroke="currentColor" strokeWidth="1.5">
+          <rect x="10.5" y="23" width="12" height="5" rx="2.5" />
+          <rect x="77.5" y="23" width="12" height="5" rx="2.5" />
+        </g>
+        <path d="M 12.5 24.6 H 16.5 M 79.5 24.6 H 83.5" stroke="white" strokeOpacity="0.55" strokeWidth="1" strokeLinecap="round" />
       </g>
     ),
-    top: 11,
+    top: 7.5,
   },
 
   texturedPompadour: {
