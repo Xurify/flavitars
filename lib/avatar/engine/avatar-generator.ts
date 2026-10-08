@@ -1,15 +1,5 @@
 import { AvatarState, DEFAULT_AVATAR_STATE, CATEGORIES } from "../types";
-import {
-  canonicalColorId,
-  FABRIC_PALETTE,
-  HAIR_PALETTE,
-  LEGACY_ACCENT_IDS,
-  LEGACY_HAIR_IDS,
-  LEGACY_SKIN_IDS,
-  LENS_PALETTE,
-  Palette,
-  SKIN_PALETTE,
-} from "../colors";
+import { FABRIC_PALETTE, HAIR_PALETTE, LENS_PALETTE, Palette, paletteSwatches, SKIN_PALETTE } from "../colors";
 import { isPackedId, packState, PACKED_ID_PREFIX, unpackState } from "./packer";
 
 /**
@@ -65,13 +55,15 @@ export function generateAvatarFromSeed(seed: string | number): AvatarState {
     (state as unknown as Record<string, string | boolean>)[category.stateKey] = keys[index];
   });
 
-  // Seeds index into the frozen legacy lists so existing seeds keep their colours.
-  const pick = (palette: Palette, legacy: readonly string[]) => canonicalColorId(palette, legacy[rng.nextInt(legacy.length)]);
-  state.skinTone = pick(SKIN_PALETTE, LEGACY_SKIN_IDS);
-  state.hairColor = pick(HAIR_PALETTE, LEGACY_HAIR_IDS);
-  state.hatColor = pick(FABRIC_PALETTE, LEGACY_HAIR_IDS);
-  state.accessoryColor = pick(LENS_PALETTE, LEGACY_ACCENT_IDS);
-  state.bodyColor = pick(FABRIC_PALETTE, LEGACY_HAIR_IDS);
+  const pick = (palette: Palette) => {
+    const swatches = paletteSwatches(palette);
+    return swatches[rng.nextInt(swatches.length)].id;
+  };
+  state.skinTone = pick(SKIN_PALETTE);
+  state.hairColor = pick(HAIR_PALETTE);
+  state.hatColor = pick(FABRIC_PALETTE);
+  state.accessoryColor = pick(LENS_PALETTE);
+  state.bodyColor = pick(FABRIC_PALETTE);
 
   state.containHair = rng.next() > 0.5;
 
