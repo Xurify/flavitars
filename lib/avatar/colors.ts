@@ -1,9 +1,9 @@
 /**
- * Colour palettes. Each palette is split into named groups for the picker, and keeps an alias
- * table so ids that were renamed or retired still resolve (stored avatars, share links).
+ * Colour palettes. Each palette is split into named groups for the picker.
  *
- * Swatch order inside a palette is part of the v2 packed-id format (see engine/packer.ts):
- * append new swatches to the end of a group's list only after bumping the packer version.
+ * Swatch order inside a palette is part of the packed-id format (see engine/packer.ts) and decides
+ * which colour a seed draws: adding, removing or reordering swatches changes seed-only avatars and
+ * breaks existing packed ids.
  */
 
 export interface ColorSwatch {
@@ -21,8 +21,6 @@ export interface Palette {
   id: PaletteId;
   label: string;
   groups: readonly ColorGroup[];
-  /** Retired or renamed ids → current ids. */
-  aliases: Readonly<Record<string, string>>;
   defaultId: string;
 }
 
@@ -66,16 +64,6 @@ export const SKIN_PALETTE: Palette = {
       ],
     },
   ],
-  aliases: {
-    paper: "porcelain",
-    ghost: "silver",
-    ghoul: "zombie",
-    crimson: "martian",
-    oceanic: "azure",
-    orchid: "lavender",
-    bubblegum: "candy",
-    bronze: "inferno",
-  },
 };
 
 export const HAIR_PALETTE: Palette = {
@@ -117,10 +105,6 @@ export const HAIR_PALETTE: Palette = {
       ],
     },
   ],
-  aliases: {
-    khaki: "ashBlonde",
-    royal: "blue",
-  },
 };
 
 /** Hats (and, historically, bodies): fabric names instead of hair names. */
@@ -158,19 +142,6 @@ export const FABRIC_PALETTE: Palette = {
       ],
     },
   ],
-  aliases: {
-    darkBrown: "chocolate",
-    brown: "camel",
-    lightBrown: "camel",
-    auburn: "maroon",
-    blonde: "mustard",
-    goldenBlonde: "mustard",
-    ashBlonde: "khaki",
-    platinumBlonde: "cream",
-    blue: "royal",
-    green: "forest",
-    lilac: "purple",
-  },
 };
 
 /** Tinted lenses (ski goggles). */
@@ -192,10 +163,6 @@ export const LENS_PALETTE: Palette = {
       ],
     },
   ],
-  aliases: {
-    black: "obsidian",
-    blue: "electric",
-  },
 };
 
 export const PALETTES: Record<PaletteId, Palette> = {
@@ -207,15 +174,9 @@ export const PALETTES: Record<PaletteId, Palette> = {
 
 export const paletteSwatches = (palette: Palette): ColorSwatch[] => palette.groups.flatMap((group) => group.swatches);
 
-/** Current id for a stored id (follows aliases); unknown ids and raw hex values pass through. */
-export const canonicalColorId = (palette: Palette, id: string | undefined): string => {
-  if (!id) return palette.defaultId;
-  return palette.aliases[id] ?? id;
-};
-
 export const findSwatch = (palette: Palette, id: string | undefined): ColorSwatch | undefined => {
-  const canonical = canonicalColorId(palette, id);
-  return paletteSwatches(palette).find((option) => option.id === canonical);
+  const target = id || palette.defaultId;
+  return paletteSwatches(palette).find((option) => option.id === target);
 };
 
 /** Hex for a stored id. Raw `#rrggbb` values are accepted; anything unknown gets the default. */
@@ -225,63 +186,3 @@ export const resolveColor = (palette: Palette, id: string | undefined): string =
   if (id?.startsWith("#")) return id;
   return findSwatch(palette, palette.defaultId)!.color;
 };
-
-/**
- * The flat lists as they were before palettes were grouped. Packed ids with the legacy `p_`
- * prefix and seed-generated avatars index into these, so they must never change.
- */
-export const LEGACY_SKIN_IDS = [
-  "paper",
-  "porcelain",
-  "pale",
-  "fair",
-  "light",
-  "warm-beige",
-  "tan",
-  "olive",
-  "medium",
-  "dark",
-  "deep",
-  "zombie",
-  "alien",
-  "ghoul",
-  "martian",
-  "crimson",
-  "oceanic",
-  "azure",
-  "sky",
-  "lavender",
-  "orchid",
-  "candy",
-  "bubblegum",
-  "inferno",
-  "gold",
-  "bronze",
-  "silver",
-  "ghost",
-] as const;
-
-export const LEGACY_HAIR_IDS = [
-  "black",
-  "darkBrown",
-  "brown",
-  "lightBrown",
-  "auburn",
-  "blonde",
-  "goldenBlonde",
-  "ashBlonde",
-  "platinumBlonde",
-  "orange",
-  "red",
-  "purple",
-  "blue",
-  "green",
-  "pink",
-  "khaki",
-  "royal",
-  "grey",
-  "white",
-  "lilac",
-] as const;
-
-export const LEGACY_ACCENT_IDS = ["fire", "electric", "emerald", "nebula", "solar", "chrome", "black"] as const;

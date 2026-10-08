@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckIcon } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { canonicalColorId, findSwatch, Palette } from "@/lib/avatar/colors";
+import { findSwatch, Palette } from "@/lib/avatar/colors";
 import { cn } from "@/lib/utils/strings";
 
 interface ColorPickerProps {
@@ -20,7 +20,6 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   selectedId,
   onSelect,
 }): React.JSX.Element => {
-  const activeId = canonicalColorId(palette, selectedId);
   const active = findSwatch(palette, selectedId);
 
   return (
@@ -45,7 +44,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
             )}
             <div className="flex flex-wrap gap-1.5">
               {group.swatches.map((swatch) => {
-                const isSelected = activeId === swatch.id;
+                const isSelected = active?.id === swatch.id;
                 return (
                   <Tooltip key={swatch.id} delayDuration={120}>
                     <TooltipTrigger asChild>
